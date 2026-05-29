@@ -12,25 +12,21 @@ body {
   overscroll-behavior: none;
 }
 
-/* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: #f4f6f8; }
 ::-webkit-scrollbar-thumb { background: #1db954; border-radius: 2px; }
 
-/* ── Login Hero Pattern ── */
 .hero-pattern {
   background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
                     radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 50%);
 }
 
-/* ── Status Blink ── */
 @keyframes blink {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.3; }
 }
 .status-blink { animation: blink 1.8s ease-in-out infinite; }
 
-/* ── Page Fade In ── */
 @keyframes fadeSlideUp {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -39,7 +35,6 @@ body {
 #loginScreen  { animation: fadeSlideUp 0.5s ease; }
 #appShell     { animation: fadeSlideUp 0.4s ease; }
 
-/* ── Card Enter Animation ── */
 @keyframes cardIn {
   from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -47,42 +42,35 @@ body {
 
 .card-anim { animation: cardIn 0.3s ease forwards; }
 
-/* ── Worker Row ── */
 .worker-row {
   transition: all 0.15s ease;
   border: 1px solid #e5e9ef;
 }
 .worker-row:active { background: #f0fdf4; }
 
-/* ── Task History Item ── */
 .history-item {
   animation: cardIn 0.25s ease forwards;
   transition: background 0.15s;
 }
 .history-item:active { background: #f4f6f8; }
 
-/* ── iFrame Wrapper ── */
 #offerWallFrame {
   min-height: 520px;
   background: #f4f6f8;
   display: block;
 }
 
-/* ── Input Focus ── */
 input:focus {
   box-shadow: 0 0 0 3px rgba(29,185,84,0.15);
 }
 
-/* ── Toast ── */
 #toast { pointer-events: none; }
 #toast.show { opacity: 1 !important; transform: translateX(-50%) translateY(-4px); }
 
-/* ── Bottom Nav Safe Area ── */
 #workerBottomNav {
   padding-bottom: env(safe-area-inset-bottom, 12px);
 }
 
-/* ── Progress Bar ── */
 .progress-bar {
   height: 3px;
   background: #e5e9ef;
@@ -96,7 +84,6 @@ input:focus {
   transition: width 0.6s ease;
 }
 
-/* ── Green Button Pulse on Login ── */
 @keyframes greenPulse {
   0%   { box-shadow: 0 4px 20px rgba(29,185,84,0.25); }
   50%  { box-shadow: 0 4px 28px rgba(29,185,84,0.45); }
@@ -105,7 +92,6 @@ input:focus {
 button.bg-primary { animation: greenPulse 2.5s ease-in-out infinite; }
 button.bg-primary:active { animation: none; }
 
-/* ── Avatar Placeholder ── */
 .avatar {
   width: 36px;
   height: 36px;
@@ -121,7 +107,6 @@ button.bg-primary:active { animation: none; }
   flex-shrink: 0;
 }
 
-/* ── Subtle texture on bg ── */
 body::after {
   content: '';
   position: fixed;
@@ -131,7 +116,6 @@ body::after {
   z-index: 0;
 }
 
-/* ── Stats Badge ── */
 .stat-badge {
   display: inline-flex;
   align-items: center;
@@ -144,7 +128,6 @@ body::after {
   border-radius: 99px;
 }
 
-/* ── Responsive ── */
 @media (max-width: 375px) {
   .font-display { font-size: 95%; }
 }
