@@ -1,0 +1,164 @@
+/* =============================================
+   TASKPAM — style.css
+   Custom styles complementing Tailwind CSS CDN
+   ============================================= */
+
+/* --- Base Reset & Body --- */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: #0a0a0a;
+  color: #e8e8e8;
+  font-family: 'DM Sans', sans-serif;
+  overscroll-behavior: none;
+}
+
+/* --- Scrollbar Styling --- */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #111111; }
+::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #00ff88; }
+
+/* --- Accent Glow Effect --- */
+.glow-accent {
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+/* --- Login Screen --- */
+#loginScreen {
+  background: radial-gradient(ellipse at top, #0f1a0f 0%, #0a0a0a 60%);
+  animation: fadeIn 0.5s ease;
+}
+
+/* --- App Shell Fade In --- */
+#appShell {
+  animation: fadeIn 0.4s ease;
+}
+
+/* --- Animations --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 8px rgba(0, 255, 136, 0.2); }
+  50%       { box-shadow: 0 0 24px rgba(0, 255, 136, 0.5); }
+}
+
+/* --- Balance Card Pulse --- */
+.balance-pulse {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* --- Card Hover --- */
+.task-card {
+  transition: all 0.2s ease;
+  animation: slideUp 0.3s ease;
+}
+
+.task-card:hover {
+  border-color: rgba(0, 255, 136, 0.3);
+  transform: translateX(2px);
+}
+
+/* --- iFrame Container --- */
+#offerWallFrame {
+  min-height: 500px;
+  background: #111111;
+}
+
+/* --- Worker Row --- */
+.worker-row {
+  transition: all 0.15s ease;
+  animation: slideUp 0.25s ease;
+}
+
+.worker-row:hover {
+  border-color: rgba(0, 255, 136, 0.2);
+}
+
+/* --- Status Indicator --- */
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00ff88;
+  animation: pulseGlow 1.5s ease-in-out infinite;
+  display: inline-block;
+}
+
+/* --- Toast --- */
+#toast {
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+#toast.show {
+  opacity: 1 !important;
+}
+
+/* --- Input Focus Ring --- */
+input:focus {
+  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+}
+
+/* --- Noise Texture Overlay --- */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* --- Section Fade Animation --- */
+.section-fade {
+  animation: fadeIn 0.35s ease;
+}
+
+/* --- Admin Danger Zone --- */
+.danger-zone {
+  background: linear-gradient(135deg, rgba(255,68,68,0.05) 0%, transparent 60%);
+}
+
+/* --- Progress Bar --- */
+.progress-bar {
+  height: 2px;
+  background: #2a2a2a;
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff88, #00cc6a);
+  border-radius: 1px;
+  transition: width 0.8s ease;
+}
+
+/* --- Monospace Numbers --- */
+.mono-num {
+  font-family: 'Space Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Bottom Nav Safe Area --- */
+#workerBottomNav {
+  padding-bottom: env(safe-area-inset-bottom, 12px);
+}
+
+/* --- Responsive --- */
+@media (max-width: 380px) {
+  .font-display { letter-spacing: 0.05em; }
+}
