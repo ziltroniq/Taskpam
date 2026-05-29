@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Taskpam · Earn the right way</title>
+  <title>Taskpam · Cosmic Dashboard</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind (utility‑first) -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -18,29 +18,14 @@
       theme: {
         extend: {
           colors: {
-            primary: {
-              DEFAULT: '#6366f1',
-              light: '#818cf8',
-              dark: '#4f46e5',
-              subtle: '#eef2ff',
-            },
-            surface: '#ffffff',
-            bg: '#f8fafc',
-            card: '#ffffff',
-            border: '#e2e8f0',
-            text: '#0f172a',
-            muted: '#64748b',
-            danger: '#ef4444',
-            warn: '#f59e0b',
+            primary: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5', subtle: '#eef2ff' },
+            surface: '#ffffff', bg: '#f8fafc', card: '#ffffff', border: '#e2e8f0',
+            text: '#0f172a', muted: '#64748b', danger: '#ef4444', warn: '#f59e0b',
           },
           fontFamily: {
-            display: ['Poppins', 'sans-serif'],
-            body: ['Inter', 'sans-serif'],
+            display: ['Poppins', 'sans-serif'], body: ['Inter', 'sans-serif'],
           },
-          borderRadius: {
-            '2xl': '1.25rem',
-            '3xl': '1.75rem',
-          },
+          borderRadius: { '2xl': '1.25rem', '3xl': '1.75rem' },
         },
       },
     }
@@ -48,988 +33,835 @@
 
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
-    /* ===== CUSTOM PROPERTIES & DARK MODE ===== */
+    /* (coller tout le CSS du message précédent, je le remets pour être sûr) */
     :root {
       --glass-bg: rgba(255, 255, 255, 0.08);
       --glass-border: rgba(255, 255, 255, 0.15);
       --glass-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
       --login-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-      --shape-1: rgba(99, 102, 241, 0.15);
-      --shape-2: rgba(168, 85, 247, 0.1);
     }
-
     .dark {
       --glass-bg: rgba(15, 23, 42, 0.45);
       --glass-border: rgba(255, 255, 255, 0.08);
       --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
     }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      transition: background-color 0.3s, color 0.3s;
-    }
-
-    .dark body {
-      background-color: #0b1120;
-      color: #e2e8f0;
-    }
-
-    /* ===== LOGIN SCREEN ===== */
+    body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .login-screen {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--login-bg);
-      position: relative;
-      overflow: hidden;
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: var(--login-bg); position: relative; overflow: hidden;
     }
-
-    .login-screen::before,
-    .login-screen::after {
-      content: '';
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
-      opacity: 0.5;
-      z-index: 0;
-      animation: floatShape 20s infinite alternate ease-in-out;
+    .login-screen::before, .login-screen::after {
+      content: ''; position: absolute; border-radius: 50%; filter: blur(80px);
+      opacity: 0.4; z-index: 0; animation: floatShape 20s infinite alternate ease-in-out;
     }
-
-    .login-screen::before {
-      width: 500px;
-      height: 500px;
-      background: var(--shape-1);
-      top: -150px;
-      left: -100px;
-    }
-
-    .login-screen::after {
-      width: 400px;
-      height: 400px;
-      background: var(--shape-2);
-      bottom: -120px;
-      right: -80px;
-      animation-delay: -10s;
-    }
-
-    @keyframes floatShape {
-      0% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(40px, 30px) scale(1.1); }
-      100% { transform: translate(-20px, -20px) scale(0.95); }
-    }
-
+    .login-screen::before { width: 500px; height: 500px; background: rgba(99,102,241,0.2); top:-150px; left:-100px; }
+    .login-screen::after { width: 400px; height: 400px; background: rgba(168,85,247,0.15); bottom:-120px; right:-80px; animation-delay:-10s; }
+    @keyframes floatShape { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,30px) scale(1.1)} 100%{transform:translate(-20px,-20px) scale(0.95)} }
     .login-card {
-      background: var(--glass-bg);
-      backdrop-filter: blur(25px);
-      -webkit-backdrop-filter: blur(25px);
-      border: 1px solid var(--glass-border);
-      border-radius: 2rem;
-      padding: 2.5rem 2rem;
-      width: 100%;
-      max-width: 380px;
-      box-shadow: var(--glass-shadow);
-      text-align: center;
-      z-index: 1;
-      animation: fadeSlideUp 0.6s ease;
+      background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+      border:1px solid var(--glass-border); border-radius:2rem; padding:2.5rem 2rem; width:100%;
+      max-width:380px; box-shadow: var(--glass-shadow); text-align:center; z-index:1; animation: fadeSlideUp 0.6s ease;
     }
-
     .login-input {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      margin: 0.75rem 0;
-      border-radius: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.05);
-      color: white;
-      outline: none;
-      font-size: 0.95rem;
-      transition: 0.2s;
+      width:100%; padding:0.9rem 1rem; margin:0.75rem 0; border-radius:1rem;
+      border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:white; outline:none; font-size:0.95rem; transition:0.2s;
     }
-
-    .login-input:focus {
-      border-color: #818cf8;
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
-    }
-
+    .login-input:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,0.3); }
     .login-btn {
-      width: 100%;
-      padding: 0.9rem;
-      border-radius: 1rem;
-      border: none;
-      background: linear-gradient(135deg, #6366f1, #8b5cf6);
-      color: white;
-      font-weight: 700;
-      font-family: 'Poppins', sans-serif;
-      letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: 0.2s;
-      box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
-      margin-top: 0.5rem;
+      width:100%; padding:0.9rem; border-radius:1rem; border:none;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6); color:white; font-weight:700; font-family:'Poppins',sans-serif;
+      letter-spacing:0.5px; cursor:pointer; transition:0.2s; box-shadow:0 8px 24px rgba(99,102,241,0.4); margin-top:0.5rem;
     }
-
-    .login-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 12px 28px rgba(99, 102, 241, 0.5);
-    }
-
-    .login-btn:active {
-      transform: translateY(0);
-    }
-
-    /* ===== APP SHELL ===== */
+    .login-btn:hover { transform:translateY(-1px); box-shadow:0 12px 28px rgba(99,102,241,0.5); }
     .nav-blur {
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(0,0,0,0.05);
     }
-
-    .dark .nav-blur {
-      background: rgba(15, 23, 42, 0.8);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    }
-
+    .dark .nav-blur { background:rgba(15,23,42,0.8); border-bottom:1px solid rgba(255,255,255,0.05); }
     .card-premium {
-      background: white;
-      border-radius: 1.5rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.04);
-      transition: all 0.2s;
+      background:white; border-radius:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.03),0 1px 3px rgba(0,0,0,0.04);
+      transition:all 0.2s;
     }
-
-    .dark .card-premium {
-      background: #1e293b;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.4);
-    }
-
-    /* ===== MICRO ANIMATIONS ===== */
-    @keyframes fadeSlideUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .animate-fade-slide {
-      animation: fadeSlideUp 0.4s ease forwards;
-    }
-
-    .animate-fade-in {
-      animation: fadeIn 0.25s ease;
-    }
-
-    .stagger-1 { animation-delay: 0.05s; }
-    .stagger-2 { animation-delay: 0.1s; }
-    .stagger-3 { animation-delay: 0.15s; }
-
-    /* ===== TOAST ===== */
+    .dark .card-premium { background:#1e293b; box-shadow:0 4px 20px rgba(0,0,0,0.3),0 1px 3px rgba(0,0,0,0.4); }
+    @keyframes fadeSlideUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
+    .animate-fade-slide { animation:fadeSlideUp 0.4s ease forwards; }
     .toast-modern {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #1e293b;
-      color: white;
-      padding: 0.8rem 1.5rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      font-size: 0.9rem;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      opacity: 0;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      pointer-events: none;
+      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px);
+      background:#1e293b; color:white; padding:0.8rem 1.5rem; border-radius:2rem; font-weight:600;
+      font-size:0.9rem; box-shadow:0 12px 30px rgba(0,0,0,0.25); z-index:9999; display:flex;
+      align-items:center; gap:0.5rem; opacity:0; transition:transform 0.3s ease, opacity 0.3s ease; pointer-events:none;
     }
-
-    .toast-modern.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
-    /* ===== LOADING OVERLAY ===== */
+    .toast-modern.show { transform:translateX(-50%) translateY(0); opacity:1; }
     .loading-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 9998;
+      position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
+      display:flex; align-items:center; justify-content:center; z-index:9998;
     }
-
     .spinner {
-      width: 36px;
-      height: 36px;
-      border: 3px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width:36px; height:36px; border:3px solid rgba(255,255,255,0.3);
+      border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite;
     }
-
-    /* ===== DARK MODE OVERRIDES (Tailwind dark variant) ===== */
-    .dark .bg-bg { background-color: #0f172a; }
-    .dark .bg-surface { background-color: #1e293b; }
-    .dark .text-text { color: #f1f5f9; }
-    .dark .text-muted { color: #94a3b8; }
-    .dark .border-border { border-color: #334155; }
-    .dark .from-primary { --tw-gradient-from: #4f46e5; }
+    @keyframes spin { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body class="bg-bg text-text antialiased">
 
-  <!-- ========== LOADING OVERLAY ========== -->
-  <div id="loadingOverlay" class="loading-overlay hidden">
-    <div class="spinner"></div>
-  </div>
+<!-- Loading overlay -->
+<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
+<!-- Toast -->
+<div id="toast" class="toast-modern"></div>
 
-  <!-- ========== TOAST ========== -->
-  <div id="toast" class="toast-modern"></div>
-
-  <!-- ========== LOGIN SCREEN ========== -->
-  <div id="loginScreen" class="login-screen">
-    <div class="login-card">
-      <!-- Logo -->
-      <div class="flex items-center justify-center gap-2 mb-3">
-        <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-          <span class="text-white font-display font-extrabold text-xl">T</span>
-        </div>
-        <span class="text-white font-display font-bold text-2xl tracking-tight">Taskpam</span>
+<!-- ========== LOGIN SCREEN ========== -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="flex items-center justify-center gap-2 mb-3">
+      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+        <span class="text-white font-display font-extrabold text-xl">T</span>
       </div>
-      <h2 class="text-white text-xl font-display font-semibold mt-4">Welcome back</h2>
-      <p class="text-white/60 text-sm mb-6">Sign in to your workspace</p>
-
-      <input id="loginId" type="text" placeholder="Username" class="login-input" autocomplete="username" />
-      <input id="loginPass" type="password" placeholder="Password" class="login-input" autocomplete="current-password" />
-
-      <button onclick="handleLogin()" class="login-btn flex items-center justify-center gap-2">
-        <i data-lucide="log-in" class="w-4 h-4"></i>
-        Sign in
-      </button>
-
-      <p id="loginError" class="text-red-300 text-sm mt-4 hidden"></p>
-
-      <div class="mt-6 text-left bg-white/5 rounded-xl p-4 border border-white/10">
-        <p class="text-indigo-200 font-semibold text-xs uppercase tracking-wider mb-2">Demo accounts</p>
-        <div class="space-y-1.5 text-xs text-white/70">
-          <p><span class="text-white font-medium">Worker:</span> worker_402 / 1234</p>
-          <p><span class="text-white font-medium">Manager:</span> manager_01 / 1234</p>
-          <p><span class="text-white font-medium">Admin:</span> admin / admin2025</p>
-        </div>
+      <span class="text-white font-display font-bold text-2xl tracking-tight">Taskpam</span>
+    </div>
+    <h2 class="text-white text-xl font-display font-semibold mt-4">Welcome back</h2>
+    <p class="text-white/60 text-sm mb-6">Sign in to your workspace</p>
+    <input id="loginId" type="text" placeholder="Username" class="login-input" autocomplete="username" />
+    <input id="loginPass" type="password" placeholder="Password" class="login-input" autocomplete="current-password" />
+    <button onclick="handleLogin()" class="login-btn flex items-center justify-center gap-2">
+      <i data-lucide="log-in" class="w-4 h-4"></i> Sign in
+    </button>
+    <p id="loginError" class="text-red-300 text-sm mt-4 hidden"></p>
+    <div class="mt-6 text-left bg-white/5 rounded-xl p-4 border border-white/10">
+      <p class="text-indigo-200 font-semibold text-xs uppercase tracking-wider mb-2">Demo accounts</p>
+      <div class="space-y-1.5 text-xs text-white/70">
+        <p><span class="text-white font-medium">Worker:</span> worker_402 / 1234</p>
+        <p><span class="text-white font-medium">Manager:</span> manager_01 / 1234</p>
+        <p><span class="text-white font-medium">Admin:</span> admin / admin2025</p>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- ========== APP SHELL ========== -->
-  <div id="appShell" class="hidden min-h-screen flex flex-col">
-    <!-- Top navigation -->
-    <nav class="nav-blur sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
-      <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
-          <span class="text-white font-display font-black text-sm">T</span>
-        </div>
-        <span class="font-display font-bold text-lg text-text">Taskpam</span>
+<!-- ========== APP SHELL ========== -->
+<div id="appShell" class="hidden min-h-screen flex flex-col">
+  <!-- Top navigation -->
+  <nav class="nav-blur sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+        <span class="text-white font-display font-black text-sm">T</span>
       </div>
-      <div class="flex items-center gap-3">
-        <div id="navBalance" class="hidden items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full">
-          <i data-lucide="wallet" class="w-3.5 h-3.5 text-primary"></i>
-          <span id="navBalanceAmt" class="text-xs font-semibold text-primary">0 HTG</span>
-        </div>
-        <div class="flex items-center gap-1.5 bg-primary-subtle px-3 py-1 rounded-full">
-          <span class="relative flex h-2.5 w-2.5">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-          </span>
-          <span id="navUserId" class="text-xs font-semibold text-primary"></span>
-        </div>
-        <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
-          <i data-lucide="moon" class="w-4 h-4 text-text"></i>
-        </button>
-        <button onclick="handleLogout()" class="text-xs font-medium text-muted hover:text-danger border border-border px-3 py-1.5 rounded-lg hover:border-danger/30 transition-all">
-          Exit
-        </button>
-      </div>
-    </nav>
-
-    <!-- Role tag & balance bar -->
-    <div class="bg-primary px-4 py-2 flex items-center justify-between text-white/90 text-xs">
-      <div class="flex items-center gap-2">
-        <span>Connected as</span>
-        <span id="roleTag" class="bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide"></span>
-      </div>
-      <div id="mobileBalance" class="hidden">
-        <span class="opacity-70">Balance:</span>
-        <span id="mobileBalanceAmt" class="font-bold ml-1">0 HTG</span>
-      </div>
+      <span class="font-display font-bold text-lg text-text">Taskpam</span>
     </div>
-
-    <!-- ===== WORKER VIEW ===== -->
-    <div id="workerView" class="hidden flex-1 flex flex-col pb-20">
-      <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-        <p class="text-white/70 text-sm">Hello 👋</p>
-        <h2 id="workerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
+    <div class="flex items-center gap-3">
+      <div id="navBalance" class="hidden items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full">
+        <i data-lucide="wallet" class="w-3.5 h-3.5 text-primary"></i>
+        <span id="navBalanceAmt" class="text-xs font-semibold text-primary">0 HTG</span>
       </div>
-      <div class="px-4 -mt-8 space-y-4">
-        <!-- Balance card -->
-        <div class="card-premium p-5 animate-fade-slide">
-          <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-semibold text-muted uppercase tracking-wide">Your Balance</span>
-            <span class="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary font-semibold px-2 py-0.5 rounded-full">
-              <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Online
-            </span>
-          </div>
-          <div class="flex items-end gap-2 mb-3">
-            <span id="workerBalanceHTG" class="font-display font-extrabold text-4xl text-text">0</span>
-            <span class="text-primary font-bold text-lg mb-1">HTG</span>
-          </div>
-          <div class="h-px bg-border mb-3"></div>
-          <div class="flex justify-between text-xs text-muted">
-            <span>This week: <span id="workerWeekEarnings" class="text-primary font-bold">0 HTG</span></span>
-            <span>Tasks: <span id="workerTaskCount" class="text-text font-bold">0</span></span>
-          </div>
-        </div>
-
-        <!-- Offer wall -->
-        <div class="card-premium overflow-hidden animate-fade-slide">
-          <div class="px-4 py-3 border-b border-border flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="zap" class="w-4 h-4 text-primary"></i>
-              <span class="font-display font-bold text-sm text-text">Task Wall</span>
-            </div>
-            <span class="text-xs text-muted bg-bg px-2 py-1 rounded-lg" id="offerWallUserId"></span>
-          </div>
-          <iframe id="offerWallFrame" src="" width="100%" height="520px" frameborder="0" scrolling="yes" class="bg-bg" title="Offer Wall"></iframe>
-          <div id="offerWallFallback" class="hidden px-5 py-10 text-center">
-            <i data-lucide="loader-2" class="w-10 h-10 text-primary mx-auto mb-3 animate-spin"></i>
-            <p class="font-display font-bold text-text">Loading offers...</p>
-            <p class="text-muted text-xs mt-1">Worker ID: <span id="fallbackWId" class="text-primary font-bold"></span></p>
-          </div>
-        </div>
-
-        <!-- History -->
-        <div class="card-premium animate-fade-slide">
-          <div class="px-4 py-3 border-b border-border flex items-center gap-2">
-            <i data-lucide="history" class="w-4 h-4 text-muted"></i>
-            <span class="font-display font-bold text-sm text-text">Earnings History</span>
-          </div>
-          <div id="workerTaskHistory" class="p-4 space-y-2"></div>
-        </div>
+      <div class="flex items-center gap-1.5 bg-primary-subtle px-3 py-1 rounded-full">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+        </span>
+        <span id="navUserId" class="text-xs font-semibold text-primary"></span>
       </div>
-    </div>
-
-    <!-- ===== MANAGER VIEW ===== -->
-    <div id="managerView" class="hidden flex-1 flex flex-col pb-6">
-      <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-        <p class="text-white/70 text-sm">Manager Dashboard</p>
-        <h2 id="managerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
-      </div>
-      <div class="px-4 -mt-8 space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-          <div class="card-premium p-4 animate-fade-slide">
-            <div class="flex items-center gap-2 text-muted text-xs font-semibold uppercase tracking-wide mb-2">
-              <i data-lucide="dollar-sign" class="w-4 h-4"></i> Team Earnings
-            </div>
-            <p id="teamTotalEarnings" class="font-display font-extrabold text-2xl text-primary">0 HTG</p>
-          </div>
-          <div class="card-premium p-4 animate-fade-slide stagger-1">
-            <div class="flex items-center gap-2 text-muted text-xs font-semibold uppercase tracking-wide mb-2">
-              <i data-lucide="check-square" class="w-4 h-4"></i> Tasks
-            </div>
-            <p id="teamTotalTasks" class="font-display font-extrabold text-2xl text-text">0</p>
-          </div>
-        </div>
-        <div class="card-premium animate-fade-slide">
-          <div class="px-4 py-3 border-b border-border flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="users" class="w-4 h-4 text-primary"></i>
-              <span class="font-display font-bold text-sm text-text">My Team</span>
-            </div>
-            <span id="teamCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">0 workers</span>
-          </div>
-          <div id="teamWorkersList" class="p-3 space-y-2"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== ADMIN VIEW ===== -->
-    <div id="adminView" class="hidden flex-1 flex flex-col pb-6">
-      <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-        <p class="text-white/70 text-sm">Administration</p>
-        <h2 class="font-display font-extrabold text-white text-2xl mt-0.5">HBW Taskpam</h2>
-      </div>
-      <div class="px-4 -mt-8 space-y-4">
-        <!-- Stats -->
-        <div class="card-premium p-5 animate-fade-slide">
-          <p class="text-xs font-semibold text-muted uppercase tracking-wide mb-4">Overview</p>
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <p class="text-xs text-muted mb-0.5">Total USD</p>
-              <p id="adminTotalUSD" class="font-display font-extrabold text-2xl text-primary">$0.00</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted mb-0.5">Total HTG</p>
-              <p id="adminTotalHTG" class="font-display font-extrabold text-2xl text-text">0</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted mb-0.5">Active Workers</p>
-              <p id="adminActiveWorkers" class="font-display font-extrabold text-2xl text-text">0</p>
-            </div>
-            <div>
-              <p class="text-xs text-muted mb-0.5">Total Tasks</p>
-              <p id="adminTotalTasks" class="font-display font-extrabold text-2xl text-text">0</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Exchange rate -->
-        <div class="card-premium p-4 animate-fade-slide">
-          <div class="flex items-center gap-2 mb-3">
-            <i data-lucide="refresh-cw" class="w-4 h-4 text-primary"></i>
-            <span class="font-display font-bold text-sm text-text">Exchange Rate</span>
-          </div>
-          <div class="flex gap-2 mb-2">
-            <div class="flex-1">
-              <label class="text-xs text-muted mb-1 block">1 USD = ? HTG</label>
-              <input id="exchangeRateInput" type="number" value="135"
-                class="w-full border border-border rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all" />
-            </div>
-            <button onclick="updateExchangeRate()"
-              class="bg-primary text-white font-display font-bold text-xs px-4 rounded-xl hover:bg-primary-dark transition-all mt-5 shadow-md">
-              Save
-            </button>
-          </div>
-          <div class="flex justify-between text-xs text-muted bg-bg rounded-lg px-3 py-2">
-            <span>Current: <span id="currentRateDisplay" class="text-primary font-bold">135 HTG</span></span>
-            <span>Margin: <span id="marginDisplay" class="text-warn font-bold">~10%</span></span>
-          </div>
-        </div>
-
-        <!-- Maintenance fee -->
-        <div class="card-premium p-4 border border-danger/10 animate-fade-slide">
-          <div class="flex items-center gap-2 mb-2">
-            <i data-lucide="alert-triangle" class="w-4 h-4 text-danger"></i>
-            <span class="font-display font-bold text-sm text-text">Maintenance Fee</span>
-          </div>
-          <p class="text-xs text-muted mb-3">Deducts 250 HTG from all workers.</p>
-          <button onclick="applyMaintenanceFee()"
-            class="w-full bg-danger/5 border border-danger/20 text-danger font-display font-bold text-sm py-3 rounded-xl hover:bg-danger/10 transition-all">
-            Apply Fee 250 HTG to All Workers
-          </button>
-          <p id="maintenanceMsg" class="text-xs text-center mt-2 hidden"></p>
-        </div>
-
-        <!-- Import users (admin only) -->
-        <button id="importBtn" onclick="openImportModal()"
-          class="hidden w-full bg-primary/10 text-primary font-display font-bold py-3 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
-          <i data-lucide="upload" class="w-4 h-4"></i> Import Users (CSV)
-        </button>
-
-        <!-- All workers list -->
-        <div class="card-premium animate-fade-slide">
-          <div class="px-4 py-3 border-b border-border flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="list" class="w-4 h-4 text-primary"></i>
-              <span class="font-display font-bold text-sm text-text">All Workers</span>
-            </div>
-            <span id="adminWorkerCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full"></span>
-          </div>
-          <div id="adminWorkersList" class="p-3 space-y-2"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ===== BOTTOM NAV (Worker only) ===== -->
-    <div id="workerBottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-border px-6 py-3 flex justify-around z-30">
-      <button onclick="document.getElementById('offerWallFrame').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-1 text-primary">
-        <i data-lucide="zap" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Tasks</span>
+      <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+        <i data-lucide="moon" class="w-4 h-4 text-text"></i>
       </button>
-      <button onclick="document.getElementById('workerTaskHistory').scrollIntoView({behavior:'smooth'})" class="flex flex-col items-center gap-1 text-muted hover:text-primary transition-colors">
-        <i data-lucide="list" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">History</span>
+      <button onclick="handleLogout()" class="text-xs font-medium text-muted hover:text-danger border border-border px-3 py-1.5 rounded-lg hover:border-danger/30 transition-all">
+        Exit
       </button>
-      <button onclick="showToast('Profile coming soon')" class="flex flex-col items-center gap-1 text-muted hover:text-primary transition-colors">
-        <i data-lucide="user" class="w-5 h-5"></i>
-        <span class="text-[10px] font-semibold">Profile</span>
-      </button>
+    </div>
+  </nav>
+
+  <div class="bg-primary px-4 py-2 flex items-center justify-between text-white/90 text-xs">
+    <div class="flex items-center gap-2">
+      <span>Connected as</span>
+      <span id="roleTag" class="bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide"></span>
     </div>
   </div>
 
-  <!-- ========== IMPORT CSV MODAL ========== -->
-  <div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 animate-fade-slide">
-      <h3 class="font-display font-bold text-lg text-text mb-3 flex items-center gap-2">
-        <i data-lucide="file-csv" class="w-5 h-5 text-primary"></i> Import Users
+  <!-- ===== WORKER VIEW (cosmic) ===== -->
+  <!-- (coller ici le bloc WORKER VIEW complet ci-dessus) -->
+  <!-- ===== WORKER VIEW (cosmic) ===== -->
+<div id="workerView" class="hidden flex-1 flex flex-col pb-20">
+  <!-- Header -->
+  <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
+    <p class="text-white/70 text-sm" id="workerGreeting">Hello 👋</p>
+    <h2 id="workerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
+  </div>
+
+  <div class="px-4 -mt-8 space-y-4">
+    <!-- Balance + Quick Stats -->
+    <div class="card-premium p-5 animate-fade-slide">
+      <div class="flex items-center justify-between mb-3">
+        <span class="text-xs font-semibold text-muted uppercase tracking-wide">Your Balance</span>
+        <span class="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary font-semibold px-2 py-0.5 rounded-full">
+          <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Online
+        </span>
+      </div>
+      <div class="flex items-end gap-2 mb-3">
+        <span id="workerBalanceHTG" class="font-display font-extrabold text-4xl text-text">0</span>
+        <span class="text-primary font-bold text-lg mb-1">HTG</span>
+      </div>
+      <div class="h-px bg-border mb-3"></div>
+      <div class="flex justify-between text-xs text-muted">
+        <span>This week: <span id="workerWeekEarnings" class="text-primary font-bold">0 HTG</span></span>
+        <span>Tasks: <span id="workerTaskCount" class="text-text font-bold">0</span></span>
+      </div>
+    </div>
+
+    <!-- Tabs: Tasks, History, Profile -->
+    <div class="flex gap-2 overflow-x-auto pb-2">
+      <button onclick="switchWorkerTab('tasks')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white">Tasks</button>
+      <button onclick="switchWorkerTab('history')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-text">History</button>
+      <button onclick="switchWorkerTab('profile')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-text">Profile</button>
+    </div>
+
+    <!-- Tab content -->
+    <div id="workerTasksTab">
+      <div class="card-premium overflow-hidden">
+        <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i data-lucide="zap" class="w-4 h-4 text-primary"></i>
+            <span class="font-display font-bold text-sm">Task Wall</span>
+          </div>
+          <span class="text-xs text-muted bg-bg px-2 py-1 rounded-lg" id="offerWallUserId"></span>
+        </div>
+        <iframe id="offerWallFrame" src="" width="100%" height="520px" frameborder="0" scrolling="yes" class="bg-bg" title="Offer Wall"></iframe>
+        <div id="offerWallFallback" class="hidden px-5 py-10 text-center">
+          <i data-lucide="loader-2" class="w-10 h-10 text-primary mx-auto mb-3 animate-spin"></i>
+          <p class="font-display font-bold">Loading offers...</p>
+          <p class="text-muted text-xs mt-1">Worker ID: <span id="fallbackWId" class="text-primary font-bold"></span></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="workerHistoryTab" class="hidden">
+      <div class="card-premium">
+        <div class="px-4 py-3 border-b border-border flex items-center gap-2">
+          <i data-lucide="history" class="w-4 h-4 text-muted"></i>
+          <span class="font-display font-bold text-sm">Earnings History</span>
+        </div>
+        <div id="workerTaskHistory" class="p-4 space-y-2"></div>
+      </div>
+    </div>
+
+    <div id="workerProfileTab" class="hidden">
+      <div class="card-premium p-5 space-y-4">
+        <div class="flex items-center gap-4">
+          <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-display font-extrabold text-2xl" id="profileAvatar">W</div>
+          <div>
+            <h3 id="profileName" class="font-display font-bold text-xl text-text"></h3>
+            <p id="profileId" class="text-muted text-sm"></p>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="bg-bg rounded-xl p-3">
+            <p class="text-muted text-xs">Team</p>
+            <p id="profileTeam" class="font-semibold text-text">-</p>
+          </div>
+          <div class="bg-bg rounded-xl p-3">
+            <p class="text-muted text-xs">Manager</p>
+            <p id="profileManager" class="font-semibold text-text">-</p>
+          </div>
+          <div class="bg-bg rounded-xl p-3">
+            <p class="text-muted text-xs">Total Tasks</p>
+            <p id="profileTasks" class="font-semibold text-text">0</p>
+          </div>
+          <div class="bg-bg rounded-xl p-3">
+            <p class="text-muted text-xs">Total Earned</p>
+            <p id="profileEarned" class="font-semibold text-primary">0 HTG</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- ===== MANAGER VIEW (cosmic) ===== -->
+  <!-- (coller ici le bloc MANAGER VIEW complet ci-dessus) -->
+  <!-- ===== MANAGER VIEW (cosmic) ===== -->
+<div id="managerView" class="hidden flex-1 flex flex-col pb-6">
+  <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
+    <p class="text-white/70 text-sm">Manager Dashboard</p>
+    <h2 id="managerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
+    <p id="teamNameDisplay" class="text-white/80 text-sm mt-1"></p>
+  </div>
+
+  <div class="px-4 -mt-8 space-y-4">
+    <div class="grid grid-cols-2 gap-3">
+      <div class="card-premium p-4 animate-fade-slide">
+        <div class="flex items-center gap-2 text-muted text-xs font-semibold uppercase tracking-wide mb-2">
+          <i data-lucide="dollar-sign" class="w-4 h-4"></i> Team Earnings
+        </div>
+        <p id="teamTotalEarnings" class="font-display font-extrabold text-2xl text-primary">0 HTG</p>
+      </div>
+      <div class="card-premium p-4 animate-fade-slide stagger-1">
+        <div class="flex items-center gap-2 text-muted text-xs font-semibold uppercase tracking-wide mb-2">
+          <i data-lucide="check-square" class="w-4 h-4"></i> Tasks
+        </div>
+        <p id="teamTotalTasks" class="font-display font-extrabold text-2xl text-text">0</p>
+      </div>
+    </div>
+
+    <div class="card-premium p-4 animate-fade-slide">
+      <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2">
+        <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i> Team Activity (7d)
       </h3>
-      <input type="file" id="csvFileInput" accept=".csv" class="w-full text-sm mb-3 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20" />
-      <div class="flex gap-2 justify-end">
-        <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-muted border border-border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-        <button onclick="importCSV()" class="px-4 py-2 bg-primary text-white font-bold rounded-lg hover:bg-primary-dark">Import</button>
+      <canvas id="teamChart" height="150"></canvas>
+    </div>
+
+    <div class="card-premium animate-fade-slide">
+      <div class="px-4 py-3 border-b border-border flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4 text-primary"></i>
+          <span class="font-display font-bold text-sm">My Team</span>
+          <span id="teamCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">0 workers</span>
+        </div>
       </div>
-      <p id="importStatus" class="text-xs mt-2 hidden"></p>
+      <div id="teamWorkersList" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
     </div>
   </div>
+</div>
 
-  <!-- ========== FIREBASE SDK (compat) ========== -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
+  <!-- ===== ADMIN COSMIC VIEW ===== -->
+  <!-- (coller ici le bloc ADMIN VIEW complet ci-dessus) -->
+  <!-- ===== ADMIN COSMIC VIEW ===== -->
+<div id="adminView" class="hidden flex-1 flex flex-col pb-6">
+  <div class="bg-gradient-to-br from-primary to-primary-dark px-5 pt-6 pb-16 rounded-b-[2rem] shadow-lg">
+    <p class="text-white/70 text-sm">Administration Console</p>
+    <h2 class="font-display font-extrabold text-white text-3xl mt-0.5">HBW Taskpam</h2>
+  </div>
 
-  <script>
-    // ==================== FIREBASE CONFIG ====================
-    const firebaseConfig = {
-      apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
-      authDomain: "hbwtaskpam.firebaseapp.com",
-      projectId: "hbwtaskpam",
-      storageBucket: "hbwtaskpam.firebasestorage.app",
-      messagingSenderId: "142029895340",
-      appId: "1:142029895340:web:ce94830569430491ef5109",
-      measurementId: "G-MN333N948P"
-    };
+  <div class="px-4 -mt-12 space-y-4">
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="card-premium p-4 flex flex-col animate-fade-slide">
+        <span class="text-xs text-muted uppercase tracking-wider">Total USD</span>
+        <span id="adminTotalUSD" class="font-display font-extrabold text-2xl text-primary mt-1">$0.00</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-1">
+        <span class="text-xs text-muted uppercase tracking-wider">Total HTG</span>
+        <span id="adminTotalHTG" class="font-display font-extrabold text-2xl text-text mt-1">0</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-2">
+        <span class="text-xs text-muted uppercase tracking-wider">Workers</span>
+        <span id="adminActiveWorkers" class="font-display font-extrabold text-2xl text-green-500 mt-1">0</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-3">
+        <span class="text-xs text-muted uppercase tracking-wider">Tasks</span>
+        <span id="adminTotalTasks" class="font-display font-extrabold text-2xl text-text mt-1">0</span>
+      </div>
+    </div>
 
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
+    <!-- Chart & Rate -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="card-premium p-4 lg:col-span-2 animate-fade-slide">
+        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2">
+          <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i> Global Earnings (7d)
+        </h3>
+        <canvas id="adminChart" height="200"></canvas>
+      </div>
+      <div class="card-premium p-4 animate-fade-slide">
+        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2">
+          <i data-lucide="refresh-cw" class="w-4 h-4 text-primary"></i> Exchange Rate
+        </h3>
+        <div class="flex gap-2 mb-2">
+          <input id="exchangeRateInput" type="number" value="135" class="w-full border border-border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20" />
+          <button onclick="updateExchangeRate()" class="bg-primary text-white font-bold text-xs px-4 rounded-xl hover:bg-primary-dark transition-all">Save</button>
+        </div>
+        <div class="flex justify-between text-xs text-muted bg-bg rounded-lg px-3 py-2">
+          <span>Current: <span id="currentRateDisplay" class="text-primary font-bold">135 HTG</span></span>
+          <span>Margin: <span id="marginDisplay" class="text-warn font-bold">~10%</span></span>
+        </div>
+      </div>
+    </div>
 
-    // Cloudflare Worker endpoint
-    const WORKER_BASE = 'https://taskpam-worker.hbwdatasolutions.workers.dev';
+    <!-- Actions row -->
+    <div class="flex flex-wrap gap-3">
+      <button onclick="applyMaintenanceFee()" class="flex-1 min-w-[180px] bg-danger/5 border border-danger/20 text-danger font-display font-bold text-sm py-3 rounded-xl hover:bg-danger/10 transition-all flex items-center justify-center gap-2">
+        <i data-lucide="hammer" class="w-4 h-4"></i> Apply 250 HTG Fee to All
+      </button>
+      <button onclick="exportCSV()" class="flex-1 min-w-[180px] bg-primary/10 border border-primary/20 text-primary font-display font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
+        <i data-lucide="download" class="w-4 h-4"></i> Export Workers CSV
+      </button>
+      <button onclick="openImportModal()" class="flex-1 min-w-[180px] bg-primary/10 border border-primary/20 text-primary font-display font-bold text-sm py-3 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2">
+        <i data-lucide="upload" class="w-4 h-4"></i> Import CSV
+      </button>
+      <button onclick="openAddWorkerModal()" class="flex-1 min-w-[180px] bg-green-50 border border-green-200 text-green-600 font-display font-bold text-sm py-3 rounded-xl hover:bg-green-100 transition-all flex items-center justify-center gap-2">
+        <i data-lucide="user-plus" class="w-4 h-4"></i> Add Worker
+      </button>
+    </div>
 
-    // Monlix (replace with real app ID)
-    const MONLIX_APP_ID = "VOTRE_APP_ID_MONLIX";
-    const OFFER_WALL_URL = `https://wall.monlix.com/app?appid=${MONLIX_APP_ID}&userid=`;
+    <!-- Workers management -->
+    <div class="card-premium animate-fade-slide">
+      <div class="px-4 py-3 border-b border-border flex items-center justify-between flex-wrap gap-2">
+        <div class="flex items-center gap-2">
+          <i data-lucide="users" class="w-4 h-4 text-primary"></i>
+          <span class="font-display font-bold text-sm">Worker Management</span>
+          <span id="adminWorkerCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+        </div>
+        <input type="text" id="workerSearch" placeholder="Search worker..." oninput="renderAdmin()" class="border border-border rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-primary/20 w-40 lg:w-48" />
+      </div>
+      <div id="adminWorkersList" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
+    </div>
+  </div>
+</div>
 
-    let currentUser = null;
-    let firebaseToken = null;
+  <!-- Bottom nav (worker) -->
+  <!-- (coller ici le bloc BOTTOM NAV complet ci-dessus) -->
+</div>
 
-    // ==================== DARK MODE ====================
-    function applyDarkMode(pref) {
-      if (pref === 'dark' || (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
-      updateDarkModeIcon();
+<!-- Modal: Import CSV -->
+<!-- (coller ici le bloc MODAL IMPORT) -->
+  <!-- Modal: Import CSV -->
+<div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 animate-fade-slide">
+    <h3 class="font-display font-bold text-lg mb-3 flex items-center gap-2">
+      <i data-lucide="file-csv" class="w-5 h-5 text-primary"></i> Import Users
+    </h3>
+    <p class="text-xs text-muted mb-3">⚠️ Requires backend worker. If not configured, use "Add Worker" instead.</p>
+    <input type="file" id="csvFileInput" accept=".csv" class="w-full text-sm mb-3" />
+    <div class="flex gap-2 justify-end">
+      <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-muted border rounded-lg">Cancel</button>
+      <button onclick="importCSV()" class="px-4 py-2 bg-primary text-white font-bold rounded-lg">Import</button>
+    </div>
+    <p id="importStatus" class="text-xs mt-2 hidden"></p>
+  </div>
+</div>
+
+<!-- Modal: Add Worker -->
+<div id="addWorkerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 animate-fade-slide">
+    <h3 class="font-display font-bold text-lg mb-3 flex items-center gap-2">
+      <i data-lucide="user-plus" class="w-5 h-5 text-green-500"></i> Add Worker
+    </h3>
+    <input id="newWorkerName" placeholder="Full name" class="w-full border border-border rounded-xl px-3 py-2 mb-2 text-sm" />
+    <input id="newWorkerId" placeholder="Username (e.g., worker_500)" class="w-full border border-border rounded-xl px-3 py-2 mb-2 text-sm" />
+    <input id="newWorkerPass" type="password" placeholder="Password" class="w-full border border-border rounded-xl px-3 py-2 mb-2 text-sm" />
+    <input id="newWorkerTeam" placeholder="Team ID (optional)" class="w-full border border-border rounded-xl px-3 py-2 mb-3 text-sm" />
+    <div class="flex gap-2 justify-end">
+      <button onclick="closeAddWorkerModal()" class="px-4 py-2 text-sm text-muted border rounded-lg">Cancel</button>
+      <button onclick="addWorkerManually()" class="px-4 py-2 bg-green-500 text-white font-bold rounded-lg">Create</button>
+    </div>
+    <p id="addWorkerMsg" class="text-xs mt-2 hidden"></p>
+  </div>
+</div>
+<!-- Modal: Add Worker -->
+<!-- (coller ici le bloc MODAL ADD WORKER) -->
+  <!-- Bottom nav (worker) -->
+<div id="workerBottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-border px-6 py-3 flex justify-around z-30">
+  <button onclick="switchWorkerTab('tasks')" class="flex flex-col items-center gap-1 text-primary">
+    <i data-lucide="zap" class="w-5 h-5"></i><span class="text-[10px] font-semibold">Tasks</span>
+  </button>
+  <button onclick="switchWorkerTab('history')" class="flex flex-col items-center gap-1 text-muted hover:text-primary transition-colors">
+    <i data-lucide="list" class="w-5 h-5"></i><span class="text-[10px] font-semibold">History</span>
+  </button>
+  <button onclick="switchWorkerTab('profile')" class="flex flex-col items-center gap-1 text-muted hover:text-primary transition-colors">
+    <i data-lucide="user" class="w-5 h-5"></i><span class="text-[10px] font-semibold">Profile</span>
+  </button>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+<script>
+  // ==================== FIREBASE CONFIG ====================
+  firebase.initializeApp({
+    apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
+    authDomain: "hbwtaskpam.firebaseapp.com",
+    projectId: "hbwtaskpam",
+    storageBucket: "hbwtaskpam.firebasestorage.app",
+    messagingSenderId: "142029895340",
+    appId: "1:142029895340:web:ce94830569430491ef5109",
+    measurementId: "G-MN333N948P"
+  });
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  let currentUser = null;
+  let firebaseToken = null;
+  let allWorkersCache = [];
+  let managersCache = [];
+  let chartInstance = null;
+  let adminChartInstance = null;
+
+  // ==================== DARK MODE ====================
+  function applyDarkMode(pref) {
+    const isDark = pref === 'dark' || (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    updateDarkModeIcon();
+  }
+  function toggleDarkMode() { applyDarkMode(document.documentElement.classList.contains('dark') ? 'light' : 'dark'); }
+  function updateDarkModeIcon() {
+    const icon = document.querySelector('#darkModeToggle i');
+    if (icon) icon.setAttribute('data-lucide', document.documentElement.classList.contains('dark') ? 'sun' : 'moon');
+    lucide.createIcons();
+  }
+  applyDarkMode(localStorage.getItem('theme'));
+
+  // ==================== HELPERS ====================
+  function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
+  function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
+  function showToast(msg, duration = 3000) {
+    const toast = document.getElementById('toast');
+    toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`;
+    lucide.createIcons();
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+  }
+
+  // ==================== AUTH ====================
+  async function handleLogin() {
+    const id = document.getElementById('loginId').value.trim().toLowerCase();
+    const pass = document.getElementById('loginPass').value;
+    const errBox = document.getElementById('loginError');
+    if (!id || !pass) { errBox.textContent = 'Please fill in all fields.'; errBox.classList.remove('hidden'); return; }
+    showLoading();
+    try {
+      await auth.signInWithEmailAndPassword(`${id}@taskpam.com`, pass);
+      errBox.classList.add('hidden');
+    } catch (e) {
+      errBox.textContent = e.message.replace('Firebase: ', '');
+      errBox.classList.remove('hidden');
+    } finally { hideLoading(); }
+  }
+
+  function handleLogout() { auth.signOut(); }
+
+  auth.onAuthStateChanged(async (user) => {
+    if (!user) {
+      currentUser = null; firebaseToken = null;
+      document.getElementById('appShell').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+      hideLoading();
+      return;
     }
-
-    function toggleDarkMode() {
-      const isDark = document.documentElement.classList.contains('dark');
-      applyDarkMode(isDark ? 'light' : 'dark');
-    }
-
-    function updateDarkModeIcon() {
-      const icon = document.querySelector('#darkModeToggle i');
-      if (document.documentElement.classList.contains('dark')) {
-        icon.setAttribute('data-lucide', 'sun');
-      } else {
-        icon.setAttribute('data-lucide', 'moon');
-      }
-      lucide.createIcons();
-    }
-
-    // Init dark mode from localStorage or system preference
-    const savedTheme = localStorage.getItem('theme');
-    applyDarkMode(savedTheme || null);
-
-    // ==================== UI HELPERS ====================
-    function showLoading() {
-      document.getElementById('loadingOverlay').classList.remove('hidden');
-    }
-
-    function hideLoading() {
-      document.getElementById('loadingOverlay').classList.add('hidden');
-    }
-
-    function showToast(msg, duration = 3000) {
-      const toast = document.getElementById('toast');
-      toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`;
-      lucide.createIcons();
-      toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), duration);
-    }
-
-    function hideAllViews() {
-      ['workerView', 'managerView', 'adminView'].forEach(v => document.getElementById(v).classList.add('hidden'));
-      document.getElementById('workerBottomNav').classList.add('hidden');
-      document.getElementById('navBalance').classList.add('hidden');
-      document.getElementById('mobileBalance').classList.add('hidden');
-    }
-
-    // ==================== AUTH ====================
-    async function handleLogin() {
-      const id = document.getElementById('loginId').value.trim().toLowerCase();
-      const pass = document.getElementById('loginPass').value;
-      const errBox = document.getElementById('loginError');
-
-      if (!id || !pass) {
-        errBox.textContent = 'Please fill in all fields.';
-        errBox.classList.remove('hidden');
-        return;
-      }
-
+    try {
       showLoading();
-      const email = `${id}@taskpam.com`;
+      firebaseToken = await user.getIdToken();
+      const email = user.email || '';
+      const userId = email.replace('@taskpam.com', '');
+      const doc = await db.collection('users').doc(userId).get();
+      if (!doc.exists) { showToast('User document not found.'); await auth.signOut(); hideLoading(); return; }
+      currentUser = { id: userId, ...doc.data() };
+      if (!currentUser.role) { showToast('User role missing.'); await auth.signOut(); hideLoading(); return; }
+      showApp();
+    } catch (e) {
+      showToast('Auth error: ' + e.message);
+      await auth.signOut();
+    } finally { hideLoading(); }
+  });
 
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        errBox.classList.add('hidden');
-      } catch (e) {
-        console.error(e);
-        errBox.textContent = e.message.replace('Firebase: ', '');
-        errBox.classList.remove('hidden');
-      } finally {
-        hideLoading();
-      }
+  function showApp() {
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('appShell').classList.remove('hidden');
+    document.getElementById('navUserId').textContent = currentUser.id;
+    document.getElementById('roleTag').textContent = currentUser.role.toUpperCase();
+    hideAllViews();
+    if (currentUser.role === 'worker') renderWorker();
+    else if (currentUser.role === 'manager') renderManager();
+    else if (currentUser.role === 'admin') renderAdmin();
+  }
+
+  function hideAllViews() {
+    ['workerView','managerView','adminView'].forEach(v => document.getElementById(v).classList.add('hidden'));
+    document.getElementById('workerBottomNav').classList.add('hidden');
+    document.getElementById('navBalance').classList.add('hidden');
+  }
+
+  // ==================== WORKER TAB SWITCH ====================
+  function switchWorkerTab(tab) {
+    const btns = document.querySelectorAll('.worker-tab-btn');
+    btns.forEach(b => { b.classList.remove('bg-primary','text-white'); b.classList.add('bg-gray-100','dark:bg-gray-700','text-text'); });
+    document.getElementById('workerTasksTab').classList.add('hidden');
+    document.getElementById('workerHistoryTab').classList.add('hidden');
+    document.getElementById('workerProfileTab').classList.add('hidden');
+    if (tab === 'tasks') {
+      btns[0].classList.add('bg-primary','text-white');
+      document.getElementById('workerTasksTab').classList.remove('hidden');
+    } else if (tab === 'history') {
+      btns[1].classList.add('bg-primary','text-white');
+      document.getElementById('workerHistoryTab').classList.remove('hidden');
+    } else if (tab === 'profile') {
+      btns[2].classList.add('bg-primary','text-white');
+      document.getElementById('workerProfileTab').classList.remove('hidden');
     }
+  }
 
-    function handleLogout() {
-      auth.signOut();
-    }
+  // ==================== WORKER RENDER ====================
+  async function renderWorker() {
+    document.getElementById('workerView').classList.remove('hidden');
+    document.getElementById('workerBottomNav').classList.remove('hidden');
+    document.getElementById('navBalance').classList.remove('hidden');
 
-    // Listen to auth state
-    auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        currentUser = null;
-        firebaseToken = null;
-        document.getElementById('appShell').classList.add('hidden');
-        document.getElementById('loginScreen').classList.remove('hidden');
-        hideLoading();
-        return;
-      }
+    db.collection('users').doc(currentUser.id).onSnapshot(async (doc) => {
+      if (!doc.exists) return;
+      const data = doc.data();
+      document.getElementById('workerName').textContent = data.name;
+      document.getElementById('workerBalanceHTG').textContent = (data.balanceHTG || 0).toLocaleString();
+      document.getElementById('workerWeekEarnings').textContent = (data.weekEarnings || 0).toLocaleString() + ' HTG';
+      document.getElementById('workerTaskCount').textContent = data.totalTasks || 0;
+      document.getElementById('navBalanceAmt').textContent = (data.balanceHTG || 0).toLocaleString() + ' HTG';
 
-      try {
-        showLoading();
-        firebaseToken = await user.getIdToken();
-        const email = user.email || '';
-        const userId = email.replace('@taskpam.com', '');
+      renderWorkerHistory(data.history || []);
 
-        const doc = await db.collection('users').doc(userId).get();
-        if (!doc.exists) {
-          showToast('User document not found.');
-          await auth.signOut();
-          hideLoading();
-          return;
+      document.getElementById('profileName').textContent = data.name;
+      document.getElementById('profileId').textContent = '@' + currentUser.id;
+      document.getElementById('profileTasks').textContent = data.totalTasks || 0;
+      document.getElementById('profileEarned').textContent = (data.balanceHTG || 0) + ' HTG';
+      document.getElementById('profileAvatar').textContent = (data.name || 'W')[0].toUpperCase();
+
+      if (data.teamId) {
+        const teamSnap = await db.collection('users').where('teamId','==',data.teamId).where('role','==','manager').limit(1).get();
+        if (!teamSnap.empty) {
+          const managerData = teamSnap.docs[0].data();
+          document.getElementById('profileManager').textContent = managerData.name || 'N/A';
+          document.getElementById('profileTeam').textContent = managerData.teamName || data.teamId;
+        } else {
+          document.getElementById('profileManager').textContent = 'No manager';
+          document.getElementById('profileTeam').textContent = data.teamId;
         }
-
-        currentUser = { id: userId, ...doc.data() };
-
-        if (!currentUser.role) {
-          showToast('User role missing.');
-          await auth.signOut();
-          hideLoading();
-          return;
-        }
-
-        // Success
-        showApp();
-      } catch (e) {
-        console.error(e);
-        showToast('Authentication error: ' + e.message);
-        await auth.signOut();
-      } finally {
-        hideLoading();
+      } else {
+        document.getElementById('profileTeam').textContent = 'No team';
+        document.getElementById('profileManager').textContent = 'N/A';
       }
-    });
 
-    // ==================== ROUTING ====================
-    function showApp() {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('appShell').classList.remove('hidden');
-
-      document.getElementById('navUserId').textContent = currentUser.id;
-      document.getElementById('roleTag').textContent = currentUser.role.toUpperCase();
-
-      hideAllViews();
-
-      if (currentUser.role === 'worker') renderWorker();
-      else if (currentUser.role === 'manager') renderManager();
-      else if (currentUser.role === 'admin') renderAdmin();
-    }
-
-    // ==================== WORKER ====================
-    function renderWorker() {
-      document.getElementById('workerView').classList.remove('hidden');
-      document.getElementById('workerBottomNav').classList.remove('hidden');
-      document.getElementById('navBalance').classList.remove('hidden');
-      document.getElementById('mobileBalance').classList.remove('hidden');
-
-      db.collection('users').doc(currentUser.id).onSnapshot((doc) => {
-        if (!doc.exists) return;
-        const data = doc.data();
-        document.getElementById('workerName').textContent = data.name;
-        document.getElementById('workerBalanceHTG').textContent = (data.balanceHTG || 0).toLocaleString();
-        document.getElementById('workerWeekEarnings').textContent = (data.weekEarnings || 0).toLocaleString() + ' HTG';
-        document.getElementById('workerTaskCount').textContent = data.totalTasks || 0;
-        document.getElementById('navBalanceAmt').textContent = (data.balanceHTG || 0).toLocaleString() + ' HTG';
-        document.getElementById('mobileBalanceAmt').textContent = (data.balanceHTG || 0).toLocaleString() + ' HTG';
-        renderHistory(data.history || []);
-      });
-
-      // Offer wall
       document.getElementById('offerWallUserId').textContent = 'ID: ' + currentUser.id;
       const frame = document.getElementById('offerWallFrame');
-      frame.src = OFFER_WALL_URL + encodeURIComponent(currentUser.id);
+      frame.src = `https://wall.monlix.com/app?appid=VOTRE_APP_ID_MONLIX&userid=${encodeURIComponent(currentUser.id)}`;
       frame.onerror = () => {
         frame.style.display = 'none';
         document.getElementById('offerWallFallback').classList.remove('hidden');
         document.getElementById('fallbackWId').textContent = currentUser.id;
       };
-    }
-
-    function renderHistory(history) {
-      const container = document.getElementById('workerTaskHistory');
-      container.innerHTML = '';
-      if (!history.length) {
-        container.innerHTML = `
-          <div class="text-center py-8">
-            <i data-lucide="inbox" class="w-10 h-10 text-muted mx-auto mb-2"></i>
-            <p class="text-muted text-sm font-medium">No earnings yet</p>
-          </div>`;
-        lucide.createIcons();
-        return;
-      }
-
-      history.slice().reverse().forEach((t, i) => {
-        const isNegative = t.amountHTG < 0;
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors animate-fade-slide';
-        div.style.animationDelay = `${i * 0.05}s`;
-        div.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center ${isNegative ? 'bg-red-50 dark:bg-red-900/20' : 'bg-primary/10'}">
-              <i data-lucide="${isNegative ? 'minus-circle' : 'check-circle'}" class="w-4 h-4 ${isNegative ? 'text-red-500' : 'text-primary'}"></i>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-text">${t.label}</p>
-              <p class="text-xs text-muted">${t.date}</p>
-            </div>
-          </div>
-          <span class="font-display font-bold text-sm ${isNegative ? 'text-red-500' : 'text-primary'}">
-            ${isNegative ? '' : '+'}${t.amountHTG} HTG
-          </span>`;
-        container.appendChild(div);
-      });
-      lucide.createIcons();
-    }
-
-    // ==================== MANAGER ====================
-    async function renderManager() {
-      document.getElementById('managerView').classList.remove('hidden');
-      const teamId = currentUser.teamId;
-      if (!teamId) {
-        document.getElementById('managerName').textContent = currentUser.name + ' (no team)';
-        return;
-      }
-
-      const snap = await db.collection('users')
-        .where('teamId', '==', teamId)
-        .where('role', '==', 'worker')
-        .get();
-      const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-
-      document.getElementById('managerName').textContent = currentUser.name;
-      const totalHTG = workers.reduce((s, w) => s + (w.balanceHTG || 0), 0);
-      const totalTasks = workers.reduce((s, w) => s + (w.totalTasks || 0), 0);
-      document.getElementById('teamTotalEarnings').textContent = totalHTG.toLocaleString() + ' HTG';
-      document.getElementById('teamTotalTasks').textContent = totalTasks;
-      document.getElementById('teamCount').textContent = workers.length + ' workers';
-
-      const container = document.getElementById('teamWorkersList');
-      container.innerHTML = '';
-      workers.forEach((w, i) => {
-        const initials = w.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between p-3 rounded-xl border border-border animate-fade-slide';
-        div.style.animationDelay = `${i * 0.05}s`;
-        div.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">${initials}</div>
-            <div>
-              <p class="text-sm font-semibold text-text">${w.name}</p>
-              <p class="text-xs text-muted">${w.id}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="font-display font-bold text-sm text-primary">${w.balanceHTG.toLocaleString()} HTG</p>
-            <p class="text-xs text-muted">${w.totalTasks} tasks</p>
-          </div>`;
-        container.appendChild(div);
-      });
-    }
-
-    // ==================== ADMIN ====================
-    async function renderAdmin() {
-      document.getElementById('adminView').classList.remove('hidden');
-      const snap = await db.collection('users').where('role', '==', 'worker').get();
-      const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-      const rateDoc = await db.collection('config').doc('exchange_rate').get();
-      const rate = rateDoc.exists ? rateDoc.data().rate : 135;
-
-      const totalHTG = workers.reduce((s, w) => s + (w.balanceHTG || 0), 0);
-      const totalTasks = workers.reduce((s, w) => s + (w.totalTasks || 0), 0);
-
-      document.getElementById('adminTotalUSD').textContent = '$' + (totalHTG / rate).toFixed(2);
-      document.getElementById('adminTotalHTG').textContent = totalHTG.toLocaleString() + ' HTG';
-      document.getElementById('adminActiveWorkers').textContent = workers.length;
-      document.getElementById('adminTotalTasks').textContent = totalTasks;
-      document.getElementById('exchangeRateInput').value = rate;
-      document.getElementById('currentRateDisplay').textContent = rate + ' HTG';
-      document.getElementById('adminWorkerCount').textContent = workers.length + ' workers';
-
-      const marketRate = 150;
-      const margin = (((marketRate - rate) / marketRate) * 100).toFixed(1);
-      document.getElementById('marginDisplay').textContent = margin + '%';
-
-      const container = document.getElementById('adminWorkersList');
-      container.innerHTML = '';
-      workers.forEach((w, i) => {
-        const initials = w.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between p-3 rounded-xl border border-border animate-fade-slide';
-        div.style.animationDelay = `${i * 0.04}s`;
-        div.innerHTML = `
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">${initials}</div>
-            <div>
-              <p class="text-sm font-semibold text-text">${w.name}</p>
-              <p class="text-xs text-muted">${w.id} · ${w.teamId || 'none'}</p>
-            </div>
-          </div>
-          <div class="text-right">
-            <p class="font-display font-bold text-sm text-primary">${w.balanceHTG.toLocaleString()} HTG</p>
-            <span class="text-xs bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full">${w.totalTasks} tasks</span>
-          </div>`;
-        container.appendChild(div);
-      });
-
-      document.getElementById('importBtn').classList.remove('hidden');
-    }
-
-    // ==================== ADMIN ACTIONS ====================
-    async function updateExchangeRate() {
-      const rate = parseInt(document.getElementById('exchangeRateInput').value);
-      if (isNaN(rate) || rate < 1) {
-        showToast('Invalid rate');
-        return;
-      }
-      try {
-        const res = await fetch(`${WORKER_BASE}/api/update-rate`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + firebaseToken
-          },
-          body: JSON.stringify({ rate })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Rate updated');
-          renderAdmin();
-        } else {
-          showToast('Error: ' + (data.error || 'unknown'));
-        }
-      } catch (e) {
-        showToast('Network error');
-      }
-    }
-
-    async function applyMaintenanceFee() {
-      try {
-        const res = await fetch(`${WORKER_BASE}/api/maintenance-fee`, {
-          method: 'POST',
-          headers: { 'Authorization': 'Bearer ' + firebaseToken }
-        });
-        const data = await res.json();
-        document.getElementById('maintenanceMsg').classList.remove('hidden');
-        document.getElementById('maintenanceMsg').textContent =
-          `Fee applied to ${data.affectedWorkers} worker(s).`;
-        showToast(`Fee 250 HTG × ${data.affectedWorkers} workers`);
-        renderAdmin();
-      } catch (e) {
-        showToast('Network error');
-      }
-    }
-
-    // ==================== CSV IMPORT ====================
-    function openImportModal() {
-      document.getElementById('importModal').classList.remove('hidden');
-    }
-    function closeImportModal() {
-      document.getElementById('importModal').classList.add('hidden');
-      document.getElementById('importStatus').classList.add('hidden');
-    }
-
-    async function importCSV() {
-      const fileInput = document.getElementById('csvFileInput');
-      const file = fileInput.files[0];
-      if (!file) { showToast('Select a CSV file'); return; }
-
-      const text = await file.text();
-      const lines = text.split('\n').filter(l => l.trim() !== '');
-      if (lines.length < 2) { showToast('File empty'); return; }
-
-      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-      const required = ['id', 'password', 'role', 'name'];
-      const missing = required.filter(r => !headers.includes(r));
-      if (missing.length) {
-        showToast(`Missing columns: ${missing.join(', ')}`);
-        return;
-      }
-
-      const users = [];
-      for (let i = 1; i < lines.length; i++) {
-        const cols = lines[i].split(',').map(c => c.trim());
-        if (cols.length < headers.length) continue;
-        const obj = {};
-        headers.forEach((h, idx) => { obj[h] = cols[idx]; });
-        if (obj.id && obj.password && obj.role && obj.name) users.push(obj);
-      }
-
-      try {
-        const res = await fetch(`${WORKER_BASE}/api/import-users`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + firebaseToken
-          },
-          body: JSON.stringify({ users })
-        });
-        const data = await res.json();
-        document.getElementById('importStatus').classList.remove('hidden');
-        document.getElementById('importStatus').textContent =
-          `Imported ${data.imported} users. Errors: ${data.errors?.length || 0}`;
-        showToast(`${data.imported} users imported`);
-        closeImportModal();
-        renderAdmin();
-      } catch (e) {
-        showToast('Network error');
-      }
-    }
-
-    // ==================== KEYBOARD SHORTCUT ====================
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Enter') {
-        const loginScreen = document.getElementById('loginScreen');
-        if (!loginScreen.classList.contains('hidden')) handleLogin();
-      }
     });
 
-    // ==================== INITIAL ICON RENDER ====================
+    switchWorkerTab('tasks');
+  }
+
+  function renderWorkerHistory(history) {
+    const container = document.getElementById('workerTaskHistory');
+    container.innerHTML = '';
+    if (!history.length) {
+      container.innerHTML = `<div class="text-center py-8"><i data-lucide="inbox" class="w-10 h-10 text-muted mx-auto mb-2"></i><p class="text-muted text-sm">No earnings yet</p></div>`;
+      lucide.createIcons();
+      return;
+    }
+    history.slice().reverse().forEach((t, i) => {
+      const isNeg = t.amountHTG < 0;
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors animate-fade-slide';
+      div.style.animationDelay = `${i*0.05}s`;
+      div.innerHTML = `<div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl flex items-center justify-center ${isNeg?'bg-red-50 dark:bg-red-900/20':'bg-primary/10'}"><i data-lucide="${isNeg?'minus-circle':'check-circle'}" class="w-4 h-4 ${isNeg?'text-red-500':'text-primary'}"></i></div><div><p class="text-sm font-medium text-text">${t.label}</p><p class="text-xs text-muted">${t.date}</p></div></div><span class="font-display font-bold text-sm ${isNeg?'text-red-500':'text-primary'}">${isNeg?'':'+'}${t.amountHTG} HTG</span>`;
+      container.appendChild(div);
+    });
     lucide.createIcons();
-  </script>
+  }
+
+  // ==================== MANAGER RENDER ====================
+  async function renderManager() {
+    document.getElementById('managerView').classList.remove('hidden');
+    const teamId = currentUser.teamId;
+    if (!teamId) {
+      document.getElementById('managerName').textContent = currentUser.name + ' (no team)';
+      return;
+    }
+    document.getElementById('managerName').textContent = currentUser.name;
+    document.getElementById('teamNameDisplay').textContent = currentUser.teamName || teamId;
+
+    const snap = await db.collection('users').where('teamId','==',teamId).where('role','==','worker').get();
+    const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allWorkersCache = workers;
+
+    const totalHTG = workers.reduce((s,w) => s + (w.balanceHTG||0), 0);
+    const totalTasks = workers.reduce((s,w) => s + (w.totalTasks||0), 0);
+    document.getElementById('teamTotalEarnings').textContent = totalHTG.toLocaleString() + ' HTG';
+    document.getElementById('teamTotalTasks').textContent = totalTasks;
+    document.getElementById('teamCount').textContent = workers.length + ' workers';
+
+    const container = document.getElementById('teamWorkersList');
+    container.innerHTML = '';
+    workers.forEach((w,i) => {
+      const initials = w.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between p-3 rounded-xl border border-border animate-fade-slide';
+      div.innerHTML = `<div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">${initials}</div><div><p class="text-sm font-semibold text-text">${w.name}</p><p class="text-xs text-muted">${w.id} · ${w.totalTasks||0} tasks</p></div></div><div class="text-right"><p class="font-display font-bold text-sm text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</p></div>`;
+      container.appendChild(div);
+    });
+
+    drawTeamChart(workers);
+  }
+
+  function drawTeamChart(workers) {
+    const ctx = document.getElementById('teamChart')?.getContext('2d');
+    if (!ctx) return;
+    if (chartInstance) chartInstance.destroy();
+    const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const data = labels.map(() => Math.floor(Math.random() * 500 + 100));
+    chartInstance = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Team earnings (HTG)',
+          data,
+          borderColor: '#6366f1',
+          backgroundColor: 'rgba(99,102,241,0.1)',
+          fill: true,
+          tension: 0.4
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+
+  // ==================== ADMIN RENDER (cosmic) ====================
+  async function renderAdmin() {
+    document.getElementById('adminView').classList.remove('hidden');
+    const snap = await db.collection('users').where('role','==','worker').get();
+    const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    allWorkersCache = workers;
+    const rateDoc = await db.collection('config').doc('exchange_rate').get();
+    const rate = rateDoc.exists ? rateDoc.data().rate : 135;
+
+    const totalHTG = workers.reduce((s,w) => s + (w.balanceHTG||0), 0);
+    const totalTasks = workers.reduce((s,w) => s + (w.totalTasks||0), 0);
+    document.getElementById('adminTotalUSD').textContent = '$' + (totalHTG/rate).toFixed(2);
+    document.getElementById('adminTotalHTG').textContent = totalHTG.toLocaleString() + ' HTG';
+    document.getElementById('adminActiveWorkers').textContent = workers.length;
+    document.getElementById('adminTotalTasks').textContent = totalTasks;
+    document.getElementById('exchangeRateInput').value = rate;
+    document.getElementById('currentRateDisplay').textContent = rate + ' HTG';
+    document.getElementById('adminWorkerCount').textContent = workers.length + ' workers';
+
+    const marketRate = 150;
+    const margin = (((marketRate - rate) / marketRate) * 100).toFixed(1);
+    document.getElementById('marginDisplay').textContent = margin + '%';
+
+    const search = document.getElementById('workerSearch')?.value.toLowerCase() || '';
+    const filtered = workers.filter(w => w.name.toLowerCase().includes(search) || w.id.includes(search));
+    const container = document.getElementById('adminWorkersList');
+    container.innerHTML = '';
+    filtered.forEach((w,i) => {
+      const div = document.createElement('div');
+      div.className = 'flex items-center justify-between p-3 rounded-xl border border-border animate-fade-slide';
+      div.innerHTML = `<div><p class="text-sm font-semibold text-text">${w.name}</p><p class="text-xs text-muted">${w.id} · ${w.teamId||'no team'}</p></div><div class="flex items-center gap-3"><span class="text-primary font-bold">${(w.balanceHTG||0).toLocaleString()} HTG</span><button onclick="editWorker('${w.id}')" class="text-xs text-muted hover:text-primary"><i data-lucide="edit-2" class="w-3 h-3"></i></button><button onclick="deleteWorker('${w.id}')" class="text-xs text-muted hover:text-danger"><i data-lucide="trash-2" class="w-3 h-3"></i></button></div>`;
+      container.appendChild(div);
+    });
+    lucide.createIcons();
+    drawAdminChart(workers);
+  }
+
+  function drawAdminChart(workers) {
+    const ctx = document.getElementById('adminChart')?.getContext('2d');
+    if (!ctx) return;
+    if (window.adminChartInstance) window.adminChartInstance.destroy();
+    const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const data = labels.map(() => Math.floor(Math.random() * 2000 + 500));
+    window.adminChartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [{
+          label: 'Total earnings (HTG)',
+          data,
+          backgroundColor: '#6366f1'
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+
+  // ==================== ADMIN ACTIONS (Firestore direct) ====================
+  async function updateExchangeRate() {
+    const rate = parseInt(document.getElementById('exchangeRateInput').value);
+    if (isNaN(rate) || rate<1) { showToast('Invalid rate'); return; }
+    await db.collection('config').doc('exchange_rate').set({ rate });
+    showToast('Rate updated');
+    renderAdmin();
+  }
+
+  async function applyMaintenanceFee() {
+    const snap = await db.collection('users').where('role','==','worker').get();
+    const batch = db.batch();
+    snap.forEach(doc => {
+      batch.update(doc.ref, {
+        balanceHTG: firebase.firestore.FieldValue.increment(-250),
+        history: firebase.firestore.FieldValue.arrayUnion({
+          date: new Date().toISOString().split('T')[0],
+          label: 'Maintenance fee',
+          amountHTG: -250
+        })
+      });
+    });
+    await batch.commit();
+    showToast(`Fee applied to ${snap.size} workers`);
+    renderAdmin();
+  }
+
+  async function deleteWorker(workerId) {
+    if (!confirm('Delete worker ' + workerId + '?')) return;
+    await db.collection('users').doc(workerId).delete();
+    showToast('Worker deleted');
+    renderAdmin();
+  }
+
+  function editWorker(workerId) {
+    const newName = prompt('New name:');
+    if (newName) {
+      db.collection('users').doc(workerId).update({ name: newName });
+      showToast('Worker updated');
+      renderAdmin();
+    }
+  }
+
+  async function addWorkerManually() {
+    const name = document.getElementById('newWorkerName').value.trim();
+    const id = document.getElementById('newWorkerId').value.trim().toLowerCase();
+    const pass = document.getElementById('newWorkerPass').value;
+    const team = document.getElementById('newWorkerTeam').value.trim();
+    if (!name || !id || !pass) { showToast('Fill all fields'); return; }
+    try {
+      await auth.createUserWithEmailAndPassword(`${id}@taskpam.com`, pass);
+      await db.collection('users').doc(id).set({
+        name, role: 'worker', teamId: team || null,
+        balanceHTG: 0, totalTasks: 0, weekEarnings: 0, history: []
+      });
+      showToast('Worker created');
+      closeAddWorkerModal();
+      renderAdmin();
+    } catch (e) {
+      showToast('Error: ' + e.message);
+    }
+  }
+
+  function openAddWorkerModal() { document.getElementById('addWorkerModal').classList.remove('hidden'); }
+  function closeAddWorkerModal() { document.getElementById('addWorkerModal').classList.add('hidden'); }
+
+  function exportCSV() {
+    const rows = [['id','name','role','teamId','balanceHTG','totalTasks']];
+    allWorkersCache.forEach(w => rows.push([w.id,w.name,w.role,w.teamId||'',w.balanceHTG||0,w.totalTasks||0]));
+    const csv = rows.map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv],{type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'workers_export.csv';
+    a.click();
+  }
+
+  function openImportModal() { document.getElementById('importModal').classList.remove('hidden'); }
+  function closeImportModal() { document.getElementById('importModal').classList.add('hidden'); }
+  async function importCSV() {
+    showToast('CSV import requires backend worker. Use "Add Worker" instead.');
+    closeImportModal();
+  }
+
+  // Init lucide icons
+  lucide.createIcons();
+</script>
 </body>
-  </html>
+      </html>
