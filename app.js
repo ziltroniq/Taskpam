@@ -29,6 +29,7 @@ let firebaseToken = null; // Token Firebase pour les appels admin
 
 // ─── AUTHENTIFICATION ────────────────────────
 async function handleLogin() {
+async function handleLogin() {
   const id   = document.getElementById('loginId').value.trim().toLowerCase();
   const pass = document.getElementById('loginPass').value;
   const err  = document.getElementById('loginError');
@@ -41,17 +42,22 @@ async function handleLogin() {
   const email = `${id}@taskpam.com`;
 
   try {
+    alert("Tentative connexion");
+
     await auth.signInWithEmailAndPassword(email, pass);
+
+    alert("Connexion réussie");
+
     err.classList.add('hidden');
+
   } catch (e) {
+    console.log(e);
+
+    alert(e.message);
+
     err.classList.remove('hidden');
   }
 }
-
-function handleLogout() {
-  auth.signOut();
-}
-
 // Surveiller l'état de connexion
 auth.onAuthStateChanged(async (user) => {
   if (!user) {
