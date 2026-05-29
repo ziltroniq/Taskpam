@@ -29,7 +29,6 @@ let firebaseToken = null; // Token Firebase pour les appels admin
 
 // ─── AUTHENTIFICATION ────────────────────────
 async function handleLogin() {
-async function handleLogin() {
   const id   = document.getElementById('loginId').value.trim().toLowerCase();
   const pass = document.getElementById('loginPass').value;
   const err  = document.getElementById('loginError');
@@ -52,9 +51,7 @@ async function handleLogin() {
 
   } catch (e) {
     console.log(e);
-
     alert(e.message);
-
     err.classList.remove('hidden');
   }
 }
