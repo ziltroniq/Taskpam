@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Importation massive Taskpam</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 50px auto; }
+    progress { width: 100%; }
+    button { padding: 10px 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>📥 Importer des utilisateurs en masse</h1>
+  <p>Sélectionnez un fichier CSV (id,password,name,role,teamId)</p>
+  <input type="file" id="csvFile" accept=".csv"><br><br>
+  <button onclick="startImport()">Lancer l'importation</button>
+  <p id="status"></p>
+  <progress id="progress" value="0" max="100" style="display:none"></progress>
+  <ul id="log"></ul>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script>
+    // Configuration Firebase (identique à votre app)
+    firebase.initializeApp({
+      apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
+      authDomain: "hbwtaskpam.firebaseapp.com",
+      projectId: "hbwtaskpam",
+      storageBucket: "hbwtaskpam.firebasestorage.app",
+      messagingSenderId: "142029895340",
+      appId: "1:142029895340:web:ce94830569430491ef5109",
+      measurementId: "G-MN333N948P"
+    });
+
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    async function startImport() {
+      const fileInput = document.getElementById('csvFile');
+      const file = fileInput.files[0];
+      if (!file) return alert('Veuillez choisir un fichier CSV.');
+
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      if (lines.length < 2) return alert('Fichier vide ou mal formaté.');
+
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const required = ['id', 'password', 'name', 'role'];
+      const missing = required.filter(r => !headers.includes(r));
+      if (missing.length) return alert(`Colonnes manquantes : ${missing.join(', ')}`);
+
+      const users = [];
+      for (let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',').map(c => c.trim());
+        if (cols.length < headers.length) continue;
+        const obj = {};
+        headers.forEach((h, idx) => { obj[h] = cols[idx]; });
+        if (obj.id && obj.password && obj.name && obj.role) users.push(obj);
+      }
+
+      if (users.length === 0) return alert('Aucun utilisateur valide trouvé.');
+
+      document.getElementById('progress').style.display = 'block';
+      document.getElementById('progress').max = users.length;
+      const log = document.getElementById('log');
+      const status = document.getElementById('status');
+      status.textContent = 'Importation en cours...';
+
+      let created = 0;
+      for (let i = 0; i < users.length; i++) {
+        const u = users[i];
+        try {
+          // Création du compte email = id@taskpam.com
+          await auth.createUserWithEmailAndPassword(`${u.id}@taskpam.com`, u.password);
+          // Ajout du document Firestore
+          await db.collection('users').doc(u.id).set({
+            name: u.name,
+            role: u.role,
+            teamId: u.teamId || null,
+            balanceHTG: 0,
+            totalTasks: 0,
+            weekEarnings: 0,
+            history: []
+          });
+          created++;
+          log.innerHTML += `<li style="color:green">✅ ${u.id} créé</li>`;
+        } catch (err) {
+          log.innerHTML += `<li style="color:red">❌ ${u.id} : ${err.message}</li>`;
+        }
+        document.getElementById('progress').value = i + 1;
+        // Pause d'une seconde entre chaque création (évite le rate limiting)
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+
+      status.textContent = `Importation terminée : ${created} / ${users.length} créés avec succès.`;
+    }
+  </script>
+</body>
+</html>
