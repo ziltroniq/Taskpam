@@ -1,8 +1,8 @@
 /* =============================================
-   TASKPAM — app.js FIREBASE PRODUCTION
+   TASKPAM — app.js HYBRIDE Firebase + Cloudflare Worker
    ============================================= */
 
-// ⚠️ Configuration Firebase – déjà la vôtre
+// Configuration Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
   authDomain: "hbwtaskpam.firebaseapp.com",
@@ -16,13 +16,16 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
-const functions = firebase.functions();
 
-// App ID Monlix (remplacez par le vrai)
-const MONLIX_APP_ID   = "VOTRE_APP_ID_MONLIX";
+// URL de votre Worker Cloudflare
+const WORKER_BASE = 'https://taskpam-worker.hbwdatasolutions.workers.dev';
+
+// Monlix
+const MONLIX_APP_ID   = "VOTRE_APP_ID_MONLIX"; // à remplacer
 const OFFER_WALL_URL  = `https://wall.monlix.com/app?appid=${MONLIX_APP_ID}&userid=`;
 
-let currentUser = null; // { id, role, name, teamId, ... }
+let currentUser = null;
+let firebaseToken = null; // Token Firebase pour les appels admin
 
 // ─── AUTHENTIFICATION ────────────────────────
 async function handleLogin() {
@@ -35,16 +38,13 @@ async function handleLogin() {
     return;
   }
 
-  // L'email = identifiant + "@taskpam.com"
   const email = `${id}@taskpam.com`;
 
   try {
     await auth.signInWithEmailAndPassword(email, pass);
-    // La connexion réussie déclenche onAuthStateChanged, qui va charger currentUser
     err.classList.add('hidden');
   } catch (e) {
     err.classList.remove('hidden');
-    console.error(e);
   }
 }
 
@@ -52,22 +52,23 @@ function handleLogout() {
   auth.signOut();
 }
 
-// Observer l'état de connexion
+// Surveiller l'état de connexion
 auth.onAuthStateChanged(async (user) => {
   if (user) {
-    // user.uid == identifiant (ex: "worker_402")
-    const uid = user.uid;
-    const doc = await db.collection('users').doc(uid).get();
+    // Récupérer le token Firebase pour les appels admin
+    firebaseToken = await user.getIdToken();
+
+    const doc = await db.collection('users').doc(user.uid).get();
     if (doc.exists) {
-      currentUser = { id: uid, ...doc.data() };
+      currentUser = { id: user.uid, ...doc.data() };
       showApp();
     } else {
-      // L'utilisateur est authentifié mais n'a pas de document Firestore -> erreur
       auth.signOut();
-      alert("Compte non trouvé dans la base. Contactez l'administrateur.");
+      alert("Compte non trouvé. Contactez l'administrateur.");
     }
   } else {
     currentUser = null;
+    firebaseToken = null;
     document.getElementById('appShell').classList.add('hidden');
     document.getElementById('loginScreen').classList.remove('hidden');
   }
@@ -96,7 +97,6 @@ function renderWorker() {
   document.getElementById('workerBottomNav').classList.remove('hidden');
   document.getElementById('navBalance').classList.remove('hidden');
 
-  // Écoute temps réel du document utilisateur
   db.collection('users').doc(currentUser.id).onSnapshot((doc) => {
     if (!doc.exists) return;
     const data = doc.data();
@@ -146,6 +146,7 @@ async function renderManager() {
     document.getElementById('managerName').textContent = currentUser.name + ' (aucune équipe)';
     return;
   }
+
   const snap = await db.collection('users')
     .where('teamId', '==', teamId)
     .where('role', '==', 'worker')
@@ -175,6 +176,7 @@ async function renderManager() {
 // ─── ADMIN VIEW ──────────────────────────────
 async function renderAdmin() {
   document.getElementById('adminView').classList.remove('hidden');
+
   const snap = await db.collection('users').where('role', '==', 'worker').get();
   const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   const rateDoc = await db.collection('config').doc('exchange_rate').get();
@@ -191,7 +193,7 @@ async function renderAdmin() {
   document.getElementById('currentRateDisplay').textContent = rate + ' HTG';
   document.getElementById('adminWorkerCount').textContent = workers.length + ' workers';
 
-  const marketRate = 150; // taux de marché de référence
+  const marketRate = 150;
   const margin = (((marketRate - rate) / marketRate) * 100).toFixed(1);
   document.getElementById('marginDisplay').textContent = margin + '%';
 
@@ -207,39 +209,54 @@ async function renderAdmin() {
     c.appendChild(el);
   });
 
-  // Afficher le bouton d'import
   document.getElementById('importBtn').classList.remove('hidden');
 }
 
-// ─── ACTIONS ADMIN ───────────────────────────
+// ─── ACTIONS ADMIN (via Worker) ──────────────
 async function updateExchangeRate() {
   const rate = parseInt(document.getElementById('exchangeRateInput').value);
   if (isNaN(rate) || rate < 1) { showToast('⚠️ Taux invalide'); return; }
+
   try {
-    const updateFn = functions.httpsCallable('updateRate');
-    await updateFn({ rate });
-    showToast('✅ Taux mis à jour');
-    renderAdmin();
+    const res = await fetch(`${WORKER_BASE}/api/update-rate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + firebaseToken
+      },
+      body: JSON.stringify({ rate })
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('✅ Taux mis à jour');
+      renderAdmin();
+    } else {
+      showToast('❌ Erreur: ' + (data.error || 'inconnue'));
+    }
   } catch (e) {
-    showToast('❌ Erreur: ' + e.message);
+    showToast('❌ Erreur réseau');
   }
 }
 
 async function applyMaintenanceFee() {
   try {
-    const feeFn = functions.httpsCallable('maintenanceFee');
-    const result = await feeFn();
-    const data = result.data;
+    const res = await fetch(`${WORKER_BASE}/api/maintenance-fee`, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + firebaseToken
+      }
+    });
+    const data = await res.json();
     document.getElementById('maintenanceMsg').classList.remove('hidden');
     document.getElementById('maintenanceMsg').textContent = `✅ Frais appliqués à ${data.affectedWorkers} worker(s).`;
     showToast(`Frais 250 HTG × ${data.affectedWorkers} workers`);
     renderAdmin();
   } catch (e) {
-    showToast('❌ Erreur: ' + e.message);
+    showToast('❌ Erreur réseau');
   }
 }
 
-// ─── IMPORT CSV ──────────────────────────────
+// ─── IMPORT CSV (via Worker) ─────────────────
 function openImportModal() {
   document.getElementById('importModal').classList.remove('hidden');
 }
@@ -272,16 +289,22 @@ async function importCSV() {
   }
 
   try {
-    const importFn = functions.httpsCallable('importUsers');
-    const result = await importFn({ users });
-    const data = result.data;
+    const res = await fetch(`${WORKER_BASE}/api/import-users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + firebaseToken
+      },
+      body: JSON.stringify({ users })
+    });
+    const data = await res.json();
     document.getElementById('importStatus').classList.remove('hidden');
     document.getElementById('importStatus').textContent = `✅ ${data.imported} utilisateurs importés. Erreurs: ${data.errors?.length || 0}`;
     showToast(`${data.imported} utilisateurs importés !`);
     closeImportModal();
     renderAdmin();
   } catch (e) {
-    showToast('❌ Erreur import: ' + e.message);
+    showToast('❌ Erreur réseau');
   }
 }
 
