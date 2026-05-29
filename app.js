@@ -54,47 +54,74 @@ function handleLogout() {
 
 // Surveiller l'état de connexion
 auth.onAuthStateChanged(async (user) => {
-  if (user) {
-    // Message visible sur la page (dans la zone de login)
-    document.getElementById('loginError').classList.remove('hidden');
-    document.getElementById('loginError').textContent = '🔄 Connexion réussie, chargement des données...';
-    document.getElementById('loginError').style.color = '#1db954'; // vert
+  if (!user) {
+    currentUser = null;
+    firebaseToken = null;
+
+    document.getElementById('appShell').classList.add('hidden');
+    document.getElementById('loginScreen').classList.remove('hidden');
+
+    return;
+  }
+
+  try {
+    // Debug visible
+    const errBox = document.getElementById('loginError');
+    errBox.classList.remove('hidden');
+    errBox.style.color = '#1db954';
+    errBox.textContent = '🔄 Chargement du profil...';
 
     firebaseToken = await user.getIdToken();
 
-    const email = user.email;
+    const email = user.email || '';
     const userId = email.replace('@taskpam.com', '');
-    document.getElementById('loginError').textContent += '\nID extrait : ' + userId;
 
-    // Chercher par champ "id"
-    const snapshot = await db.collection('users').where('id', '==', userId).limit(1).get();
-    document.getElementById('loginError').textContent += '\nRésultat requête : ' + (snapshot.empty ? 'vide' : 'document trouvé');
+    errBox.textContent += '\nUtilisateur : ' + userId;
 
-    if (!snapshot.empty) {
-      const doc = snapshot.docs[0];
-      currentUser = { id: userId, ...doc.data() };
-      document.getElementById('loginError').classList.add('hidden'); // masquer le message
-      showApp();
-    } else {
-      // Fallback avec UID
-      document.getElementById('loginError').textContent += '\nTentative avec UID...';
-      const doc = await db.collection('users').doc(user.uid).get();
-      if (doc.exists) {
-        currentUser = { id: userId, ...doc.data() };
-        document.getElementById('loginError').classList.add('hidden');
-        showApp();
-      } else {
-        document.getElementById('loginError').textContent = '❌ Document non trouvé (ni par ID, ni par UID)';
-        document.getElementById('loginError').style.color = '#e53935';
-        auth.signOut();
-      }
+    // IMPORTANT :
+    // on lit directement users/admin
+    // users/worker_402
+    // etc.
+    const doc = await db.collection('users').doc(userId).get();
+
+    if (!doc.exists) {
+      errBox.style.color = '#e53935';
+      errBox.textContent =
+        '❌ Aucun document Firestore trouvé : users/' + userId;
+
+      await auth.signOut();
+      return;
     }
-  } else {
-    currentUser = null;
-    firebaseToken = null;
-    document.getElementById('appShell').classList.add('hidden');
-    document.getElementById('loginScreen').classList.remove('hidden');
+
+    currentUser = {
+      id: userId,
+      ...doc.data()
+    };
+
+    // Vérification critique
+    if (!currentUser.role) {
+      errBox.style.color = '#e53935';
+      errBox.textContent =
+        '❌ Champ role manquant dans users/' + userId;
+
+      return;
+    }
+
+    errBox.classList.add('hidden');
+
+    showApp();
+
+  } catch (e) {
+    console.error(e);
+
+    const errBox = document.getElementById('loginError');
+
+    errBox.classList.remove('hidden');
+    errBox.style.color = '#e53935';
+    errBox.textContent =
+      '❌ Erreur : ' + e.message;
   }
+});
 });
 // ─── ROUTAGE ─────────────────────────────────
 function showApp() {
