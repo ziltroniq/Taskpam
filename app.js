@@ -55,16 +55,29 @@ function handleLogout() {
 // Surveiller l'état de connexion
 auth.onAuthStateChanged(async (user) => {
   if (user) {
-    // Récupérer le token Firebase pour les appels admin
     firebaseToken = await user.getIdToken();
 
-    const doc = await db.collection('users').doc(user.uid).get();
-    if (doc.exists) {
-      currentUser = { id: user.uid, ...doc.data() };
+    // Extraire l'identifiant à partir de l'email (ex: "admin@taskpam.com" -> "admin")
+    const email = user.email;
+    const userId = email.replace('@taskpam.com', '');
+
+    // Chercher le document dont le champ "id" égale cet identifiant
+    const snapshot = await db.collection('users').where('id', '==', userId).limit(1).get();
+
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      currentUser = { id: userId, ...doc.data() };
       showApp();
     } else {
-      auth.signOut();
-      alert("Compte non trouvé. Contactez l'administrateur.");
+      // Si pas trouvé, on tente quand même avec l'UID (pour les anciens comptes)
+      const doc = await db.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        currentUser = { id: userId, ...doc.data() };
+        showApp();
+      } else {
+        auth.signOut();
+        alert("Compte non trouvé. Contactez l'administrateur.");
+      }
     }
   } else {
     currentUser = null;
