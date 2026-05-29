@@ -1,87 +1,62 @@
 /* =============================================
-   TASKPAM — app.js
-   Gestion des rôles, Offer Wall, Postback,
-   Soldes HTG, Admin Controls
+   TASKPAM — app.js v2.0
+   Thème Monlix | Green & White | Pro
    ============================================= */
 
-// ─────────────────────────────────────────────
-// 1. BASE DE DONNÉES SIMULÉE (LocalStorage)
-//    En production → remplacer par Firebase/Supabase
-// ─────────────────────────────────────────────
+// ─── CONFIGURATION ───────────────────────────
+// ⚠️ Remplace par ton vrai App ID Monlix
+const MONLIX_APP_ID   = "VOTRE_APP_ID_MONLIX";
+const OFFER_WALL_URL  = `https://wall.monlix.com/app?appid=${MONLIX_APP_ID}&userid=`;
 
-const OFFER_WALL_BASE_URL = "https://wall.monlix.com/app?appid=VOTRE_APP_ID&userid=";
-// ↑ Remplace VOTRE_APP_ID par ton ID Monlix/Lootably réel
-
-const PLATFORM_SECRET = "taskpam_secret_2025"; // Clé secrète pour valider postbacks
-
-// Taux de change par défaut (1 USD = X HTG)
-// Le vrai taux marché est ~135 — on applique une marge de ~10%
+// Taux de change par défaut (1 USD → HTG)
 let exchangeRate = parseInt(localStorage.getItem('tp_rate') || '135');
 
-// ─────────────────────────────────────────────
-// UTILISATEURS DEMO
-// ─────────────────────────────────────────────
+// ─── BASE DE DONNÉES SIMULÉE ─────────────────
 const USERS_DB = {
-  'worker_402': { pass: '1234', role: 'worker', name: 'Worker 402', teamId: 'team_apex' },
-  'worker_403': { pass: '1234', role: 'worker', name: 'Worker 403', teamId: 'team_apex' },
-  'worker_404': { pass: '1234', role: 'worker', name: 'Worker 404', teamId: 'team_bolt' },
-  'manager_01': { pass: '1234', role: 'manager', name: 'Manager Alpha', teamId: 'team_apex' },
-  'manager_02': { pass: '1234', role: 'manager', name: 'Manager Beta',  teamId: 'team_bolt' },
-  'admin':      { pass: 'admin2025', role: 'admin', name: 'HBW Admin', teamId: null },
+  'worker_402': { pass:'1234',      role:'worker',  name:'Jean Pierre',    teamId:'team_apex' },
+  'worker_403': { pass:'1234',      role:'worker',  name:'Marie Claire',   teamId:'team_apex' },
+  'worker_404': { pass:'1234',      role:'worker',  name:'Roody Laurent',  teamId:'team_bolt' },
+  'worker_405': { pass:'1234',      role:'worker',  name:'Nadège Joseph',  teamId:'team_bolt' },
+  'manager_01': { pass:'1234',      role:'manager', name:'Alexandre Marc', teamId:'team_apex' },
+  'manager_02': { pass:'1234',      role:'manager', name:'Sophia Jean',    teamId:'team_bolt' },
+  'admin':      { pass:'admin2025', role:'admin',   name:'HBW Admin',      teamId:null },
 };
 
-// ─────────────────────────────────────────────
-// FONCTION : Charger/sauvegarder soldes
-// ─────────────────────────────────────────────
+// ─── WORKER DATA (LocalStorage) ──────────────
 function getWorkerData(userId) {
-  const raw = localStorage.getItem('tp_worker_' + userId);
+  const raw = localStorage.getItem('tp_w_' + userId);
   if (raw) return JSON.parse(raw);
-  // Données initiales par défaut
-  return {
-    balanceHTG: 0,
-    weekEarnings: 0,
-    totalTasks: 0,
-    history: []
-  };
+  return { balanceHTG:0, weekEarnings:0, totalTasks:0, history:[] };
 }
 
 function saveWorkerData(userId, data) {
-  localStorage.setItem('tp_worker_' + userId, JSON.stringify(data));
+  localStorage.setItem('tp_w_' + userId, JSON.stringify(data));
 }
 
 function getAllWorkers() {
   return Object.entries(USERS_DB)
-    .filter(([, u]) => u.role === 'worker')
-    .map(([id, u]) => ({
-      id,
-      name: u.name,
-      teamId: u.teamId,
-      ...getWorkerData(id)
-    }));
+    .filter(([,u]) => u.role === 'worker')
+    .map(([id, u]) => ({ id, ...u, ...getWorkerData(id) }));
 }
 
-// ─────────────────────────────────────────────
-// 2. AUTHENTIFICATION
-// ─────────────────────────────────────────────
+// ─── SESSION ─────────────────────────────────
 let currentUser = null;
 
 function handleLogin() {
   const id   = document.getElementById('loginId').value.trim().toLowerCase();
   const pass = document.getElementById('loginPass').value;
   const err  = document.getElementById('loginError');
-
   const user = USERS_DB[id];
+
   if (!user || user.pass !== pass) {
     err.classList.remove('hidden');
+    document.getElementById('loginId').classList.add('border-danger');
     return;
   }
 
   err.classList.add('hidden');
   currentUser = { id, ...user };
-
-  // Sauvegarder session
-  localStorage.setItem('tp_session', JSON.stringify({ id, role: user.role }));
-
+  localStorage.setItem('tp_session', JSON.stringify({ id }));
   showApp();
 }
 
@@ -92,422 +67,342 @@ function handleLogout() {
   document.getElementById('loginScreen').classList.remove('hidden');
 }
 
-// Restaurer session au rechargement
 function restoreSession() {
   const raw = localStorage.getItem('tp_session');
   if (!raw) return;
-  const sess = JSON.parse(raw);
-  const user = USERS_DB[sess.id];
+  const { id } = JSON.parse(raw);
+  const user   = USERS_DB[id];
   if (!user) return;
-  currentUser = { id: sess.id, ...user };
+  currentUser  = { id, ...user };
   showApp();
 }
 
-// ─────────────────────────────────────────────
-// 3. ROUTING DES VUES PAR RÔLE
-// ─────────────────────────────────────────────
+// ─── ROUTING ─────────────────────────────────
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
   document.getElementById('appShell').classList.remove('hidden');
 
   // Nav info
   document.getElementById('navUserId').textContent = currentUser.id;
-  document.getElementById('roleTag').textContent   = currentUser.role;
+  document.getElementById('roleTag').textContent   = currentUser.role.toUpperCase();
 
-  // Cacher toutes les vues
-  ['workerView', 'managerView', 'adminView'].forEach(v =>
-    document.getElementById(v).classList.add('hidden')
-  );
+  // Reset views
+  ['workerView','managerView','adminView'].forEach(v =>
+    document.getElementById(v).classList.add('hidden'));
   document.getElementById('workerBottomNav').classList.add('hidden');
+  document.getElementById('navBalance').classList.add('hidden');
 
-  if (currentUser.role === 'worker')  renderWorkerDashboard();
-  if (currentUser.role === 'manager') renderManagerDashboard();
-  if (currentUser.role === 'admin')   renderAdminDashboard();
+  if (currentUser.role === 'worker')  renderWorker();
+  if (currentUser.role === 'manager') renderManager();
+  if (currentUser.role === 'admin')   renderAdmin();
 }
 
-// ─────────────────────────────────────────────
-// 4. VUE WORKER
-// ─────────────────────────────────────────────
-function renderWorkerDashboard() {
-  const view = document.getElementById('workerView');
-  view.classList.remove('hidden');
+// ─── WORKER VIEW ─────────────────────────────
+function renderWorker() {
+  document.getElementById('workerView').classList.remove('hidden');
   document.getElementById('workerBottomNav').classList.remove('hidden');
+  document.getElementById('navBalance').classList.remove('hidden');
 
   const data = getWorkerData(currentUser.id);
+  const user = USERS_DB[currentUser.id];
 
-  // Nom & solde
-  document.getElementById('workerName').textContent = currentUser.name;
-  document.getElementById('workerBalanceHTG').textContent = data.balanceHTG.toLocaleString() + ' HTG';
+  // Header
+  document.getElementById('workerName').textContent = user.name;
+
+  // Balance
+  document.getElementById('workerBalanceHTG').textContent   = data.balanceHTG.toLocaleString();
   document.getElementById('workerWeekEarnings').textContent = data.weekEarnings.toLocaleString() + ' HTG';
+  document.getElementById('workerTaskCount').textContent    = data.totalTasks;
+  document.getElementById('navBalanceAmt').textContent      = data.balanceHTG.toLocaleString() + ' HTG';
 
-  // ── OFFER WALL iFrame ──
-  // L'ID du worker est passé dynamiquement dans l'URL via le paramètre userid=
-  const frameUrl = OFFER_WALL_BASE_URL + encodeURIComponent(currentUser.id);
-  const frame = document.getElementById('offerWallFrame');
+  // Offer Wall — Injection dynamique de l'userId
+  const frameUrl = OFFER_WALL_URL + encodeURIComponent(currentUser.id);
+  const frame    = document.getElementById('offerWallFrame');
+  document.getElementById('offerWallUserId').textContent = 'ID: ' + currentUser.id;
 
   frame.src = frameUrl;
-
-  // Fallback si l'iFrame ne charge pas (CORS, blocage, etc.)
   frame.onerror = () => {
-    frame.classList.add('hidden');
-    const fallback = document.getElementById('offerWallFallback');
-    fallback.classList.remove('hidden');
-    document.getElementById('fallbackWorkerId').textContent = currentUser.id;
+    frame.style.display = 'none';
+    const fb = document.getElementById('offerWallFallback');
+    fb.classList.remove('hidden');
+    document.getElementById('fallbackWId').textContent = currentUser.id;
   };
 
-  // ── Historique ──
-  renderWorkerHistory(data.history);
+  // Historique
+  renderHistory(data.history);
 }
 
-function renderWorkerHistory(history) {
-  const container = document.getElementById('workerTaskHistory');
-  container.innerHTML = '';
+function renderHistory(history) {
+  const c = document.getElementById('workerTaskHistory');
+  c.innerHTML = '';
 
   if (!history.length) {
-    container.innerHTML = `
-      <div class="bg-card border border-border rounded-xl p-4 text-center">
-        <p class="text-muted text-sm">Aucune tâche complétée pour l'instant.</p>
-        <p class="text-xs text-muted mt-1">Complétez des offres pour voir votre historique ici.</p>
+    c.innerHTML = `
+      <div class="text-center py-8">
+        <div class="text-4xl mb-2">📭</div>
+        <p class="text-muted text-sm font-medium">Aucun gain pour l'instant</p>
+        <p class="text-muted text-xs mt-1">Complétez des offres pour voir votre historique</p>
       </div>`;
     return;
   }
 
-  history.slice().reverse().forEach(task => {
+  history.slice().reverse().forEach((t, i) => {
+    const isNeg = t.amountHTG < 0;
     const el = document.createElement('div');
-    el.className = 'task-card bg-card border border-border rounded-xl p-3 flex items-center justify-between';
+    el.className = 'history-item flex items-center justify-between px-3 py-3 rounded-xl hover:bg-bg cursor-default';
+    el.style.animationDelay = (i * 0.05) + 's';
     el.innerHTML = `
-      <div>
-        <p class="text-sm text-text">${task.label}</p>
-        <p class="text-xs text-muted">${task.date}</p>
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center ${isNeg ? 'bg-red-50' : 'bg-primaryLt'}">
+          <span class="text-base">${isNeg ? '💸' : '✅'}</span>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-text">${t.label}</p>
+          <p class="text-xs text-muted">${t.date}</p>
+        </div>
       </div>
-      <span class="font-display text-accent text-sm">+${task.amountHTG} HTG</span>
-    `;
-    container.appendChild(el);
+      <span class="font-display font-bold text-sm ${isNeg ? 'text-danger' : 'text-primary'}">
+        ${isNeg ? '' : '+'}${t.amountHTG} HTG
+      </span>`;
+    c.appendChild(el);
   });
 }
 
-function showWorkerTab(tab) {
-  // Toggle zone visible (tasks vs history) — simple scroll
-  if (tab === 'tasks') {
-    document.getElementById('offerWallFrame').scrollIntoView({ behavior: 'smooth' });
-  } else {
-    document.getElementById('workerTaskHistory').scrollIntoView({ behavior: 'smooth' });
-  }
-}
-
-// ─────────────────────────────────────────────
-// 5. VUE MANAGER
-// ─────────────────────────────────────────────
-function renderManagerDashboard() {
+// ─── MANAGER VIEW ────────────────────────────
+function renderManager() {
   document.getElementById('managerView').classList.remove('hidden');
-  document.getElementById('managerName').textContent = currentUser.name;
+  document.getElementById('managerName').textContent = USERS_DB[currentUser.id].name;
 
-  // Filtrer les workers de l'équipe de ce manager
-  const teamId = currentUser.teamId;
+  const teamId     = currentUser.teamId;
   const teamWorkers = getAllWorkers().filter(w => w.teamId === teamId);
 
-  const totalEarnings = teamWorkers.reduce((acc, w) => acc + w.balanceHTG, 0);
-  const totalTasks    = teamWorkers.reduce((acc, w) => acc + w.totalTasks, 0);
+  const totalHTG   = teamWorkers.reduce((a,w) => a + w.balanceHTG, 0);
+  const totalTasks = teamWorkers.reduce((a,w) => a + w.totalTasks, 0);
 
-  document.getElementById('teamTotalEarnings').textContent = totalEarnings.toLocaleString() + ' HTG';
-  document.getElementById('teamTotalTasks').textContent    = totalTasks.toLocaleString();
+  document.getElementById('teamTotalEarnings').textContent = totalHTG.toLocaleString() + ' HTG';
+  document.getElementById('teamTotalTasks').textContent    = totalTasks;
+  document.getElementById('teamCount').textContent         = teamWorkers.length + ' workers';
 
-  // Liste des workers
-  const container = document.getElementById('teamWorkersList');
-  container.innerHTML = '';
+  const c = document.getElementById('teamWorkersList');
+  c.innerHTML = '';
 
   if (!teamWorkers.length) {
-    container.innerHTML = `<div class="bg-card border border-border rounded-xl p-4 text-center"><p class="text-muted text-sm">Aucun worker dans votre équipe.</p></div>`;
+    c.innerHTML = `<p class="text-muted text-sm text-center py-4">Aucun worker dans votre équipe.</p>`;
     return;
   }
 
-  teamWorkers.forEach(w => {
-    const el = document.createElement('div');
-    el.className = 'worker-row bg-card border border-border rounded-xl p-3 flex items-center justify-between';
-    el.innerHTML = `
+  teamWorkers.forEach((w, i) => {
+    const initials = w.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const pct      = Math.min(Math.round((w.totalTasks / 50) * 100), 100);
+    const el       = document.createElement('div');
+    el.className   = 'worker-row flex items-center justify-between p-3 rounded-xl bg-white card-anim';
+    el.style.animationDelay = (i * 0.05) + 's';
+    el.innerHTML   = `
       <div class="flex items-center gap-3">
-        <span class="status-dot"></span>
+        <div class="avatar">${initials}</div>
         <div>
-          <p class="text-sm text-text">${w.name}</p>
-          <p class="text-xs text-muted">${w.id} · ${w.totalTasks} tâches</p>
-        </div>
-      </div>
-      <span class="font-display text-sm text-accent">${w.balanceHTG.toLocaleString()} HTG</span>
-    `;
-    container.appendChild(el);
-  });
-}
-
-// ─────────────────────────────────────────────
-// 6. VUE ADMIN
-// ─────────────────────────────────────────────
-function renderAdminDashboard() {
-  document.getElementById('adminView').classList.remove('hidden');
-
-  const allWorkers = getAllWorkers();
-  const totalHTG   = allWorkers.reduce((acc, w) => acc + w.balanceHTG, 0);
-  const totalTasks = allWorkers.reduce((acc, w) => acc + w.totalTasks, 0);
-  const totalUSD   = (totalHTG / exchangeRate).toFixed(2);
-
-  document.getElementById('adminTotalUSD').textContent     = '$' + totalUSD;
-  document.getElementById('adminTotalHTG').textContent     = totalHTG.toLocaleString() + ' HTG';
-  document.getElementById('adminActiveWorkers').textContent = allWorkers.length;
-  document.getElementById('adminTotalTasks').textContent   = totalTasks.toLocaleString();
-  document.getElementById('exchangeRateInput').value       = exchangeRate;
-  document.getElementById('currentRateDisplay').textContent = exchangeRate + ' HTG/USD';
-
-  // Calculer marge (marché réel ~150 HTG, notre taux peut être plus bas = marge)
-  const marketRate = 150;
-  const margin = (((marketRate - exchangeRate) / marketRate) * 100).toFixed(1);
-  document.getElementById('marginDisplay').textContent = margin + '%';
-
-  // Liste de tous les workers
-  const container = document.getElementById('adminWorkersList');
-  container.innerHTML = '';
-
-  allWorkers.forEach(w => {
-    const el = document.createElement('div');
-    el.className = 'worker-row bg-card border border-border rounded-xl p-3 flex items-center justify-between';
-    el.innerHTML = `
-      <div>
-        <p class="text-sm text-text">${w.name}</p>
-        <p class="text-xs text-muted">${w.id} · Équipe: ${w.teamId}</p>
-        <div class="progress-bar mt-1 w-24">
-          <div class="progress-fill" style="width: ${Math.min((w.totalTasks / 10) * 100, 100)}%"></div>
+          <p class="text-sm font-semibold text-text">${w.name}</p>
+          <p class="text-xs text-muted">${w.id}</p>
+          <div class="progress-bar w-20 mt-1">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>
         </div>
       </div>
       <div class="text-right">
-        <p class="font-display text-sm text-accent">${w.balanceHTG.toLocaleString()} HTG</p>
+        <p class="font-display font-bold text-sm text-primary">${w.balanceHTG.toLocaleString()} HTG</p>
         <p class="text-xs text-muted">${w.totalTasks} tâches</p>
-      </div>
-    `;
-    container.appendChild(el);
+      </div>`;
+    c.appendChild(el);
   });
 }
 
-// ─────────────────────────────────────────────
-// 7. ADMIN : TAUX DE CHANGE
-// ─────────────────────────────────────────────
-function updateExchangeRate() {
-  const newRate = parseInt(document.getElementById('exchangeRateInput').value);
-  if (isNaN(newRate) || newRate < 1) {
-    showToast('Taux invalide !');
-    return;
-  }
-  exchangeRate = newRate;
-  localStorage.setItem('tp_rate', newRate);
-  showToast('Taux mis à jour : ' + newRate + ' HTG/USD');
-  renderAdminDashboard();
+// ─── ADMIN VIEW ──────────────────────────────
+function renderAdmin() {
+  document.getElementById('adminView').classList.remove('hidden');
+
+  const workers    = getAllWorkers();
+  const totalHTG   = workers.reduce((a,w) => a + w.balanceHTG, 0);
+  const totalTasks = workers.reduce((a,w) => a + w.totalTasks, 0);
+  const totalUSD   = (totalHTG / exchangeRate).toFixed(2);
+
+  document.getElementById('adminTotalUSD').textContent      = '$' + totalUSD;
+  document.getElementById('adminTotalHTG').textContent      = totalHTG.toLocaleString() + ' HTG';
+  document.getElementById('adminActiveWorkers').textContent = workers.length;
+  document.getElementById('adminTotalTasks').textContent    = totalTasks;
+  document.getElementById('exchangeRateInput').value        = exchangeRate;
+  document.getElementById('currentRateDisplay').textContent = exchangeRate + ' HTG';
+  document.getElementById('adminWorkerCount').textContent   = workers.length + ' workers';
+
+  const marketRate = 150;
+  const margin     = (((marketRate - exchangeRate) / marketRate) * 100).toFixed(1);
+  document.getElementById('marginDisplay').textContent = margin + '%';
+
+  const c = document.getElementById('adminWorkersList');
+  c.innerHTML = '';
+
+  workers.forEach((w, i) => {
+    const initials = w.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
+    const pct      = Math.min(Math.round((w.totalTasks / 50) * 100), 100);
+    const el       = document.createElement('div');
+    el.className   = 'worker-row flex items-center justify-between p-3 rounded-xl bg-white card-anim';
+    el.style.animationDelay = (i * 0.04) + 's';
+    el.innerHTML   = `
+      <div class="flex items-center gap-3">
+        <div class="avatar">${initials}</div>
+        <div>
+          <p class="text-sm font-semibold text-text">${w.name}</p>
+          <p class="text-xs text-muted">${w.id} · ${w.teamId}</p>
+          <div class="progress-bar w-24 mt-1">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <p class="font-display font-bold text-sm text-primary">${w.balanceHTG.toLocaleString()} HTG</p>
+        <span class="stat-badge">${w.totalTasks} tâches</span>
+      </div>`;
+    c.appendChild(el);
+  });
 }
 
-// ─────────────────────────────────────────────
-// 8. ADMIN : FRAIS DE MAINTENANCE 250 HTG
-// ─────────────────────────────────────────────
-function applyMaintenanceFee() {
-  const FEE = 250; // HTG
-  const allWorkers = getAllWorkers();
-  let affected = 0;
+// ─── ADMIN CONTROLS ──────────────────────────
+function updateExchangeRate() {
+  const v = parseInt(document.getElementById('exchangeRateInput').value);
+  if (isNaN(v) || v < 1) { showToast('⚠️ Taux invalide'); return; }
+  exchangeRate = v;
+  localStorage.setItem('tp_rate', v);
+  showToast('✅ Taux mis à jour : ' + v + ' HTG/USD');
+  renderAdmin();
+}
 
-  allWorkers.forEach(w => {
-    const data = getWorkerData(w.id);
-    if (data.balanceHTG >= FEE) {
-      data.balanceHTG -= FEE;
-      // Ajouter à l'historique
-      data.history.push({
+function applyMaintenanceFee() {
+  const FEE     = 250;
+  const workers = getAllWorkers();
+  let   count   = 0;
+
+  workers.forEach(w => {
+    const d = getWorkerData(w.id);
+    if (d.balanceHTG >= FEE) {
+      d.balanceHTG -= FEE;
+      d.history.push({
         label: 'Frais de maintenance plateforme',
         date: new Date().toLocaleDateString('fr-HT'),
         amountHTG: -FEE
       });
-      saveWorkerData(w.id, data);
-      affected++;
+      saveWorkerData(w.id, d);
+      count++;
     }
   });
 
   const msg = document.getElementById('maintenanceMsg');
   msg.classList.remove('hidden');
-  msg.textContent = `✅ ${affected} workers débités de 250 HTG.`;
-  msg.className = 'text-xs text-center mt-2 text-accent';
-
-  showToast(`Frais appliqués à ${affected} workers`);
-  renderAdminDashboard();
+  msg.className = 'text-xs text-center mt-2 font-medium text-primary';
+  msg.textContent = `✅ Frais appliqués à ${count} worker(s).`;
+  showToast(`Frais 250 HTG appliqués à ${count} workers`);
+  renderAdmin();
 }
 
-// ─────────────────────────────────────────────
-// 9. POSTBACK / WEBHOOK HANDLER
-//    ════════════════════════════════════════
-//    Ce bloc simule le traitement d'un postback
-//    HTTP GET envoyé par Monlix/Lootably/CPALead
-//    après qu'un worker a complété une offre.
-//
-//    URL type reçue par ton serveur :
-//    https://taskpam.com/postback?
-//      userid=worker_402
-//      &amount=1.50
-//      &currency=USD
-//      &offer_id=12345
-//      &sig=SHA256(userid+amount+SECRET)
-//
-//    En production → implémenter sur Cloudflare Workers
-//    ou Node.js Express (voir commentaires ci-dessous)
-// ─────────────────────────────────────────────
-
+// ─── POSTBACK HANDLER ────────────────────────
 /**
- * SIMULATEUR POSTBACK (côté front pour démo)
- * En production, cette logique est sur le SERVEUR.
+ * Traite un postback de l'Offer Wall (Monlix/CPALead)
+ * URL type: https://taskpam.com/postback?userid=worker_402&amount=1.5&offer_id=123&sig=xxx
  *
- * @param {string} userId  - ID du worker (ex: "worker_402")
- * @param {number} amountUSD - Montant gagné en USD (ex: 1.50)
- * @param {string} offerId - ID de l'offre complétée
- * @param {string} sig     - Signature de sécurité (SHA256)
+ * @param {string} userId
+ * @param {number} amountUSD
+ * @param {string} offerId
+ * @param {string} sig
  */
 function processPostback(userId, amountUSD, offerId, sig) {
-
-  // ÉTAPE 1 — Vérifier que le worker existe
   if (!USERS_DB[userId] || USERS_DB[userId].role !== 'worker') {
     console.error('[POSTBACK] Worker inconnu:', userId);
-    return { status: 'error', message: 'Worker not found' };
+    return { status:'error', message:'Worker not found' };
   }
 
-  // ÉTAPE 2 — Vérifier la signature secrète
-  // En production : sig = SHA256(userId + amountUSD + PLATFORM_SECRET)
-  // Ici simulé : on accepte si sig n'est pas vide
   if (!sig) {
-    console.error('[POSTBACK] Signature manquante ou invalide');
-    return { status: 'error', message: 'Invalid signature' };
+    console.error('[POSTBACK] Signature manquante');
+    return { status:'error', message:'Invalid signature' };
   }
 
-  // ÉTAPE 3 — Convertir USD → HTG selon le taux de la plateforme
   const amountHTG = Math.floor(amountUSD * exchangeRate);
+  const data      = getWorkerData(userId);
 
-  // ÉTAPE 4 — Mettre à jour le solde du worker
-  const data = getWorkerData(userId);
-  data.balanceHTG     += amountHTG;
-  data.weekEarnings   += amountHTG;
-  data.totalTasks     += 1;
+  data.balanceHTG   += amountHTG;
+  data.weekEarnings += amountHTG;
+  data.totalTasks   += 1;
   data.history.push({
-    label: `Offre #${offerId} complétée`,
+    label: `Offre complétée #${offerId}`,
     date: new Date().toLocaleDateString('fr-HT'),
-    amountHTG: amountHTG
+    amountHTG
   });
+
   saveWorkerData(userId, data);
+  console.log(`[POSTBACK] ✅ ${userId} → +${amountHTG} HTG ($${amountUSD})`);
 
-  console.log(`[POSTBACK] ✅ Worker ${userId} crédité de ${amountHTG} HTG ($${amountUSD})`);
-
-  // ÉTAPE 5 — Rafraîchir la vue si c'est le worker connecté
-  if (currentUser && currentUser.id === userId && currentUser.role === 'worker') {
-    renderWorkerDashboard();
-    showToast(`+${amountHTG} HTG crédités !`);
+  if (currentUser && currentUser.id === userId) {
+    renderWorker();
+    showToast(`🎉 +${amountHTG} HTG crédités !`);
   }
 
-  return { status: 'ok', credited: amountHTG };
+  return { status:'ok', credited: amountHTG };
 }
 
-/* ══════════════════════════════════════════════════════
-   CLOUDFLARE WORKERS — CODE DE PRODUCTION (commenté)
-   ══════════════════════════════════════════════════════
+/* ══ CLOUDFLARE WORKERS — PRODUCTION ══════════════
+addEventListener('fetch', e => e.respondWith(handlePostback(e.request)));
 
-   // wrangler.toml : name = "taskpam-postback"
+async function handlePostback(req) {
+  const url       = new URL(req.url);
+  const userId    = url.searchParams.get('userid');
+  const amount    = parseFloat(url.searchParams.get('amount'));
+  const offerId   = url.searchParams.get('offer_id');
+  const sig       = url.searchParams.get('sig');
 
-   addEventListener('fetch', event => {
-     event.respondWith(handlePostback(event.request));
-   });
+  // Vérifier signature SHA256 : sha256(userId + amount + SECRET)
+  const expected = await sha256(userId + amount + 'VOTRE_SECRET');
+  if (sig !== expected) return new Response('Unauthorized', {status:401});
 
-   async function handlePostback(request) {
-     const url = new URL(request.url);
-     const userId    = url.searchParams.get('userid');
-     const amountUSD = parseFloat(url.searchParams.get('amount'));
-     const offerId   = url.searchParams.get('offer_id');
-     const sig       = url.searchParams.get('sig');
+  const rate      = parseInt(await KV.get('exchange_rate') || '135');
+  const amountHTG = Math.floor(amount * rate);
+  const key       = 'worker_' + userId;
+  const existing  = JSON.parse(await KV.get(key) || '{"balanceHTG":0}');
+  existing.balanceHTG += amountHTG;
+  await KV.put(key, JSON.stringify(existing));
 
-     // 1. Vérifier signature SHA256
-     const expectedSig = await sha256(userId + amountUSD + PLATFORM_SECRET);
-     if (sig !== expectedSig) {
-       return new Response('Unauthorized', { status: 401 });
-     }
+  return new Response('1', {status:200});
+}
+══════════════════════════════════════════════════ */
 
-     // 2. Convertir USD → HTG
-     const rate = await KV.get('exchange_rate') || 135;
-     const amountHTG = Math.floor(amountUSD * rate);
-
-     // 3. Mettre à jour KV Store ou D1 Database
-     const workerKey = 'worker_' + userId;
-     const existing  = JSON.parse(await KV.get(workerKey) || '{"balanceHTG":0}');
-     existing.balanceHTG += amountHTG;
-     await KV.put(workerKey, JSON.stringify(existing));
-
-     // 4. Répondre OK à l'Offer Wall
-     return new Response('OK', { status: 200 });
-   }
-
-   ══════════════════════════════════════════════════════
-   NODE.JS EXPRESS — ALTERNATIVE (commenté)
-   ══════════════════════════════════════════════════════
-
-   const express = require('express');
-   const crypto  = require('crypto');
-   const app     = express();
-
-   app.get('/postback', (req, res) => {
-     const { userid, amount, offer_id, sig } = req.query;
-
-     // Vérifier signature
-     const expected = crypto
-       .createHash('sha256')
-       .update(userid + amount + PLATFORM_SECRET)
-       .digest('hex');
-
-     if (sig !== expected) return res.status(401).send('Invalid signature');
-
-     const amountHTG = Math.floor(parseFloat(amount) * exchangeRate);
-
-     // Mettre à jour la base de données (MongoDB/PostgreSQL/Firebase)
-     // db.workers.updateOne({ id: userid }, { $inc: { balanceHTG: amountHTG } });
-
-     res.send('1'); // Réponse attendue par la plupart des Offer Walls
-   });
-
-   app.listen(3000);
-
-   ══════════════════════════════════════════════════════ */
-
-// ─────────────────────────────────────────────
-// 10. UTILITAIRES
-// ─────────────────────────────────────────────
-
-// Toast notification
-function showToast(msg, duration = 3000) {
-  const toast = document.getElementById('toast');
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), duration);
+// ─── TOAST ───────────────────────────────────
+function showToast(msg, ms = 3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), ms);
 }
 
-// Simuler un postback pour les tests (Admin uniquement)
-window.simulatePostback = function(userId, amount) {
-  return processPostback(userId, amount || 1.50, 'TEST_' + Date.now(), 'demo_sig');
-};
-
-// ─────────────────────────────────────────────
-// 11. INIT
-// ─────────────────────────────────────────────
+// ─── INIT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Restaurer session existante
   restoreSession();
 
-  // Écouter l'URL pour postbacks simulés (ex: taskpam.html?postback=1&userid=worker_402&amount=2.00)
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('postback') === '1') {
-    const userId    = params.get('userid');
-    const amount    = parseFloat(params.get('amount') || '1');
-    const offerId   = params.get('offer_id') || 'DEMO';
-    const sig       = params.get('sig') || 'demo_sig';
-    processPostback(userId, amount, offerId, sig);
+  // Gestion postback via URL params
+  const p = new URLSearchParams(window.location.search);
+  if (p.get('postback') === '1') {
+    processPostback(
+      p.get('userid'),
+      parseFloat(p.get('amount') || '1'),
+      p.get('offer_id') || 'DEMO',
+      p.get('sig') || 'demo'
+    );
   }
 });
 
-// Permettre Enter pour login
+// Enter key pour login
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !document.getElementById('loginScreen').classList.contains('hidden')) {
-    handleLogin();
+  if (e.key === 'Enter') {
+    const ls = document.getElementById('loginScreen');
+    if (!ls.classList.contains('hidden')) handleLogin();
   }
 });
+
+// Exposer pour tests console
+window.simulatePostback = (userId, amount = 1.5) =>
+  processPostback(userId, amount, 'TEST_' + Date.now(), 'demo_sig');
