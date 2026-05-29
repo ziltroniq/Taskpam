@@ -1,164 +1,150 @@
 /* =============================================
    TASKPAM — style.css
-   Custom styles complementing Tailwind CSS CDN
+   Thème Monlix : Vert / Blanc / Officiel / Pro
    ============================================= */
 
-/* --- Base Reset & Body --- */
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body {
-  background-color: #0a0a0a;
-  color: #e8e8e8;
-  font-family: 'DM Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
+  background-color: #f4f6f8;
+  color: #1a1a2e;
   overscroll-behavior: none;
 }
 
-/* --- Scrollbar Styling --- */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #111111; }
-::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
-::-webkit-scrollbar-thumb:hover { background: #00ff88; }
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: #f4f6f8; }
+::-webkit-scrollbar-thumb { background: #1db954; border-radius: 2px; }
 
-/* --- Accent Glow Effect --- */
-.glow-accent {
-  box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+/* ── Login Hero Pattern ── */
+.hero-pattern {
+  background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.2) 0%, transparent 50%);
 }
 
-/* --- Login Screen --- */
-#loginScreen {
-  background: radial-gradient(ellipse at top, #0f1a0f 0%, #0a0a0a 60%);
-  animation: fadeIn 0.5s ease;
+/* ── Status Blink ── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
 }
+.status-blink { animation: blink 1.8s ease-in-out infinite; }
 
-/* --- App Shell Fade In --- */
-#appShell {
-  animation: fadeIn 0.4s ease;
-}
-
-/* --- Animations --- */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+/* ── Page Fade In ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(16px); }
+#loginScreen  { animation: fadeSlideUp 0.5s ease; }
+#appShell     { animation: fadeSlideUp 0.4s ease; }
+
+/* ── Card Enter Animation ── */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 8px rgba(0, 255, 136, 0.2); }
-  50%       { box-shadow: 0 0 24px rgba(0, 255, 136, 0.5); }
-}
+.card-anim { animation: cardIn 0.3s ease forwards; }
 
-/* --- Balance Card Pulse --- */
-.balance-pulse {
-  animation: pulseGlow 2s ease-in-out infinite;
-}
-
-/* --- Card Hover --- */
-.task-card {
-  transition: all 0.2s ease;
-  animation: slideUp 0.3s ease;
-}
-
-.task-card:hover {
-  border-color: rgba(0, 255, 136, 0.3);
-  transform: translateX(2px);
-}
-
-/* --- iFrame Container --- */
-#offerWallFrame {
-  min-height: 500px;
-  background: #111111;
-}
-
-/* --- Worker Row --- */
+/* ── Worker Row ── */
 .worker-row {
   transition: all 0.15s ease;
-  animation: slideUp 0.25s ease;
+  border: 1px solid #e5e9ef;
+}
+.worker-row:active { background: #f0fdf4; }
+
+/* ── Task History Item ── */
+.history-item {
+  animation: cardIn 0.25s ease forwards;
+  transition: background 0.15s;
+}
+.history-item:active { background: #f4f6f8; }
+
+/* ── iFrame Wrapper ── */
+#offerWallFrame {
+  min-height: 520px;
+  background: #f4f6f8;
+  display: block;
 }
 
-.worker-row:hover {
-  border-color: rgba(0, 255, 136, 0.2);
-}
-
-/* --- Status Indicator --- */
-.status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00ff88;
-  animation: pulseGlow 1.5s ease-in-out infinite;
-  display: inline-block;
-}
-
-/* --- Toast --- */
-#toast {
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-#toast.show {
-  opacity: 1 !important;
-}
-
-/* --- Input Focus Ring --- */
+/* ── Input Focus ── */
 input:focus {
-  box-shadow: 0 0 0 2px rgba(0, 255, 136, 0.2);
+  box-shadow: 0 0 0 3px rgba(29,185,84,0.15);
 }
 
-/* --- Noise Texture Overlay --- */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
-}
+/* ── Toast ── */
+#toast { pointer-events: none; }
+#toast.show { opacity: 1 !important; transform: translateX(-50%) translateY(-4px); }
 
-/* --- Section Fade Animation --- */
-.section-fade {
-  animation: fadeIn 0.35s ease;
-}
-
-/* --- Admin Danger Zone --- */
-.danger-zone {
-  background: linear-gradient(135deg, rgba(255,68,68,0.05) 0%, transparent 60%);
-}
-
-/* --- Progress Bar --- */
-.progress-bar {
-  height: 2px;
-  background: #2a2a2a;
-  border-radius: 1px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #00ff88, #00cc6a);
-  border-radius: 1px;
-  transition: width 0.8s ease;
-}
-
-/* --- Monospace Numbers --- */
-.mono-num {
-  font-family: 'Space Mono', monospace;
-  font-variant-numeric: tabular-nums;
-}
-
-/* --- Bottom Nav Safe Area --- */
+/* ── Bottom Nav Safe Area ── */
 #workerBottomNav {
   padding-bottom: env(safe-area-inset-bottom, 12px);
 }
 
-/* --- Responsive --- */
-@media (max-width: 380px) {
-  .font-display { letter-spacing: 0.05em; }
+/* ── Progress Bar ── */
+.progress-bar {
+  height: 3px;
+  background: #e5e9ef;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1db954, #17a348);
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+
+/* ── Green Button Pulse on Login ── */
+@keyframes greenPulse {
+  0%   { box-shadow: 0 4px 20px rgba(29,185,84,0.25); }
+  50%  { box-shadow: 0 4px 28px rgba(29,185,84,0.45); }
+  100% { box-shadow: 0 4px 20px rgba(29,185,84,0.25); }
+}
+button.bg-primary { animation: greenPulse 2.5s ease-in-out infinite; }
+button.bg-primary:active { animation: none; }
+
+/* ── Avatar Placeholder ── */
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #1db954, #17a348);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Subtle texture on bg ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%231db954' fill-opacity='0.015'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  z-index: 0;
+}
+
+/* ── Stats Badge ── */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f8ee;
+  color: #1db954;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 375px) {
+  .font-display { font-size: 95%; }
 }
