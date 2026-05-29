@@ -338,6 +338,18 @@
 <div id="toast"
   class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-dark text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-float opacity-0 transition-all duration-300 z-50 whitespace-nowrap">
 </div>
+  <!-- MODALE IMPORT CSV -->
+<div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-dark/50">
+  <div class="bg-white rounded-2xl shadow-float p-6 max-w-sm w-full mx-4">
+    <h3 class="font-display font-bold text-lg text-text mb-3">Importer des utilisateurs (CSV)</h3>
+    <input type="file" id="csvFileInput" accept=".csv" class="w-full text-sm mb-3" />
+    <div class="flex gap-2 justify-end">
+      <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-muted border rounded-lg">Annuler</button>
+      <button onclick="importCSV()" class="px-4 py-2 bg-primary text-white font-bold rounded-lg">Importer</button>
+    </div>
+    <p id="importStatus" class="text-xs mt-2 hidden"></p>
+  </div>
+</div>
 
 <script src="app.js"></script>
 </body>
