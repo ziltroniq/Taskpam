@@ -39,15 +39,17 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="style.css"/>
+
+  <!-- Firebase SDKs (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-functions-compat.js"></script>
 </head>
 <body class="bg-bg font-body text-text min-h-screen">
 
-<!-- ══════════════════════════════════════
-     LOGIN SCREEN
-══════════════════════════════════════ -->
+<!-- LOGIN SCREEN -->
 <div id="loginScreen" class="min-h-screen flex flex-col">
-
-  <!-- Green Header Banner -->
   <div class="bg-primary px-6 pt-12 pb-16 text-center relative overflow-hidden">
     <div class="absolute inset-0 hero-pattern opacity-10"></div>
     <div class="relative z-10">
@@ -60,36 +62,27 @@
       <p class="text-white/80 text-sm font-body">Earn the right way 🇭🇹</p>
     </div>
   </div>
-
-  <!-- Login Card (overlaps banner) -->
   <div class="flex-1 px-5 -mt-8 pb-8">
     <div class="bg-white rounded-2xl shadow-float p-6 max-w-sm mx-auto">
-
       <h2 class="font-display font-bold text-xl text-text mb-1">Connexion</h2>
       <p class="text-muted text-sm mb-6">Accédez à votre espace de travail</p>
-
       <div class="mb-4">
         <label class="text-xs font-semibold text-text mb-1.5 block">Identifiant</label>
         <input id="loginId" type="text" placeholder="worker_402 / manager_01 / admin"
           class="w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder-muted"/>
       </div>
-
       <div class="mb-5">
         <label class="text-xs font-semibold text-text mb-1.5 block">Mot de passe</label>
         <input id="loginPass" type="password" placeholder="••••••••"
           class="w-full border border-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all placeholder-muted"/>
       </div>
-
       <button onclick="handleLogin()"
         class="w-full bg-primary hover:bg-primaryDk text-white font-display font-bold py-3.5 rounded-xl shadow-green hover:shadow-md transition-all text-sm tracking-wide">
         SE CONNECTER
       </button>
-
       <p id="loginError" class="text-danger text-xs text-center mt-3 hidden font-medium">
         ❌ Identifiant ou mot de passe incorrect.
       </p>
-
-      <!-- Demo Credentials -->
       <div class="mt-5 bg-primaryLt border border-primary/20 rounded-xl p-4">
         <p class="text-primary font-display font-bold text-xs mb-2 uppercase tracking-wide">Comptes Demo</p>
         <div class="space-y-1 text-xs text-muted">
@@ -102,12 +95,8 @@
   </div>
 </div>
 
-<!-- ══════════════════════════════════════
-     APP SHELL
-══════════════════════════════════════ -->
+<!-- APP SHELL -->
 <div id="appShell" class="hidden min-h-screen flex flex-col">
-
-  <!-- TOP NAVBAR -->
   <nav class="bg-white border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-50 shadow-sm">
     <div class="flex items-center gap-2.5">
       <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
@@ -126,8 +115,6 @@
       </button>
     </div>
   </nav>
-
-  <!-- Role Badge Bar -->
   <div class="bg-primary px-4 py-2 flex items-center justify-between">
     <div class="flex items-center gap-2">
       <span class="text-white/70 text-xs">Connecté en tant que</span>
@@ -139,20 +126,13 @@
     </div>
   </div>
 
-  <!-- ══════════════════
-       WORKER VIEW
-  ══════════════════ -->
+  <!-- WORKER VIEW -->
   <div id="workerView" class="hidden flex-1 flex flex-col pb-20">
-
-    <!-- Welcome Banner -->
     <div class="bg-primary px-5 pt-5 pb-10">
       <p class="text-white/70 text-sm">Bonjour 👋</p>
       <h2 id="workerName" class="font-display font-black text-white text-2xl mt-0.5"></h2>
     </div>
-
     <div class="px-4 -mt-6 space-y-4">
-
-      <!-- Balance Card -->
       <div class="bg-white rounded-2xl shadow-float p-5">
         <div class="flex items-center justify-between mb-4">
           <p class="text-muted text-xs font-semibold uppercase tracking-wide">Votre Solde</p>
@@ -168,8 +148,6 @@
           <span>Tâches: <span id="workerTaskCount" class="text-text font-bold">0</span></span>
         </div>
       </div>
-
-      <!-- Offer Wall -->
       <div class="bg-white rounded-2xl shadow-card overflow-hidden">
         <div class="px-4 py-3 border-b border-border flex items-center justify-between">
           <div class="flex items-center gap-2">
@@ -188,8 +166,6 @@
           <p class="text-muted text-xs mt-1">Worker ID: <span id="fallbackWId" class="text-primary font-bold"></span></p>
         </div>
       </div>
-
-      <!-- Task History -->
       <div class="bg-white rounded-2xl shadow-card">
         <div class="px-4 py-3 border-b border-border">
           <p class="font-display font-bold text-sm text-text">Historique des Gains</p>
@@ -199,20 +175,13 @@
     </div>
   </div>
 
-  <!-- ══════════════════
-       MANAGER VIEW
-  ══════════════════ -->
+  <!-- MANAGER VIEW -->
   <div id="managerView" class="hidden flex-1 flex flex-col pb-6">
-
-    <!-- Banner -->
     <div class="bg-primary px-5 pt-5 pb-10">
       <p class="text-white/70 text-sm">Dashboard Manager</p>
       <h2 id="managerName" class="font-display font-black text-white text-2xl mt-0.5"></h2>
     </div>
-
     <div class="px-4 -mt-6 space-y-4">
-
-      <!-- Team Stats -->
       <div class="grid grid-cols-2 gap-3">
         <div class="bg-white rounded-2xl shadow-float p-4">
           <p class="text-muted text-xs font-semibold uppercase tracking-wide mb-2">Gains Équipe</p>
@@ -223,8 +192,6 @@
           <p id="teamTotalTasks" class="font-display font-black text-2xl text-text">0</p>
         </div>
       </div>
-
-      <!-- Team Worker List -->
       <div class="bg-white rounded-2xl shadow-card">
         <div class="px-4 py-3 border-b border-border flex items-center justify-between">
           <p class="font-display font-bold text-sm text-text">Mon Équipe</p>
@@ -235,20 +202,13 @@
     </div>
   </div>
 
-  <!-- ══════════════════
-       ADMIN VIEW
-  ══════════════════ -->
+  <!-- ADMIN VIEW -->
   <div id="adminView" class="hidden flex-1 flex flex-col pb-6">
-
-    <!-- Banner -->
     <div class="bg-primary px-5 pt-5 pb-10">
       <p class="text-white/70 text-sm">Administration</p>
       <h2 class="font-display font-black text-white text-2xl mt-0.5">HBW Taskpam</h2>
     </div>
-
     <div class="px-4 -mt-6 space-y-4">
-
-      <!-- Platform Stats -->
       <div class="bg-white rounded-2xl shadow-float p-5">
         <p class="text-muted text-xs font-semibold uppercase tracking-wide mb-4">Vue d'ensemble</p>
         <div class="grid grid-cols-2 gap-4">
@@ -270,8 +230,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Exchange Rate -->
       <div class="bg-white rounded-2xl shadow-card p-4">
         <p class="font-display font-bold text-sm text-text mb-3">💱 Taux de Change (Virtual Currency)</p>
         <div class="flex gap-2 mb-2">
@@ -290,8 +248,6 @@
           <span>Marge: <span id="marginDisplay" class="text-warn font-bold">~10%</span></span>
         </div>
       </div>
-
-      <!-- Maintenance Fee -->
       <div class="bg-white rounded-2xl shadow-card p-4 border border-danger/10">
         <p class="font-display font-bold text-sm text-text mb-1">⚙️ Frais de Maintenance</p>
         <p class="text-xs text-muted mb-3">Déduit 250 HTG du solde de tous les workers.</p>
@@ -301,8 +257,10 @@
         </button>
         <p id="maintenanceMsg" class="text-xs text-center mt-2 hidden"></p>
       </div>
-
-      <!-- Workers List -->
+      <button id="importBtn" onclick="openImportModal()"
+        class="hidden w-full bg-primaryLt text-primary font-display font-bold py-3 rounded-xl hover:bg-primary/10 transition-all">
+        📥 Importer des utilisateurs (CSV)
+      </button>
       <div class="bg-white rounded-2xl shadow-card">
         <div class="px-4 py-3 border-b border-border flex items-center justify-between">
           <p class="font-display font-bold text-sm text-text">Tous les Workers</p>
@@ -331,15 +289,10 @@
       <span class="text-xs font-semibold">Profil</span>
     </button>
   </div>
-
-</div><!-- end appShell -->
-
-<!-- TOAST -->
-<div id="toast"
-  class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-dark text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-float opacity-0 transition-all duration-300 z-50 whitespace-nowrap">
 </div>
-  <!-- MODALE IMPORT CSV -->
-<div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-dark/50">
+
+<!-- MODALE IMPORT CSV -->
+<div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-dark/50" style="backdrop-filter: blur(2px);">
   <div class="bg-white rounded-2xl shadow-float p-6 max-w-sm w-full mx-4">
     <h3 class="font-display font-bold text-lg text-text mb-3">Importer des utilisateurs (CSV)</h3>
     <input type="file" id="csvFileInput" accept=".csv" class="w-full text-sm mb-3" />
@@ -351,6 +304,11 @@
   </div>
 </div>
 
+<!-- TOAST -->
+<div id="toast"
+  class="fixed bottom-24 left-1/2 -translate-x-1/2 bg-dark text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-float opacity-0 transition-all duration-300 z-50 whitespace-nowrap">
+</div>
+
 <script src="app.js"></script>
 </body>
-</html>
+                                                                 </html>
