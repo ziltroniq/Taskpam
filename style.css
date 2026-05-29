@@ -148,3 +148,5 @@ body::after {
 @media (max-width: 375px) {
   .font-display { font-size: 95%; }
 }
+
+#importModal { backdrop-filter: blur(2px); }
