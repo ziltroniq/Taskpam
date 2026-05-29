@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Taskpam — Micro-Task Platform</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg:       '#0a0a0a',
+            surface:  '#111111',
+            card:     '#181818',
+            border:   '#2a2a2a',
+            accent:   '#00ff88',
+            accentDim:'#00cc6a',
+            muted:    '#555555',
+            text:     '#e8e8e8',
+            danger:   '#ff4444',
+            warn:     '#ffaa00',
+          },
+          fontFamily: {
+            display: ['"Space Mono"', 'monospace'],
+            body:    ['"DM Sans"', 'sans-serif'],
+          },
+          boxShadow: {
+            glow: '0 0 20px rgba(0,255,136,0.15)',
+            card: '0 1px 3px rgba(0,0,0,0.6)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body class="bg-bg text-text font-body min-h-screen">
+
+  <!-- ===== LOGIN SCREEN ===== -->
+  <div id="loginScreen" class="min-h-screen flex flex-col items-center justify-center px-6">
+    <div class="w-full max-w-sm">
+
+      <!-- Logo -->
+      <div class="text-center mb-10">
+        <h1 class="font-display text-3xl text-accent tracking-widest">TASKPAM</h1>
+        <p class="text-muted text-xs mt-1 tracking-wider uppercase">Micro-Task Platform — Haiti</p>
+      </div>
+
+      <!-- Login Card -->
+      <div class="bg-card border border-border rounded-2xl p-6 shadow-card">
+        <p class="text-muted text-xs uppercase tracking-wider mb-4">Connexion sécurisée</p>
+
+        <div class="mb-4">
+          <label class="text-xs text-muted mb-1 block">ID Utilisateur</label>
+          <input id="loginId" type="text" placeholder="ex: worker_402 / manager_01 / admin"
+            class="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-text focus:outline-none focus:border-accent transition-colors placeholder-muted"/>
+        </div>
+
+        <div class="mb-6">
+          <label class="text-xs text-muted mb-1 block">Mot de passe</label>
+          <input id="loginPass" type="password" placeholder="••••••••"
+            class="w-full bg-surface border border-border rounded-lg px-4 py-3 text-sm text-text focus:outline-none focus:border-accent transition-colors placeholder-muted"/>
+        </div>
+
+        <button onclick="handleLogin()"
+          class="w-full bg-accent text-bg font-display text-sm py-3 rounded-lg hover:bg-accentDim transition-colors tracking-wider">
+          CONNEXION
+        </button>
+
+        <p id="loginError" class="text-danger text-xs text-center mt-3 hidden">ID ou mot de passe incorrect.</p>
+      </div>
+
+      <!-- Demo hint -->
+      <div class="mt-4 bg-surface border border-border rounded-xl p-4 text-xs text-muted">
+        <p class="font-display text-accent text-xs mb-2">DEMO CREDENTIALS</p>
+        <p>Worker: <span class="text-text">worker_402</span> / pass: <span class="text-text">1234</span></p>
+        <p>Manager: <span class="text-text">manager_01</span> / pass: <span class="text-text">1234</span></p>
+        <p>Admin: <span class="text-text">admin</span> / pass: <span class="text-text">admin2025</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== APP SHELL (visible after login) ===== -->
+  <div id="appShell" class="hidden min-h-screen flex flex-col">
+
+    <!-- TOP NAV -->
+    <nav class="bg-surface border-b border-border px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+      <div class="flex items-center gap-3">
+        <span class="font-display text-accent text-lg tracking-widest">TASKPAM</span>
+        <span id="roleTag" class="text-xs bg-card border border-border px-2 py-0.5 rounded-full text-muted uppercase tracking-wider"></span>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="navUserId" class="text-xs text-muted font-display"></span>
+        <button onclick="handleLogout()" class="text-xs text-danger border border-danger/30 px-3 py-1 rounded-full hover:bg-danger/10 transition-colors">
+          EXIT
+        </button>
+      </div>
+    </nav>
+
+    <!-- ============================================================ -->
+    <!-- WORKER DASHBOARD -->
+    <!-- ============================================================ -->
+    <div id="workerView" class="hidden flex-1 flex flex-col">
+
+      <!-- Header Stats -->
+      <div class="px-4 pt-5 pb-3">
+        <p class="text-muted text-xs uppercase tracking-wider mb-1">Bonjour,</p>
+        <h2 id="workerName" class="font-display text-xl text-accent"></h2>
+      </div>
+
+      <!-- Balance Cards -->
+      <div class="px-4 grid grid-cols-2 gap-3 mb-5">
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Solde HTG</p>
+          <p id="workerBalanceHTG" class="font-display text-2xl text-accent">0 HTG</p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Cette semaine</p>
+          <p id="workerWeekEarnings" class="font-display text-2xl text-text">0 HTG</p>
+        </div>
+      </div>
+
+      <!-- Offer Wall Section -->
+      <div class="px-4 mb-5">
+        <div class="flex items-center justify-between mb-3">
+          <p class="text-xs uppercase tracking-wider text-muted font-display">Zone de Tâches</p>
+          <span class="text-xs text-accent border border-accent/30 px-2 py-0.5 rounded-full">LIVE</span>
+        </div>
+        <div class="bg-card border border-border rounded-xl overflow-hidden">
+          <!-- Offer Wall iFrame — L'ID du worker est injecté dynamiquement -->
+          <iframe
+            id="offerWallFrame"
+            src=""
+            width="100%"
+            height="500px"
+            frameborder="0"
+            scrolling="yes"
+            class="w-full"
+            title="Taskpam Offer Wall">
+          </iframe>
+          <!-- Fallback si iFrame bloqué -->
+          <div id="offerWallFallback" class="hidden p-6 text-center">
+            <p class="text-muted text-sm">Offres en cours de chargement...</p>
+            <p class="text-xs text-muted mt-1">Worker ID: <span id="fallbackWorkerId" class="text-accent font-display"></span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task History -->
+      <div class="px-4 mb-8">
+        <p class="text-xs uppercase tracking-wider text-muted font-display mb-3">Historique des tâches</p>
+        <div id="workerTaskHistory" class="space-y-2">
+          <!-- Injecté par JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MANAGER DASHBOARD -->
+    <!-- ============================================================ -->
+    <div id="managerView" class="hidden flex-1 flex flex-col">
+
+      <!-- Header -->
+      <div class="px-4 pt-5 pb-3">
+        <p class="text-muted text-xs uppercase tracking-wider mb-1">Dashboard Manager</p>
+        <h2 id="managerName" class="font-display text-xl text-accent"></h2>
+      </div>
+
+      <!-- Team Stats -->
+      <div class="px-4 grid grid-cols-2 gap-3 mb-5">
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Gains Équipe</p>
+          <p id="teamTotalEarnings" class="font-display text-2xl text-accent">0 HTG</p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Tâches complétées</p>
+          <p id="teamTotalTasks" class="font-display text-2xl text-text">0</p>
+        </div>
+      </div>
+
+      <!-- Team Workers List -->
+      <div class="px-4 mb-8">
+        <p class="text-xs uppercase tracking-wider text-muted font-display mb-3">Mon Équipe</p>
+        <div id="teamWorkersList" class="space-y-2">
+          <!-- Injecté par JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ADMIN DASHBOARD -->
+    <!-- ============================================================ -->
+    <div id="adminView" class="hidden flex-1 flex flex-col">
+
+      <!-- Header -->
+      <div class="px-4 pt-5 pb-3">
+        <p class="text-muted text-xs uppercase tracking-wider mb-1">Administration</p>
+        <h2 class="font-display text-xl text-accent">HBW TASKPAM</h2>
+      </div>
+
+      <!-- Platform Stats -->
+      <div class="px-4 grid grid-cols-2 gap-3 mb-5">
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Total USD</p>
+          <p id="adminTotalUSD" class="font-display text-2xl text-accent">$0.00</p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Total HTG</p>
+          <p id="adminTotalHTG" class="font-display text-2xl text-text">0 HTG</p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Workers actifs</p>
+          <p id="adminActiveWorkers" class="font-display text-2xl text-text">0</p>
+        </div>
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-muted text-xs mb-1 uppercase tracking-wider">Tâches totales</p>
+          <p id="adminTotalTasks" class="font-display text-2xl text-text">0</p>
+        </div>
+      </div>
+
+      <!-- Exchange Rate Manager -->
+      <div class="px-4 mb-5">
+        <div class="bg-card border border-border rounded-xl p-4">
+          <p class="text-xs uppercase tracking-wider text-muted font-display mb-3">Taux de Change (Virtual Currency)</p>
+          <div class="flex items-center gap-3">
+            <div class="flex-1">
+              <label class="text-xs text-muted mb-1 block">1 USD = X HTG (Taux plateforme)</label>
+              <input id="exchangeRateInput" type="number" value="135"
+                class="w-full bg-surface border border-border rounded-lg px-3 py-2 text-sm text-text focus:outline-none focus:border-accent transition-colors"/>
+            </div>
+            <button onclick="updateExchangeRate()"
+              class="bg-accent text-bg font-display text-xs px-4 py-2 rounded-lg hover:bg-accentDim transition-colors mt-4">
+              SAVE
+            </button>
+          </div>
+          <p class="text-xs text-muted mt-2">Taux actuel: <span id="currentRateDisplay" class="text-accent font-display">135 HTG/USD</span></p>
+          <p class="text-xs text-muted">Marge plateforme: <span id="marginDisplay" class="text-warn font-display">~10%</span></p>
+        </div>
+      </div>
+
+      <!-- Maintenance Fee Button -->
+      <div class="px-4 mb-5">
+        <div class="bg-card border border-danger/20 rounded-xl p-4">
+          <p class="text-xs uppercase tracking-wider text-muted font-display mb-1">Frais de Maintenance</p>
+          <p class="text-xs text-muted mb-3">Déduit automatiquement 250 HTG du solde de tous les workers.</p>
+          <button onclick="applyMaintenanceFee()"
+            class="w-full bg-danger/10 border border-danger/30 text-danger font-display text-xs py-3 rounded-lg hover:bg-danger/20 transition-colors tracking-wider">
+            ⚡ APPLIQUER FRAIS 250 HTG × TOUS WORKERS
+          </button>
+          <p id="maintenanceMsg" class="text-xs text-center mt-2 hidden"></p>
+        </div>
+      </div>
+
+      <!-- All Workers Overview -->
+      <div class="px-4 mb-8">
+        <p class="text-xs uppercase tracking-wider text-muted font-display mb-3">Tous les Workers</p>
+        <div id="adminWorkersList" class="space-y-2">
+          <!-- Injecté par JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM NAV (Worker only) -->
+    <div id="workerBottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-border px-6 py-3 flex justify-around">
+      <button onclick="showWorkerTab('tasks')" class="flex flex-col items-center gap-1 text-accent">
+        <span class="text-lg">⚡</span>
+        <span class="text-xs">Tâches</span>
+      </button>
+      <button onclick="showWorkerTab('history')" class="flex flex-col items-center gap-1 text-muted">
+        <span class="text-lg">📋</span>
+        <span class="text-xs">Historique</span>
+      </button>
+    </div>
+
+  </div><!-- end appShell -->
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-card border border-accent/30 text-accent text-xs font-display px-4 py-2 rounded-full shadow-glow opacity-0 transition-opacity duration-300 z-50">
+    Notification
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
