@@ -55,28 +55,38 @@ function handleLogout() {
 // Surveiller l'état de connexion
 auth.onAuthStateChanged(async (user) => {
   if (user) {
+    // Message visible sur la page (dans la zone de login)
+    document.getElementById('loginError').classList.remove('hidden');
+    document.getElementById('loginError').textContent = '🔄 Connexion réussie, chargement des données...';
+    document.getElementById('loginError').style.color = '#1db954'; // vert
+
     firebaseToken = await user.getIdToken();
 
-    // Extraire l'identifiant à partir de l'email (ex: "admin@taskpam.com" -> "admin")
     const email = user.email;
     const userId = email.replace('@taskpam.com', '');
+    document.getElementById('loginError').textContent += '\nID extrait : ' + userId;
 
-    // Chercher le document dont le champ "id" égale cet identifiant
+    // Chercher par champ "id"
     const snapshot = await db.collection('users').where('id', '==', userId).limit(1).get();
+    document.getElementById('loginError').textContent += '\nRésultat requête : ' + (snapshot.empty ? 'vide' : 'document trouvé');
 
     if (!snapshot.empty) {
       const doc = snapshot.docs[0];
       currentUser = { id: userId, ...doc.data() };
+      document.getElementById('loginError').classList.add('hidden'); // masquer le message
       showApp();
     } else {
-      // Si pas trouvé, on tente quand même avec l'UID (pour les anciens comptes)
+      // Fallback avec UID
+      document.getElementById('loginError').textContent += '\nTentative avec UID...';
       const doc = await db.collection('users').doc(user.uid).get();
       if (doc.exists) {
         currentUser = { id: userId, ...doc.data() };
+        document.getElementById('loginError').classList.add('hidden');
         showApp();
       } else {
+        document.getElementById('loginError').textContent = '❌ Document non trouvé (ni par ID, ni par UID)';
+        document.getElementById('loginError').style.color = '#e53935';
         auth.signOut();
-        alert("Compte non trouvé. Contactez l'administrateur.");
       }
     }
   } else {
@@ -86,7 +96,6 @@ auth.onAuthStateChanged(async (user) => {
     document.getElementById('loginScreen').classList.remove('hidden');
   }
 });
-
 // ─── ROUTAGE ─────────────────────────────────
 function showApp() {
   document.getElementById('loginScreen').classList.add('hidden');
