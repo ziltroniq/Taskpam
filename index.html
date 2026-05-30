@@ -2081,6 +2081,218 @@ showApp = function() {
 window.addEventListener('load', () => {
   setTimeout(initAllTabs, 500);
 });
+  let managerTabsInitialized = false;
+let managerChartInstance = null;
+
+async function renderManager() {
+  const managerView = document.getElementById('managerView');
+  managerView.classList.remove('hidden');
+  document.getElementById('navBalance').classList.remove('hidden');
+  document.getElementById('navApprovedStatus').textContent = '✅ Approved';
+
+  document.getElementById('managerName').textContent = currentUser.name || currentUser.id;
+  document.getElementById('managerTeamDisplay').textContent = currentUser.teamName || 'No team';
+
+  // ---- AJOUT : assigner automatiquement l'équipe si le manager n'a pas encore de teamId ----
+  if (!currentUser.teamId) {
+    try {
+      const teamSnap = await db.collection('teams')
+        .where('managerId', '==', currentUser.id)
+        .limit(1)
+        .get();
+      if (!teamSnap.empty) {
+        const team = teamSnap.docs[0];
+        const teamData = team.data();
+        await db.collection('users').doc(currentUser.id).update({
+          teamId: team.id,
+          teamName: teamData.name
+        });
+        currentUser.teamId = team.id;
+        currentUser.teamName = teamData.name;
+        document.getElementById('managerTeamDisplay').textContent = teamData.name;
+      }
+    } catch (e) {
+      console.error('Auto-assign team error:', e);
+    }
+  }
+  // ---- FIN AJOUT ----
+
+  // Mettre à jour les stats et le solde
+  updateManagerUI();
+
+  if (!managerTabsInitialized) {
+    initManagerTabs();
+    managerTabsInitialized = true;
+  } else {
+    const active = document.querySelector('.mtab-btn.tab-active');
+    if (active) active.click();
+    else document.querySelector('.mtab-btn[data-mtab="team"]')?.click();
+  }
+
+  // Écouter les changements en temps réel
+  db.collection('users').doc(currentUser.id).onSnapshot(doc => {
+    if (doc.exists) {
+      currentUser = { id: doc.id, ...doc.data() };
+      updateManagerUI();
+    }
+  });
+}
+
+// Le reste du bloc (updateManagerUI, loadManagerTeam, etc.) reste IDENTIQUE.
+// Je le remets pour que le bloc soit complet :
+
+function updateManagerUI() {
+  document.getElementById('managerBalance').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
+  document.getElementById('navBalanceAmt').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
+}
+
+async function loadManagerTeam() {
+  const container = document.getElementById('managerTeamList');
+  if (!container) return;
+  container.innerHTML = '<p class="text-muted text-sm">Loading team members...</p>';
+
+  try {
+    const teamId = currentUser.teamId;
+    if (!teamId) {
+      container.innerHTML = '<p class="text-muted">You are not assigned to any team.</p>';
+      return;
+    }
+    const snap = await db.collection('users').where('teamId', '==', teamId).get();
+    const members = [];
+    snap.forEach(doc => members.push({ id: doc.id, ...doc.data() }));
+
+    let totalBalance = 0, totalTasks = 0;
+    members.forEach(m => {
+      totalBalance += m.balanceHTG || 0;
+      totalTasks += m.totalTasks || 0;
+    });
+    document.getElementById('managerTeamBalance').textContent = totalBalance.toLocaleString() + ' HTG';
+    document.getElementById('managerTeamCount').textContent = members.length;
+    document.getElementById('managerTeamTasks').textContent = totalTasks;
+
+    container.innerHTML = '';
+    members.forEach(m => {
+      const div = document.createElement('div');
+      div.className = 'flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-xl';
+      div.innerHTML = `
+        <div>
+          <p class="font-semibold">${m.name || m.id}</p>
+          <p class="text-xs text-muted">${m.id} · ${m.badge || 'Bronze'}</p>
+        </div>
+        <div class="text-right">
+          <p class="font-bold text-primary">${(m.balanceHTG || 0).toLocaleString()} HTG</p>
+          <p class="text-xs text-muted">${m.totalTasks || 0} tasks</p>
+        </div>`;
+      container.appendChild(div);
+    });
+
+    drawManagerChart(members);
+  } catch (e) {
+    container.innerHTML = '<p class="text-danger">Failed to load team.</p>';
+  }
+}
+
+function drawManagerChart(members) {
+  const ctx = document.getElementById('managerChart')?.getContext('2d');
+  if (!ctx) return;
+  if (managerChartInstance) managerChartInstance.destroy();
+  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const data = labels.map(() => Math.floor(Math.random() * 500 + 100));
+  managerChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Team earnings (HTG)',
+        data,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.1)',
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+  });
+}
+
+async function loadManagerNotifications() {
+  const container = document.getElementById('managerNotificationsList');
+  if (!container) return;
+  container.innerHTML = '<p class="text-muted text-sm">Loading...</p>';
+  try {
+    const snap = await db.collection('notifications')
+      .where('recipientId', '==', currentUser.id)
+      .orderBy('createdAt', 'desc')
+      .limit(20)
+      .get();
+    if (snap.empty) {
+      container.innerHTML = '<p class="text-muted text-sm">No notifications.</p>';
+      return;
+    }
+    container.innerHTML = '';
+    snap.forEach(doc => {
+      const notif = doc.data();
+      const div = document.createElement('div');
+      div.className = 'flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-800 rounded-lg';
+      div.innerHTML = `<span>${notif.message}</span><span class="text-xs text-muted">${notif.createdAt?.toDate?.()?.toLocaleString() || ''}</span>`;
+      container.appendChild(div);
+    });
+  } catch (e) {
+    container.innerHTML = '<p class="text-danger">Failed to load notifications.</p>';
+  }
+}
+
+async function managerWithdraw() {
+  const amountStr = document.getElementById('managerWithdrawAmount').value.trim();
+  const amount = parseFloat(amountStr);
+  if (isNaN(amount) || amount <= 0) {
+    document.getElementById('managerWithdrawMsg').textContent = 'Please enter a valid amount.';
+    return;
+  }
+  if (amount > (currentUser.balanceHTG || 0)) {
+    document.getElementById('managerWithdrawMsg').textContent = 'Insufficient balance.';
+    return;
+  }
+  showLoading();
+  try {
+    await db.collection('withdrawalRequests').add({
+      userId: currentUser.id,
+      userName: currentUser.name || currentUser.id,
+      amount,
+      method: 'Manager withdrawal',
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('users').doc(currentUser.id).update({
+      balanceHTG: firebase.firestore.FieldValue.increment(-amount)
+    });
+    document.getElementById('managerWithdrawMsg').textContent = 'Withdrawal request submitted.';
+    document.getElementById('managerWithdrawAmount').value = '';
+  } catch (e) {
+    document.getElementById('managerWithdrawMsg').textContent = 'Error: ' + e.message;
+  } finally { hideLoading(); }
+}
+
+function initManagerTabs() {
+  const container = document.querySelector('#managerView');
+  if (!container) return;
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest('.mtab-btn');
+    if (!btn) return;
+    const tabId = btn.getAttribute('data-mtab');
+    container.querySelectorAll('.mtab-content').forEach(c => c.classList.add('hidden'));
+    const target = document.getElementById('mtab-' + tabId);
+    if (target) target.classList.remove('hidden');
+    container.querySelectorAll('.mtab-btn').forEach(b => b.classList.remove('tab-active'));
+    btn.classList.add('tab-active');
+
+    if (tabId === 'team') loadManagerTeam();
+    else if (tabId === 'stats') loadManagerTeam();
+    else if (tabId === 'notifications') loadManagerNotifications();
+  });
+
+  container.querySelector('.mtab-btn[data-mtab="team"]')?.click();
+  }
 
   lucide.createIcons();
 </script>
