@@ -1696,6 +1696,302 @@
   window.savePlan = savePlan;
   window.deletePlan = deletePlan;
   window.subscribeToPlan = subscribeToPlan;
+  // ================== FONCTIONS MANQUANTES (à ajouter à la fin du script) ==================
+
+async function removeCategory(catName) {
+  showLoading();
+  try {
+    const ref = db.collection('config').doc('categories');
+    const doc = await ref.get();
+    let arr = doc.exists ? doc.data().list : [];
+    arr = arr.filter(c => c !== catName);
+    await ref.set({ list: arr });
+    await addLog('REMOVE_CATEGORY', catName);
+    await loadCategories();
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+async function deleteTeam(teamId, teamName) {
+  if (!confirm(`Delete team "${teamName}"?`)) return;
+  showLoading();
+  try {
+    await db.collection('teams').doc(teamId).delete();
+    const workers = await db.collection('users').where('teamId', '==', teamId).get();
+    workers.forEach(async doc => await doc.ref.update({ teamId: null, teamName: null }));
+    await addLog('DELETE_TEAM', teamName);
+    await loadTeams();
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+async function updateTeamManager(teamId, newManagerId) {
+  showLoading();
+  try {
+    await db.collection('teams').doc(teamId).update({ managerId: newManagerId || null });
+    await addLog('UPDATE_TEAM_MANAGER', `Team ${teamId} manager changed`);
+    await loadTeams();
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+async function markWithdrawalPaid(requestId) {
+  showLoading();
+  try {
+    await db.collection('withdrawalRequests').doc(requestId).update({ status: 'paid', processedAt: firebase.firestore.FieldValue.serverTimestamp() });
+    await addLog('PAY_WITHDRAWAL', `Request ${requestId} marked paid`);
+    await loadWithdrawals();
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+function freelancerLoadProfile() {
+  document.getElementById('freelancerSkills').value = currentUser.skills || '';
+  document.getElementById('freelancerRate').value = currentUser.hourlyRate || '';
+}
+
+async function freelancerSaveProfile() {
+  const skills = document.getElementById('freelancerSkills').value.trim();
+  const rate = parseFloat(document.getElementById('freelancerRate').value);
+  if (isNaN(rate) || rate <= 0) return showToast('Enter a valid hourly rate', 'error');
+  showLoading();
+  try {
+    await db.collection('users').doc(currentUser.id).update({ skills, hourlyRate: rate });
+    showToast('Profile updated!', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
+}
+
+async function applyToJob(jobId) {
+  if (!currentUser.approved) return showToast('You are not approved yet', 'error');
+  showLoading();
+  try {
+    const existing = await db.collection('applications')
+      .where('jobId', '==', jobId).where('freelancerId', '==', currentUser.id).get();
+    if (!existing.empty) return showToast('Already applied.', 'info');
+    await db.collection('applications').add({
+      jobId, freelancerId: currentUser.id, freelancerName: currentUser.name || currentUser.id,
+      status: 'pending', appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    showToast('Application submitted!', 'success');
+  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
+}
+
+async function clientLoadFreelancers() {
+  const container = document.getElementById('freelancersList');
+  container.innerHTML = '<p class="text-muted">Loading...</p>';
+  try {
+    const snap = await db.collection('users').where('role', '==', 'freelancer').where('approved', '==', true).get();
+    if (snap.empty) { container.innerHTML = '<p class="text-muted">No freelancers available.</p>'; return; }
+    container.innerHTML = '';
+    snap.forEach(doc => {
+      const f = doc.data(); const freelancerId = doc.id;
+      container.innerHTML += `<div class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 flex justify-between items-center">
+        <div><p class="font-semibold">${f.name || freelancerId}</p><p class="text-sm">${f.skills || 'N/A'} · ${f.hourlyRate || 'N/A'} HTG/hr</p></div>
+        <button onclick="clientStartChat('${freelancerId}')" class="bg-primary text-white px-3 py-1.5 rounded-lg text-sm">💬 Message</button>
+      </div>`;
+    });
+  } catch(e) { container.innerHTML = '<p class="text-danger">Failed to load freelancers.</p>'; }
+}
+
+async function clientStartChat(freelancerId) {
+  showLoading();
+  try {
+    const existing = await db.collection('chats').where('participants', 'array-contains', currentUser.id)
+      .where('participants', 'array-contains', freelancerId).get();
+    if (!existing.empty) { existing.forEach(d => currentClientChatId = d.id); }
+    else {
+      const newChat = await db.collection('chats').add({ participants: [currentUser.id, freelancerId], messages: [] });
+      currentClientChatId = newChat.id;
+    }
+    document.querySelector('.ctab-btn[data-ctab="messages"]').click();
+    clientOpenChat(currentClientChatId, freelancerId);
+  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
+}
+
+async function clientLoadChats() {
+  const container = document.getElementById('clientChatList');
+  container.innerHTML = 'Loading...';
+  try {
+    const snap = await db.collection('chats').where('participants', 'array-contains', currentUser.id).get();
+    container.innerHTML = snap.empty ? '<p class="text-muted text-sm">No chats yet.</p>' : '';
+    snap.forEach(doc => {
+      const chat = doc.data();
+      const other = chat.participants.find(p => p !== currentUser.id) || 'Unknown';
+      container.innerHTML += `<button class="px-3 py-1.5 rounded-full border text-sm" onclick="clientOpenChat('${doc.id}', '${other}')">💬 ${other}</button>`;
+    });
+  } catch(e) { container.innerHTML = '<p class="text-danger">Failed to load chats.</p>'; }
+}
+
+async function clientOpenChat(chatId, participantName) {
+  currentClientChatId = chatId;
+  document.getElementById('clientChatInputArea').classList.remove('hidden');
+  const chatWindow = document.getElementById('clientChatWindow');
+  chatWindow.innerHTML = '<p class="text-muted">Loading...</p>';
+  try {
+    const doc = await db.collection('chats').doc(chatId).get();
+    if (!doc.exists) return;
+    const msgs = doc.data().messages || [];
+    chatWindow.innerHTML = msgs.length ? msgs.map(m => {
+      const isMe = m.senderId === currentUser.id;
+      return `<div class="mb-2 flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="max-w-[75%] p-2 rounded-xl ${isMe ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-slate-600'}"><p class="text-sm">${m.text}</p><span class="text-[10px] opacity-70">${m.timestamp?.toDate?.()?.toLocaleTimeString() || ''}</span></div></div>`;
+    }).join('') : '<p class="text-muted">No messages yet.</p>';
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  } catch(e) { chatWindow.innerHTML = '<p class="text-danger">Error loading messages.</p>'; }
+}
+
+async function sendClientChatMessage() {
+  if (!currentClientChatId) return;
+  const input = document.getElementById('clientChatMessageInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    await db.collection('chats').doc(currentClientChatId).update({
+      messages: firebase.firestore.FieldValue.arrayUnion({
+        senderId: currentUser.id, text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+    });
+    clientOpenChat(currentClientChatId, '');
+  } catch(e) { showToast('Failed to send message', 'error'); }
+}
+
+async function sendChatMessage() {
+  if (!currentChatId) return;
+  const input = document.getElementById('chatMessageInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  try {
+    await db.collection('chats').doc(currentChatId).update({
+      messages: firebase.firestore.FieldValue.arrayUnion({
+        senderId: currentUser.id, text,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      })
+    });
+    openChat(currentChatId, '');
+  } catch(e) { showToast('Failed to send message', 'error'); }
+}
+
+async function loadTeams() {
+  const teamsSnap = await db.collection('teams').get();
+  const usersSnap = await db.collection('users').get();
+  const managerOptions = [];
+  usersSnap.forEach(u => { managerOptions.push({ id: u.id, name: u.data().name }); });
+  const select = document.getElementById('teamManagerSelect');
+  if (select) {
+    select.innerHTML = '<option value="">-- Select Manager --</option>';
+    managerOptions.forEach(m => select.innerHTML += `<option value="${m.id}">${m.name}</option>`);
+  }
+  const container = document.getElementById('teamsListContainer');
+  if (!container) return;
+  container.innerHTML = '';
+  for (const teamDoc of teamsSnap.docs) {
+    const team = { id: teamDoc.id, ...teamDoc.data() };
+    let managerName = 'None';
+    if (team.managerId) {
+      const manDoc = await db.collection('users').doc(team.managerId).get();
+      if (manDoc.exists) managerName = manDoc.data().name;
+    }
+    container.innerHTML += `<div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl">
+      <div class="flex justify-between items-center"><div><strong>${team.name}</strong><span class="text-xs ml-2">Manager: ${managerName}</span></div>
+      <div class="flex gap-2"><select id="mgrSelect-${team.id}" class="text-xs border rounded px-2 py-1">${managerOptions.map(m => `<option value="${m.id}" ${team.managerId===m.id?'selected':''}>${m.name}</option>`).join('')}<option value="">None</option></select>
+      <button onclick="updateTeamManager('${team.id}', document.getElementById('mgrSelect-${team.id}').value)" class="text-primary text-xs bg-primary/10 px-3 py-1 rounded">Update</button>
+      <button onclick="deleteTeam('${team.id}','${team.name}')" class="text-danger text-xs bg-red-100 px-3 py-1 rounded">Delete</button></div></div></div>`;
+  }
+  if (teamsSnap.empty) container.innerHTML = '<div class="text-muted">No teams yet</div>';
+}
+
+async function loadCategories() {
+  const doc = await db.collection('config').doc('categories').get();
+  const cats = doc.exists ? doc.data().list : [];
+  const container = document.getElementById('categoriesList');
+  if (container) {
+    container.innerHTML = cats.map(c => `<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2">${c}<button onclick="removeCategory('${c.replace(/'/g, "\\'")}')" class="text-danger hover:bg-red-100 rounded-full w-5 h-5 inline-flex items-center justify-center">✕</button></span>`).join('');
+  }
+}
+
+async function loadExchangeRate() {
+  const doc = await db.collection('config').doc('exchangeRate').get();
+  const rate = doc.exists ? doc.data().value : 130;
+  document.getElementById('currentRateDisplay').innerText = `Current: 1 USD = ${rate} HTG`;
+  document.getElementById('exchangeRateInput').value = rate;
+}
+
+async function loadWithdrawals() {
+  const snap = await db.collection('withdrawalRequests').where('status','==','pending').orderBy('createdAt','desc').get();
+  const container = document.getElementById('withdrawalsRequestsList');
+  if (!container) return;
+  container.innerHTML = snap.empty ? '<div class="text-muted">No pending withdrawals</div>' : '';
+  snap.forEach(doc => {
+    const req = doc.data();
+    container.innerHTML += `<div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-3 rounded-xl">
+      <div><span class="font-medium">${req.userName || req.userId}</span> - ${req.amount} HTG (${req.method || 'N/A'})</div>
+      <button onclick="markWithdrawalPaid('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Mark Paid</button></div>`;
+  });
+}
+
+async function refreshChart() {
+  const usersSnap = await db.collection('users').get();
+  const monthly = {};
+  usersSnap.forEach(doc => {
+    const ts = doc.data().createdAt;
+    if (ts && ts.toDate) {
+      const date = ts.toDate();
+      const key = `${date.getFullYear()}-${date.getMonth()+1}`;
+      monthly[key] = (monthly[key] || 0) + 1;
+    }
+  });
+  const sorted = Object.keys(monthly).sort().slice(-12);
+  const labels = sorted;
+  const counts = sorted.map(k => monthly[k]);
+  const ctx = document.getElementById('adminGainsChart')?.getContext('2d');
+  if (ctx) {
+    if (gainsChart) gainsChart.destroy();
+    gainsChart = new Chart(ctx, {
+      type: 'line',
+      data: { labels, datasets: [{ label: 'New users', data: counts, borderColor: '#6366f1', tension: 0.3, fill: true, backgroundColor: 'rgba(99,102,241,0.1)' }] },
+      options: { responsive: true }
+    });
+  }
+}
+
+async function createTeam() {
+  const name = document.getElementById('teamNameInput').value.trim();
+  const managerId = document.getElementById('teamManagerSelect').value;
+  if (!name) return;
+  showLoading();
+  try {
+    await db.collection('teams').add({ name, managerId: managerId || null, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    await addLog('CREATE_TEAM', `Team ${name} created`);
+    await loadTeams();
+    document.getElementById('teamNameInput').value = '';
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+async function addCategory() {
+  const name = document.getElementById('newCategoryInput').value.trim();
+  if (!name) return;
+  showLoading();
+  try {
+    const ref = db.collection('config').doc('categories');
+    const doc = await ref.get();
+    let arr = doc.exists ? doc.data().list : [];
+    if (!arr.includes(name)) arr.push(name);
+    await ref.set({ list: arr });
+    await addLog('ADD_CATEGORY', name);
+    await loadCategories();
+    document.getElementById('newCategoryInput').value = '';
+  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
+}
+
+// N'oubliez pas de rendre ces fonctions disponibles globalement :
+window.removeCategory = removeCategory;
+window.deleteTeam = deleteTeam;
+window.updateTeamManager = updateTeamManager;
+window.markWithdrawalPaid = markWithdrawalPaid;
+window.freelancerSaveProfile = freelancerSaveProfile;
+window.applyToJob = applyToJob;
+window.clientLoadFreelancers = clientLoadFreelancers;
+window.clientStartChat = clientStartChat;
+window.sendClientChatMessage = sendClientChatMessage;
+window.sendChatMessage = sendChatMessage;
 
   lucide.createIcons();
 </script>
