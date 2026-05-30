@@ -1992,6 +1992,95 @@ window.clientLoadFreelancers = clientLoadFreelancers;
 window.clientStartChat = clientStartChat;
 window.sendClientChatMessage = sendClientChatMessage;
 window.sendChatMessage = sendChatMessage;
+  // ================== SYSTÈME D'ONGLETS UNIVERSEL (à placer à la fin du script) ==================
+function initTabs(containerSelector, tabBtnSelector, contentSelector, activeClass = 'tab-active') {
+  const container = document.querySelector(containerSelector);
+  if (!container) return;
+
+  // Délégation d'événement pour les clics sur les boutons d'onglet
+  container.addEventListener('click', (e) => {
+    const btn = e.target.closest(tabBtnSelector);
+    if (!btn) return;
+
+    const tabId = btn.getAttribute('data-tab') || btn.getAttribute('data-ftab') || btn.getAttribute('data-ctab');
+    if (!tabId) return;
+
+    // Trouver le parent qui contient tous les onglets (pour les vues avec préfixe ftab- ou ctab-)
+    const prefix = btn.getAttribute('data-ftab') ? 'ftab-' : (btn.getAttribute('data-ctab') ? 'ctab-' : 'tab-');
+    const contentId = prefix + tabId;
+
+    // Masquer tous les contenus
+    const allContents = container.parentElement.querySelectorAll('.tab-content, .ftab-content, .ctab-content');
+    allContents.forEach(c => c.classList.add('hidden'));
+
+    // Afficher le contenu cible
+    const targetContent = document.getElementById(contentId);
+    if (targetContent) targetContent.classList.remove('hidden');
+
+    // Retirer la classe active de tous les boutons
+    container.querySelectorAll(tabBtnSelector).forEach(b => b.classList.remove(activeClass));
+    // Ajouter la classe active au bouton cliqué
+    btn.classList.add(activeClass);
+
+    // Déclencher les fonctions de chargement spécifiques (selon la vue)
+    const viewType = containerSelector.includes('adminView') ? 'admin' :
+                    (containerSelector.includes('freelancerView') ? 'freelancer' :
+                    (containerSelector.includes('clientView') ? 'client' : ''));
+    if (viewType === 'admin') {
+      if (tabId === 'subscriptions') { loadPlans(); loadActiveSubscriptions(); }
+      if (tabId === 'settings') loadSettingsTab();
+      if (tabId === 'logs') loadLogs(0);
+    } else if (viewType === 'freelancer') {
+      if (tabId === 'dashboard') freelancerLoadDashboard();
+      else if (tabId === 'profile') freelancerLoadProfile();
+      else if (tabId === 'portfolio') freelancerLoadPortfolio();
+      else if (tabId === 'marketplace') freelancerLoadMarketplace();
+      else if (tabId === 'applications') freelancerLoadApplications();
+      else if (tabId === 'reviews') freelancerLoadReviews();
+      else if (tabId === 'messages') freelancerLoadChats();
+    } else if (viewType === 'client') {
+      if (tabId === 'dashboard') clientLoadDashboard();
+      else if (tabId === 'postjob') clientLoadCategories();
+      else if (tabId === 'myjobs') clientLoadMyJobs();
+      else if (tabId === 'freelancers') clientLoadFreelancers();
+      else if (tabId === 'subscription') clientLoadSubscriptionTab();
+      else if (tabId === 'collaborators') loadCollaborators();
+      else if (tabId === 'messages') clientLoadChats();
+    }
+  });
+
+  // Activer le premier onglet par défaut
+  const firstBtn = container.querySelector(tabBtnSelector);
+  if (firstBtn) firstBtn.click();
+}
+
+// Initialiser les onglets dans chaque vue
+function initAllTabs() {
+  // Admin
+  if (document.getElementById('adminView')) {
+    initTabs('#adminView', '.tab-btn', '.tab-content');
+  }
+  // Freelancer
+  if (document.getElementById('freelancerView')) {
+    initTabs('#freelancerView', '.ftab-btn', '.ftab-content');
+  }
+  // Client
+  if (document.getElementById('clientView')) {
+    initTabs('#clientView', '.ctab-btn', '.ctab-content');
+  }
+}
+
+// Appeler initAllTabs après chaque rendu de vue
+const originalShowApp = showApp;
+showApp = function() {
+  originalShowApp();
+  setTimeout(initAllTabs, 200); // laisser le DOM se mettre à jour
+};
+
+// Appeler également au chargement initial
+window.addEventListener('load', () => {
+  setTimeout(initAllTabs, 500);
+});
 
   lucide.createIcons();
 </script>
