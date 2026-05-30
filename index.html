@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Taskpam · Cosmic Dashboard</title>
+  <title>Taskpam & LakayWork & HBW Agency | Admin Console</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind CSS -->
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -21,11 +21,11 @@
             primary: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5', subtle: '#eef2ff' },
             surface: '#ffffff', bg: '#f8fafc', card: '#ffffff', border: '#e2e8f0',
             text: '#0f172a', muted: '#64748b', danger: '#ef4444', warn: '#f59e0b',
+            lakay: '#16a34a', agency: '#0ea5e9',
           },
           fontFamily: {
             display: ['Poppins', 'sans-serif'], body: ['Inter', 'sans-serif'],
           },
-          borderRadius: { '2xl': '1.25rem', '3xl': '1.75rem' },
         },
       },
     }
@@ -38,17 +38,16 @@
 
   <style>
     :root {
-      --glass-bg: rgba(255, 255, 255, 0.08);
-      --glass-border: rgba(255, 255, 255, 0.15);
-      --glass-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+      --glass-bg: rgba(255,255,255,0.08); --glass-border: rgba(255,255,255,0.15);
+      --glass-shadow: 0 20px 45px rgba(0,0,0,0.25);
       --login-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
     }
     .dark {
-      --glass-bg: rgba(15, 23, 42, 0.45);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --glass-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+      --glass-bg: rgba(15,23,42,0.45); --glass-border: rgba(255,255,255,0.08);
+      --glass-shadow: 0 20px 50px rgba(0,0,0,0.6);
     }
     body { font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
+
     .login-screen {
       min-height: 100vh; display: flex; align-items: center; justify-content: center;
       background: var(--login-bg); position: relative; overflow: hidden;
@@ -58,36 +57,46 @@
       opacity: 0.4; z-index: 0; animation: floatShape 20s infinite alternate ease-in-out;
     }
     .login-screen::before { width: 500px; height: 500px; background: rgba(99,102,241,0.2); top:-150px; left:-100px; }
-    .login-screen::after { width: 400px; height: 400px; background: rgba(168,85,247,0.15); bottom:-120px; right:-80px; animation-delay:-10s; }
+    .login-screen::after  { width: 400px; height: 400px; background: rgba(168,85,247,0.15); bottom:-120px; right:-80px; animation-delay:-10s; }
     @keyframes floatShape { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,30px) scale(1.1)} 100%{transform:translate(-20px,-20px) scale(0.95)} }
+
     .login-card {
       background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
       border:1px solid var(--glass-border); border-radius:2rem; padding:2.5rem 2rem; width:100%;
-      max-width:380px; box-shadow: var(--glass-shadow); text-align:center; z-index:1; animation: fadeSlideUp 0.6s ease;
+      max-width:400px; box-shadow: var(--glass-shadow); text-align:center; z-index:1; animation: fadeSlideUp 0.6s ease;
     }
     .login-input {
-      width:100%; padding:0.9rem 1rem; margin:0.75rem 0; border-radius:1rem;
-      border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:white; outline:none; font-size:0.95rem; transition:0.2s;
+      width:100%; padding:0.9rem 1rem; margin:0.5rem 0; border-radius:1rem;
+      border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:white; outline:none;
+      font-size:0.95rem; transition:0.2s;
     }
     .login-input:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,0.3); }
     .login-btn {
       width:100%; padding:0.9rem; border-radius:1rem; border:none;
       background: linear-gradient(135deg,#6366f1,#8b5cf6); color:white; font-weight:700; font-family:'Poppins',sans-serif;
       letter-spacing:0.5px; cursor:pointer; transition:0.2s; box-shadow:0 8px 24px rgba(99,102,241,0.4); margin-top:0.5rem;
+      display:flex; align-items:center; justify-content:center; gap:0.5rem;
     }
     .login-btn:hover { transform:translateY(-1px); box-shadow:0 12px 28px rgba(99,102,241,0.5); }
+
     .nav-blur {
       background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
       border-bottom:1px solid rgba(0,0,0,0.05);
     }
     .dark .nav-blur { background:rgba(15,23,42,0.8); border-bottom:1px solid rgba(255,255,255,0.05); }
+
     .card-premium {
-      background:white; border-radius:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.03),0 1px 3px rgba(0,0,0,0.04);
+      background:white; border-radius:1.5rem;
+      box-shadow:0 4px 20px rgba(0,0,0,0.03),0 1px 3px rgba(0,0,0,0.04);
       transition:all 0.2s;
     }
     .dark .card-premium { background:#1e293b; box-shadow:0 4px 20px rgba(0,0,0,0.3),0 1px 3px rgba(0,0,0,0.4); }
+    .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; font-weight: 600; }
+    .dark .tab-active { border-bottom: 2px solid #818cf8; color: #a5b4fc; }
+
     @keyframes fadeSlideUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
     .animate-fade-slide { animation:fadeSlideUp 0.4s ease forwards; }
+
     .toast-modern {
       position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px);
       background:#1e293b; color:white; padding:0.8rem 1.5rem; border-radius:2rem; font-weight:600;
@@ -99,461 +108,416 @@
       position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
       display:flex; align-items:center; justify-content:center; z-index:9998;
     }
-    .spinner {
-      width:36px; height:36px; border:3px solid rgba(255,255,255,0.3);
-      border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite;
-    }
+    .spinner { width:36px; height:36px; border:3px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
     @keyframes spin { to{transform:rotate(360deg)} }
   </style>
 </head>
 <body class="bg-bg text-text antialiased dark:bg-slate-900 dark:text-slate-200">
 
-<!-- Loading overlay -->
+<!-- Loading / Toast -->
 <div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
-<!-- Toast -->
 <div id="toast" class="toast-modern"></div>
 
-<!-- ========== LOGIN SCREEN ========== -->
+<!-- ========== LOGIN ========== -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
-    <div class="flex items-center justify-center gap-2 mb-3">
-      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+    <div class="flex justify-center mb-3">
+      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/30">
         <span class="text-white font-display font-extrabold text-xl">T</span>
       </div>
-      <span class="text-white font-display font-bold text-2xl tracking-tight">Taskpam</span>
     </div>
-    <h2 class="text-white text-xl font-display font-semibold mt-4">Welcome back</h2>
-    <p class="text-white/60 text-sm mb-6">Sign in to your workspace</p>
+    <h1 class="text-white font-display font-bold text-xl">Taskpam & LakayWork</h1>
+    <p class="text-indigo-200 text-xs font-semibold tracking-widest uppercase mt-0.5 mb-5">HBW Agency</p>
     <input id="loginId" type="text" placeholder="Username" class="login-input" autocomplete="username" />
-    <input id="loginPass" type="password" placeholder="Password" class="login-input" autocomplete="current-password" />
-    <button onclick="handleLogin()" class="login-btn flex items-center justify-center gap-2">
-      <i data-lucide="log-in" class="w-4 h-4"></i> Sign in
-    </button>
-    <p id="loginError" class="text-red-300 text-sm mt-4 hidden"></p>
-    <div class="mt-6 text-left bg-white/5 rounded-xl p-4 border border-white/10">
-      <p class="text-indigo-200 font-semibold text-xs uppercase tracking-wider mb-2">Demo accounts</p>
-      <div class="space-y-1.5 text-xs text-white/70">
-        <p><span class="text-white font-medium">Worker:</span> worker_402 / 1234</p>
-        <p><span class="text-white font-medium">Manager:</span> manager_01 / 1234</p>
-        <p><span class="text-white font-medium">Admin:</span> admin / admin2025</p>
-      </div>
-    </div>
+    <input id="loginPass" type="password" placeholder="Password" class="login-input" onkeydown="if(event.key==='Enter') handleLogin()" />
+    <button onclick="handleLogin()" class="login-btn"><i data-lucide="log-in" class="w-4 h-4"></i> Sign in</button>
+    <p id="loginError" class="text-red-300 text-sm mt-3 hidden"></p>
+    <p class="text-white/50 text-xs mt-5">No account? <a href="#" onclick="showRegister()" class="text-indigo-300 underline">Register</a></p>
+  </div>
+</div>
+
+<!-- ========== REGISTER ========== -->
+<div id="registerScreen" class="hidden login-screen">
+  <div class="login-card">
+    <h2 class="text-white text-xl font-display font-semibold">Create your account</h2>
+    <p class="text-white/50 text-xs mb-5">Join the platform</p>
+    <input id="regName" type="text" placeholder="Full name" class="login-input" />
+    <input id="regId" type="text" placeholder="Username" class="login-input" />
+    <input id="regPass" type="password" placeholder="Password (min 6 chars)" class="login-input" />
+    <select id="regRole" class="login-input" style="background:rgba(15,23,42,0.6);">
+      <option value="worker" class="text-black">👷 Worker</option>
+      <option value="freelancer" class="text-black">💼 Freelancer</option>
+      <option value="client" class="text-black">🧑‍💻 Client</option>
+      <option value="entreprise" class="text-black">🏢 Entreprise</option>
+    </select>
+    <button onclick="handleRegister()" class="login-btn mt-2"><i data-lucide="user-plus" class="w-4 h-4"></i> Register</button>
+    <p id="regError" class="text-red-300 text-sm mt-3 hidden"></p>
+    <p class="text-white/50 text-xs mt-5">Already have an account? <a href="#" onclick="showLogin()" class="text-indigo-300 underline">Sign in</a></p>
   </div>
 </div>
 
 <!-- ========== APP SHELL ========== -->
 <div id="appShell" class="hidden min-h-screen flex flex-col">
-  <!-- Top navigation -->
-  <nav class="nav-blur sticky top-0 z-40 px-4 py-3 flex items-center justify-between">
-    <div class="flex items-center gap-2.5">
-      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+  <!-- Navbar -->
+  <nav class="nav-blur sticky top-0 z-40 px-4 py-3 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
         <span class="text-white font-display font-black text-sm">T</span>
       </div>
-      <span class="font-display font-bold text-lg text-text dark:text-slate-200">Taskpam</span>
+      <span class="font-display font-bold text-base text-text dark:text-slate-200 truncate hidden sm:block">Taskpam & LakayWork</span>
     </div>
-    <div class="flex items-center gap-3">
-      <div id="navBalance" class="hidden items-center gap-1.5 bg-primary/10 px-3 py-1 rounded-full">
+    <div class="flex items-center gap-2 shrink-0">
+      <div id="navBalance" class="hidden items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full">
         <i data-lucide="wallet" class="w-3.5 h-3.5 text-primary"></i>
         <span id="navBalanceAmt" class="text-xs font-semibold text-primary">0 HTG</span>
       </div>
-      <div class="flex items-center gap-1.5 bg-primary-subtle px-3 py-1 rounded-full">
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
-        </span>
-        <span id="navUserId" class="text-xs font-semibold text-primary"></span>
+      <div id="notificationBadge" class="hidden relative cursor-pointer" onclick="openNotifications()">
+        <i data-lucide="bell" class="w-5 h-5 text-text dark:text-slate-200"></i>
+        <span id="notifCount" class="absolute -top-1 -right-1 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
       </div>
-      <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+      <div class="flex items-center gap-1.5 bg-primary-subtle dark:bg-indigo-900/40 px-2.5 py-1 rounded-full">
+        <span id="navUserId" class="text-xs font-semibold text-primary truncate max-w-[80px]"></span>
+      </div>
+      <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
         <i data-lucide="moon" class="w-4 h-4 text-text dark:text-slate-200"></i>
       </button>
-      <button onclick="handleLogout()" class="text-xs font-medium text-muted hover:text-danger border border-border px-3 py-1.5 rounded-lg hover:border-danger/30 transition-all dark:text-slate-300 dark:border-slate-600 dark:hover:border-red-400">
-        Exit
+      <button onclick="handleLogout()" class="text-xs font-medium text-muted hover:text-danger border border-border px-2.5 py-1.5 rounded-lg hover:border-danger/30 transition-all dark:text-slate-300 dark:border-slate-600">
+        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Exit</span>
       </button>
     </div>
   </nav>
 
-  <div class="bg-primary px-4 py-2 flex items-center justify-between text-white/90 text-xs">
-    <div class="flex items-center gap-2">
-      <span>Connected as</span>
-      <span id="roleTag" class="bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide"></span>
+  <div class="bg-primary px-4 py-1.5 flex items-center justify-between text-white/90 text-xs">
+    <div class="flex items-center gap-2"><span>Connected as</span><span id="roleTag" class="bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide"></span></div>
+    <span id="navApprovedStatus" class="text-xs"></span>
+  </div>
+
+  <!-- ========== ADMIN VIEW INSERT ========== -->
+  <div id="adminView" class="hidden p-5 md:p-6 space-y-6">
+    <!-- TABS -->
+    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
+      <button data-tab="overview" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Overview</button>
+      <button data-tab="users" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 Users & Approvals</button>
+      <button data-tab="teams" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🏢 Teams</button>
+      <button data-tab="categories" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🏷️ Categories</button>
+      <button data-tab="withdrawals" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💰 Withdrawals</button>
+      <button data-tab="logs" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📜 Activity Logs</button>
     </div>
-    <div id="mobileBalance" class="hidden">
-      <span class="opacity-70">Balance:</span>
-      <span id="mobileBalanceAmt" class="font-bold ml-1">0 HTG</span>
+
+    <!-- TAB CONTENT: OVERVIEW -->
+    <div id="tab-overview" class="tab-content space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="card-premium p-5"><div class="flex justify-between items-start"><div><p class="text-muted text-xs">Total Users</p><p id="statTotalUsers" class="text-3xl font-bold">0</p></div><i data-lucide="users" class="w-8 h-8 text-primary/70"></i></div></div>
+        <div class="card-premium p-5"><div><p class="text-muted text-xs">Pending Approvals</p><p id="statPending" class="text-3xl font-bold text-warn">0</p></div><i data-lucide="clock" class="w-8 h-8 text-warn/70 mt-2"></i></div>
+        <div class="card-premium p-5"><div><p class="text-muted text-xs">Total Balance (HTG)</p><p id="statTotalHTG" class="text-3xl font-bold">0</p></div><i data-lucide="trending-up" class="w-8 h-8 text-lakay/70"></i></div>
+        <div class="card-premium p-5"><div><p class="text-muted text-xs">≈ USD (exch rate)</p><p id="statTotalUSD" class="text-3xl font-bold">0</p></div><i data-lucide="dollar-sign" class="w-8 h-8 text-agency/70"></i></div>
+      </div>
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📈 Monthly User Gains (Registrations)</h3><canvas id="adminGainsChart" height="100"></canvas></div>
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-2">⚙️ Exchange Rate (1 USD → HTG)</h3><div class="flex gap-3 items-end"><input id="exchangeRateInput" type="number" step="0.01" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800"><button id="updateExchangeBtn" class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-semibold">Update Rate</button><span id="currentRateDisplay" class="text-muted text-sm ml-2"></span></div></div>
+    </div>
+
+    <!-- TAB CONTENT: USERS (pending + all) -->
+    <div id="tab-users" class="tab-content hidden space-y-6">
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">⏳ Pending Approvals</h3><div id="pendingUsersList" class="space-y-2 max-h-64 overflow-auto"></div></div>
+      <div class="card-premium p-5"><div class="flex flex-wrap justify-between items-center mb-3"><h3 class="font-display font-semibold">👤 All Users</h3><input type="text" id="userSearchInput" placeholder="Search name / ID..." class="border border-border rounded-xl px-3 py-1.5 text-sm w-64"></div><div id="allUsersTable" class="overflow-x-auto"><table class="min-w-full text-sm"><thead class="bg-gray-50 dark:bg-slate-800"><tr><th>ID</th><th>Name</th><th>Role</th><th>Balance(HTG)</th><th>Approved</th><th>Actions</th></tr></thead><tbody id="usersTbody"></tbody></table></div></div>
+    </div>
+
+    <!-- TAB TEAMS -->
+    <div id="tab-teams" class="tab-content hidden space-y-6">
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">➕ Create New Team</h3><div class="flex flex-wrap gap-3"><input id="teamNameInput" placeholder="Team name" class="border rounded-xl px-3 py-2"><select id="teamManagerSelect" class="border rounded-xl px-3 py-2 bg-white dark:bg-slate-800"><option value="">-- Select Manager --</option></select><button id="createTeamBtn" class="bg-primary text-white px-5 rounded-xl">Create Team</button></div></div>
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📋 Existing Teams</h3><div id="teamsListContainer" class="space-y-3"></div></div>
+    </div>
+
+    <!-- TAB CATEGORIES -->
+    <div id="tab-categories" class="tab-content hidden space-y-6">
+      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📌 Add Category</h3><div class="flex gap-2"><input id="newCategoryInput" placeholder="Category name" class="border rounded-xl px-3 py-2 flex-1"><button id="addCategoryBtn" class="bg-primary text-white px-5 rounded-xl">Add</button></div><div id="categoriesList" class="mt-5 flex flex-wrap gap-2"></div></div>
+    </div>
+
+    <!-- TAB WITHDRAWALS -->
+    <div id="tab-withdrawals" class="tab-content hidden"><div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">💸 Withdrawal Requests</h3><div id="withdrawalsRequestsList" class="space-y-3"></div></div></div>
+
+    <!-- TAB LOGS -->
+    <div id="tab-logs" class="tab-content hidden"><div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📋 Recent Activity Logs (last 20)</h3><div id="logsContainer" class="space-y-2 text-xs font-mono max-h-96 overflow-auto"></div></div></div>
+  </div>
+
+  <!-- ========== WORKER VIEW INSERT ========== -->
+  <div id="workerView" class="hidden p-4 md:p-6 space-y-6">
+    <!-- Pending Banner -->
+    <div id="pendingBanner" class="hidden bg-warn/10 border border-warn/30 text-warn font-semibold p-4 rounded-xl text-center flex items-center justify-center gap-2">
+      <i data-lucide="alert-triangle" class="w-5 h-5"></i> Pending Approval – your account is under review.
+    </div>
+
+    <!-- Main Dashboard (only when approved) -->
+    <div id="workerDashboard" class="hidden space-y-6">
+      <!-- Balance & Badge -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="card-premium p-5 flex items-center justify-between">
+          <div>
+            <p class="text-muted text-xs">Balance (HTG)</p>
+            <p id="workerBalance" class="text-3xl font-bold">0</p>
+          </div>
+          <i data-lucide="wallet" class="w-8 h-8 text-primary/70"></i>
+        </div>
+        <div class="card-premium p-5 flex items-center justify-between">
+          <div>
+            <p class="text-muted text-xs">Badge</p>
+            <p id="workerBadge" class="text-2xl font-bold">Bronze</p>
+          </div>
+          <i data-lucide="shield-check" class="w-8 h-8 text-lakay/70"></i>
+        </div>
+        <div class="card-premium p-5 flex items-center justify-center">
+          <button id="btnWithdraw" class="bg-primary text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2">
+            <i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Request Withdrawal
+          </button>
+        </div>
+      </div>
+
+      <!-- Offerwalls -->
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">💰 Offerwalls</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
+            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Monlix</div>
+            <iframe src="about:blank" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Monlix Offerwall"></iframe>
+          </div>
+          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
+            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Adscend</div>
+            <iframe src="about:blank" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Adscend Offerwall"></iframe>
+          </div>
+          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
+            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">AyetStudios</div>
+            <iframe src="about:blank" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="AyetStudios Offerwall"></iframe>
+          </div>
+          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
+            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Offertoro</div>
+            <iframe src="about:blank" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Offertoro Offerwall"></iframe>
+          </div>
+        </div>
+      </div>
+
+      <!-- Earnings History -->
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">📋 Earnings History</h3>
+        <div id="historyContainer" class="space-y-2 text-sm max-h-64 overflow-y-auto"></div>
+      </div>
+
+      <!-- Profile -->
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">👤 Profile</h3>
+        <div class="grid sm:grid-cols-2 gap-4 text-sm">
+          <div><span class="font-medium">Name:</span> <span id="profileName">-</span></div>
+          <div><span class="font-medium">Team:</span> <span id="profileTeam">-</span></div>
+          <div><span class="font-medium">Manager:</span> <span id="profileManager">-</span></div>
+        </div>
+      </div>
+
+      <!-- HBW Agency Tasks -->
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">🏢 HBW Agency Tasks</h3>
+        <div id="agencyTasksContainer" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+        <h3 class="font-display font-bold text-lg mb-4">Request Withdrawal</h3>
+        <input id="withdrawAmount" type="number" placeholder="Amount (HTG)" class="border border-border rounded-xl px-4 py-2 w-full mb-3" />
+        <input id="withdrawMethod" type="text" placeholder="Payment method (e.g., MonCash)" class="border border-border rounded-xl px-4 py-2 w-full mb-4" />
+        <div class="flex justify-end gap-3">
+          <button id="cancelWithdraw" class="px-4 py-2 rounded-xl border border-border">Cancel</button>
+          <button id="submitWithdraw" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Submit</button>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- ===== WORKER VIEW (COSMIC) ===== -->
-  <div id="workerView" class="hidden flex-1 flex flex-col pb-20">
-    <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-      <p class="text-white/70 text-sm">Hello 👋</p>
-      <h2 id="workerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
+  <!-- ========== FREELANCER VIEW INSERT ========== -->
+  <div id="freelancerView" class="hidden p-4 md:p-6 space-y-6">
+    <!-- Pending Approval Banner -->
+    <div id="freelancerPendingBanner" class="hidden bg-warn/10 border border-warn/30 text-warn font-semibold p-4 rounded-xl text-center flex items-center justify-center gap-2">
+      <i data-lucide="alert-triangle" class="w-5 h-5"></i> Pending Approval – your account is under review.
     </div>
 
-    <div class="px-4 -mt-8 space-y-4">
-      <!-- Balance Card -->
-      <div class="card-premium p-5 animate-fade-slide">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold text-muted uppercase tracking-wide dark:text-slate-400">Your Balance</span>
-          <span class="inline-flex items-center gap-1 text-xs bg-primary/10 text-primary font-semibold px-2 py-0.5 rounded-full">
-            <span class="w-1.5 h-1.5 bg-primary rounded-full"></span> Online
-          </span>
-        </div>
-        <div class="flex items-end gap-2 mb-3">
-          <span id="workerBalanceHTG" class="font-display font-extrabold text-4xl text-text dark:text-white">0</span>
-          <span class="text-primary font-bold text-lg mb-1">HTG</span>
-        </div>
-        <div class="h-px bg-border dark:bg-slate-600 mb-3"></div>
-        <div class="flex justify-between text-xs text-muted dark:text-slate-400">
-          <span>This week: <span id="workerWeekEarnings" class="text-primary font-bold">0 HTG</span></span>
-          <span>Tasks: <span id="workerTaskCount" class="text-text dark:text-white font-bold">0</span></span>
-        </div>
-      </div>
-
+    <!-- Main Freelancer Dashboard -->
+    <div id="freelancerMain" class="hidden space-y-6">
       <!-- Tabs -->
-      <div class="flex gap-2 overflow-x-auto pb-2">
-        <button onclick="switchWorkerTab('tasks')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white">Tasks</button>
-        <button onclick="switchWorkerTab('history')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-text dark:text-slate-200">History</button>
-        <button onclick="switchWorkerTab('profile')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-text dark:text-slate-200">Profile</button>
-        <button onclick="switchWorkerTab('leaderboard')" class="worker-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-gray-100 dark:bg-gray-700 text-text dark:text-slate-200">🏆 Leaderboard</button>
+      <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
+        <button data-ftab="dashboard" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Dashboard</button>
+        <button data-ftab="profile" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👤 Profile</button>
+        <button data-ftab="marketplace" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🛒 Marketplace</button>
+        <button data-ftab="applications" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📄 Applications</button>
+        <button data-ftab="messages" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💬 Messages</button>
       </div>
 
-      <!-- Tasks Tab -->
-      <div id="workerTasksTab">
-        <div class="card-premium overflow-hidden">
-          <div class="px-4 py-3 border-b border-border dark:border-slate-600 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <i data-lucide="zap" class="w-4 h-4 text-primary"></i>
-              <span class="font-display font-bold text-sm text-text dark:text-white">Task Wall</span>
-            </div>
-            <span class="text-xs text-muted dark:text-slate-400 bg-bg dark:bg-slate-800 px-2 py-1 rounded-lg" id="offerWallUserId"></span>
+      <!-- Dashboard Tab -->
+      <div id="ftab-dashboard" class="ftab-content space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div class="card-premium p-5">
+            <p class="text-muted text-xs">Total Revenue (HTG)</p>
+            <p id="freelancerRevenue" class="text-3xl font-bold">0</p>
           </div>
-          <iframe id="offerWallFrame" src="" width="100%" height="520px" frameborder="0" scrolling="yes" class="bg-bg dark:bg-slate-800" title="Offer Wall"></iframe>
-          <div id="offerWallFallback" class="hidden px-5 py-10 text-center">
-            <i data-lucide="loader-2" class="w-10 h-10 text-primary mx-auto mb-3 animate-spin"></i>
-            <p class="font-display font-bold text-text dark:text-white">Loading offers...</p>
-            <p class="text-muted dark:text-slate-400 text-xs mt-1">Worker ID: <span id="fallbackWId" class="text-primary font-bold"></span></p>
+          <div class="card-premium p-5">
+            <p class="text-muted text-xs">Jobs Completed</p>
+            <p id="freelancerCompleted" class="text-3xl font-bold">0</p>
           </div>
-        </div>
-      </div>
-
-      <!-- History Tab -->
-      <div id="workerHistoryTab" class="hidden">
-        <div class="card-premium">
-          <div class="px-4 py-3 border-b border-border dark:border-slate-600 flex items-center gap-2">
-            <i data-lucide="history" class="w-4 h-4 text-muted dark:text-slate-400"></i>
-            <span class="font-display font-bold text-sm text-text dark:text-white">Earnings History</span>
-          </div>
-          <div id="workerTaskHistory" class="p-4 space-y-2"></div>
         </div>
       </div>
 
       <!-- Profile Tab -->
-      <div id="workerProfileTab" class="hidden">
+      <div id="ftab-profile" class="ftab-content hidden space-y-4">
         <div class="card-premium p-5 space-y-4">
-          <div class="flex items-center gap-4">
-            <div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white font-display font-extrabold text-2xl" id="profileAvatar">W</div>
+          <h3 class="font-display font-semibold text-lg">Edit Profile</h3>
+          <div class="grid sm:grid-cols-2 gap-4">
             <div>
-              <h3 id="profileName" class="font-display font-bold text-xl text-text dark:text-white"></h3>
-              <p id="profileId" class="text-muted dark:text-slate-400 text-sm"></p>
+              <label class="text-sm text-muted block mb-1">Skills</label>
+              <input id="freelancerSkills" type="text" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="e.g., Web Dev, Design" />
+            </div>
+            <div>
+              <label class="text-sm text-muted block mb-1">Hourly Rate (HTG)</label>
+              <input id="freelancerRate" type="number" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="Rate" />
             </div>
           </div>
-          <div class="grid grid-cols-2 gap-3 text-sm">
-            <div class="bg-bg dark:bg-slate-800 rounded-xl p-3">
-              <p class="text-muted dark:text-slate-400 text-xs">Team</p>
-              <p id="profileTeam" class="font-semibold text-text dark:text-white">-</p>
-            </div>
-            <div class="bg-bg dark:bg-slate-800 rounded-xl p-3">
-              <p class="text-muted dark:text-slate-400 text-xs">Manager</p>
-              <p id="profileManager" class="font-semibold text-text dark:text-white">-</p>
-            </div>
-            <div class="bg-bg dark:bg-slate-800 rounded-xl p-3">
-              <p class="text-muted dark:text-slate-400 text-xs">Total Tasks</p>
-              <p id="profileTasks" class="font-semibold text-text dark:text-white">0</p>
-            </div>
-            <div class="bg-bg dark:bg-slate-800 rounded-xl p-3">
-              <p class="text-muted dark:text-slate-400 text-xs">Total Earned</p>
-              <p id="profileEarned" class="font-semibold text-primary">0 HTG</p>
-            </div>
-          </div>
+          <button id="freelancerSaveProfileBtn" onclick="freelancerSaveProfile()" class="bg-primary text-white px-5 py-2 rounded-xl font-semibold">Save Profile</button>
         </div>
       </div>
 
-      <!-- Leaderboard Tab -->
-      <div id="workerLeaderboardTab" class="hidden">
-        <div class="card-premium p-4 animate-fade-slide">
-          <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-            <i data-lucide="trophy" class="w-4 h-4 text-yellow-500"></i> My Team Leaderboard
-          </h3>
-          <div id="workerTeamLeaderboard" class="space-y-2"></div>
+      <!-- Marketplace Tab -->
+      <div id="ftab-marketplace" class="ftab-content hidden space-y-4">
+        <div class="card-premium p-5">
+          <h3 class="font-display font-semibold text-lg mb-3">Available Jobs</h3>
+          <div id="openJobsList" class="space-y-4"></div>
+        </div>
+      </div>
+
+      <!-- Applications Tab -->
+      <div id="ftab-applications" class="ftab-content hidden space-y-4">
+        <div class="card-premium p-5">
+          <h3 class="font-display font-semibold text-lg mb-3">My Applications</h3>
+          <div id="applicationsList" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- Messages Tab -->
+      <div id="ftab-messages" class="ftab-content hidden space-y-4">
+        <div class="card-premium p-5">
+          <h3 class="font-display font-semibold text-lg mb-3">Chats</h3>
+          <div id="chatList" class="flex flex-wrap gap-2 mb-4"></div>
+          <div id="chatWindow" class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
+            <p class="text-muted text-sm">Select a chat to view messages.</p>
+          </div>
+          <div id="chatInputArea" class="hidden mt-3 flex gap-2">
+            <input id="chatMessageInput" type="text" class="border border-border rounded-xl px-4 py-2 flex-1 bg-white dark:bg-slate-800" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChatMessage()" />
+            <button id="sendMessageBtn" onclick="sendChatMessage()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Send</button>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ===== MANAGER VIEW (COSMIC) ===== -->
-  <div id="managerView" class="hidden flex-1 flex flex-col pb-6">
-    <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-      <p class="text-white/70 text-sm">Manager Dashboard</p>
-      <h2 id="managerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
-      <p id="teamNameDisplay" class="text-white/80 text-sm mt-1"></p>
+  <!-- ========== CLIENT/ENTREPRISE VIEW INSERT ========== -->
+  <!-- INSERT CLIENT/ENTREPRISE HTML HERE -->
+  <div id="clientView" class="hidden p-4 md:p-6 space-y-6">
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
+      <button data-ctab="dashboard" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Dashboard</button>
+      <button data-ctab="postjob" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📝 Post a Job</button>
+      <button data-ctab="myjobs" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💼 My Jobs</button>
+      <button data-ctab="freelancers" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 Freelancers</button>
+      <button data-ctab="messages" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💬 Messages</button>
     </div>
 
-    <div class="px-4 -mt-8 space-y-4">
-      <div class="grid grid-cols-2 gap-3">
-        <div class="card-premium p-4 animate-fade-slide">
-          <div class="flex items-center gap-2 text-muted dark:text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">
-            <i data-lucide="dollar-sign" class="w-4 h-4"></i> Team Earnings
-          </div>
-          <p id="teamTotalEarnings" class="font-display font-extrabold text-2xl text-primary">0 HTG</p>
+    <!-- Dashboard Tab -->
+    <div id="ctab-dashboard" class="ctab-content space-y-6">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <div class="card-premium p-5">
+          <p class="text-muted text-xs">Balance (HTG)</p>
+          <p id="clientBalance" class="text-3xl font-bold">0</p>
         </div>
-        <div class="card-premium p-4 animate-fade-slide stagger-1">
-          <div class="flex items-center gap-2 text-muted dark:text-slate-400 text-xs font-semibold uppercase tracking-wide mb-2">
-            <i data-lucide="check-square" class="w-4 h-4"></i> Tasks
-          </div>
-          <p id="teamTotalTasks" class="font-display font-extrabold text-2xl text-text dark:text-white">0</p>
+        <div class="card-premium p-5">
+          <p class="text-muted text-xs">Jobs Posted</p>
+          <p id="clientJobsCount" class="text-3xl font-bold">0</p>
+        </div>
+        <div class="card-premium p-5">
+          <p class="text-muted text-xs">Active Contracts</p>
+          <p id="clientActiveContracts" class="text-3xl font-bold">0</p>
         </div>
       </div>
-
-      <div class="card-premium p-4 animate-fade-slide">
-        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-          <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i> Team Activity (7d)
-        </h3>
-        <canvas id="teamChart" height="150"></canvas>
-      </div>
-
-      <!-- Manager Team Leaderboard -->
-      <div class="card-premium p-4 animate-fade-slide">
-        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-          <i data-lucide="award" class="w-4 h-4 text-yellow-500"></i> Team Leaderboard
-        </h3>
-        <div id="managerTeamLeaderboard" class="space-y-2"></div>
-      </div>
-
-      <div class="card-premium animate-fade-slide">
-        <div class="px-4 py-3 border-b border-border dark:border-slate-600 flex items-center justify-between">
-          <div class="flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4 text-primary"></i>
-            <span class="font-display font-bold text-sm text-text dark:text-white">My Team</span>
-            <span id="teamCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">0 workers</span>
+      <!-- Deposit Funds -->
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">💰 Add Funds (Simulated)</h3>
+        <div class="flex gap-3 items-end">
+          <div>
+            <label class="text-sm text-muted">Amount (HTG)</label>
+            <input id="depositAmount" type="number" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800" placeholder="5000" min="1">
           </div>
-        </div>
-        <div id="teamWorkersList" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== ADMIN COSMIC VIEW ===== -->
-  <div id="adminView" class="hidden flex-1 flex flex-col pb-6">
-    <div class="bg-gradient-to-br from-indigo-700 via-purple-700 to-indigo-800 px-5 pt-6 pb-16 rounded-b-[2rem] shadow-2xl relative overflow-hidden">
-      <div class="absolute inset-0 opacity-20">
-        <div class="absolute -top-24 -right-24 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-32 -left-32 w-80 h-80 bg-pink-300 rounded-full blur-3xl"></div>
-      </div>
-      <div class="relative z-10">
-        <p class="text-white/70 text-sm">Administration Console</p>
-        <h2 class="font-display font-extrabold text-white text-3xl mt-0.5">HBW Taskpam</h2>
-        <div class="flex gap-2 mt-3">
-          <span class="inline-flex items-center gap-1 bg-white/20 text-white text-xs px-3 py-1 rounded-full">
-            <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Live
-          </span>
-          <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full" id="adminTime"></span>
+          <button id="depositBtn" class="bg-primary text-white px-5 py-2 rounded-xl font-semibold">Deposit</button>
         </div>
       </div>
     </div>
 
-    <div class="px-4 -mt-12 space-y-4">
-      <!-- Statistiques principales -->
-      <div class="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <div class="card-premium p-4 flex flex-col animate-fade-slide">
-          <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Total USD</span>
-          <span id="adminTotalUSD" class="font-display font-extrabold text-2xl text-primary mt-1">$0.00</span>
+    <!-- Post Job Tab -->
+    <div id="ctab-postjob" class="ctab-content hidden space-y-4">
+      <div class="card-premium p-5 space-y-4">
+        <h3 class="font-display font-semibold text-lg">Post a New Job</h3>
+        <div>
+          <label class="text-sm text-muted">Title</label>
+          <input id="jobTitle" type="text" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="e.g., Website redesign">
         </div>
-        <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-1">
-          <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Total HTG</span>
-          <span id="adminTotalHTG" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
+        <div>
+          <label class="text-sm text-muted">Description</label>
+          <textarea id="jobDescription" rows="3" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="Describe the project..."></textarea>
         </div>
-        <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-2">
-          <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Workers</span>
-          <span id="adminActiveWorkers" class="font-display font-extrabold text-2xl text-green-500 mt-1">0</span>
-          <span class="text-xs text-muted dark:text-slate-400" id="onlineCount"></span>
-        </div>
-        <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-3">
-          <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Tasks</span>
-          <span id="adminTotalTasks" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
-        </div>
-        <div class="card-premium p-4 flex flex-col animate-fade-slide stagger-4">
-          <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Exchange</span>
-          <span id="adminRateBadge" class="font-display font-extrabold text-2xl text-warn mt-1">1:135</span>
-        </div>
-      </div>
-
-      <!-- Graphiques -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="card-premium p-4 lg:col-span-2 animate-fade-slide">
-          <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-            <i data-lucide="bar-chart-2" class="w-4 h-4 text-primary"></i> Global Earnings (7d)
-          </h3>
-          <canvas id="adminChart" height="200"></canvas>
-        </div>
-        <div class="card-premium p-4 animate-fade-slide">
-          <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-primary"></i> By Team
-          </h3>
-          <canvas id="teamPieChart" height="200"></canvas>
-        </div>
-      </div>
-
-      <!-- Top Workers + Quick Actions -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div class="card-premium p-4 animate-fade-slide lg:col-span-2">
-          <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-            <i data-lucide="trophy" class="w-4 h-4 text-yellow-500"></i> Top 5 Workers
-          </h3>
-          <div class="space-y-2" id="topWorkersList"></div>
-        </div>
-        <div class="card-premium p-4 animate-fade-slide">
-          <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-            <i data-lucide="settings" class="w-4 h-4 text-primary"></i> Quick Actions
-          </h3>
-          <div class="grid grid-cols-1 gap-2">
-            <button onclick="applyMaintenanceFee()" class="w-full bg-danger/5 border border-danger/20 text-danger font-bold text-sm py-2.5 rounded-xl hover:bg-danger/10 transition-all flex items-center justify-center gap-2 dark:bg-slate-800 dark:text-red-400 dark:border-slate-600 dark:hover:bg-slate-700">
-              <i data-lucide="hammer" class="w-4 h-4"></i> Apply 250 HTG Fee
-            </button>
-            <button onclick="openAddWorkerModal()" class="w-full bg-green-50 border border-green-200 text-green-600 font-bold text-sm py-2.5 rounded-xl hover:bg-green-100 transition-all flex items-center justify-center gap-2 dark:bg-slate-800 dark:text-green-400 dark:border-slate-600 dark:hover:bg-slate-700">
-              <i data-lucide="user-plus" class="w-4 h-4"></i> Add Worker
-            </button>
-            <button onclick="exportCSV()" class="w-full bg-primary/10 border border-primary/20 text-primary font-bold text-sm py-2.5 rounded-xl hover:bg-primary/20 transition-all flex items-center justify-center gap-2 dark:bg-slate-800 dark:text-indigo-300 dark:border-slate-600 dark:hover:bg-slate-700">
-              <i data-lucide="download" class="w-4 h-4"></i> Export CSV
-            </button>
-            <button onclick="openBroadcastModal()" class="w-full bg-purple-50 border border-purple-200 text-purple-600 font-bold text-sm py-2.5 rounded-xl hover:bg-purple-100 transition-all flex items-center justify-center gap-2 dark:bg-slate-800 dark:text-purple-400 dark:border-slate-600 dark:hover:bg-slate-700">
-              <i data-lucide="message-square" class="w-4 h-4"></i> Message Manager
-            </button>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="text-sm text-muted">Budget (HTG)</label>
+            <input id="jobBudget" type="number" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" min="100">
           </div>
-        </div>
-      </div>
-
-      <!-- Leaderboard des équipes -->
-      <div class="card-premium animate-fade-slide p-4">
-        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-          <i data-lucide="award" class="w-4 h-4 text-yellow-500"></i> Team Leaderboard
-        </h3>
-        <div class="space-y-2" id="teamLeaderboard"></div>
-      </div>
-
-      <!-- Taux de change -->
-      <div class="card-premium p-4 animate-fade-slide">
-        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-          <i data-lucide="refresh-cw" class="w-4 h-4 text-primary"></i> Exchange Rate
-        </h3>
-        <div class="flex gap-2 mb-2">
-          <input id="exchangeRateInput" type="number" value="135" class="w-full border border-border rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 dark:bg-slate-900 dark:text-white dark:border-slate-700" />
-          <button onclick="updateExchangeRate()" class="bg-primary text-white font-bold text-xs px-4 rounded-xl hover:bg-primary-dark transition-all">Save</button>
-        </div>
-        <div class="flex justify-between text-xs text-muted dark:text-slate-400 bg-bg dark:bg-slate-800 rounded-lg px-3 py-2">
-          <span>Current: <span id="currentRateDisplay" class="text-primary font-bold">135 HTG</span></span>
-          <span>Margin: <span id="marginDisplay" class="text-warn font-bold">~10%</span></span>
-        </div>
-      </div>
-
-      <!-- Live Feed -->
-      <div class="card-premium animate-fade-slide p-4">
-        <h3 class="font-display font-bold text-sm mb-3 flex items-center gap-2 dark:text-white">
-          <i data-lucide="bell" class="w-4 h-4 text-primary"></i> Live Feed
-        </h3>
-        <div id="adminLiveFeed" class="max-h-32 overflow-y-auto text-xs space-y-2">
-          <p class="text-muted dark:text-slate-400">Loading activity...</p>
-        </div>
-      </div>
-
-      <!-- Workers list -->
-      <div class="card-premium animate-fade-slide">
-        <div class="px-4 py-3 border-b border-border dark:border-slate-600 flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <i data-lucide="users" class="w-4 h-4 text-primary"></i>
-            <span class="font-display font-bold text-sm text-text dark:text-white">All Workers</span>
-            <span id="adminWorkerCount" class="bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">0</span>
-          </div>
-          <div class="flex gap-2">
-            <input type="text" id="workerSearch" placeholder="Search..." oninput="renderAdmin()" class="border border-border rounded-xl px-3 py-1.5 text-xs focus:ring-2 focus:ring-primary/20 w-32 lg:w-48 dark:bg-slate-900 dark:text-white dark:border-slate-700" />
-            <select id="teamFilter" onchange="renderAdmin()" class="border border-border rounded-xl px-2 py-1.5 text-xs focus:ring-2 focus:ring-primary/20 dark:bg-slate-900 dark:text-white dark:border-slate-700">
-              <option value="">All teams</option>
+          <div>
+            <label class="text-sm text-muted">Category</label>
+            <select id="jobCategory" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800">
+              <option value="">Select category</option>
             </select>
           </div>
         </div>
-        <div id="adminWorkersList" class="p-3 space-y-2 max-h-96 overflow-y-auto"></div>
+        <button id="postJobBtn" class="bg-primary text-white px-6 py-2 rounded-xl font-semibold">Publish Job</button>
+      </div>
+    </div>
+
+    <!-- My Jobs Tab -->
+    <div id="ctab-myjobs" class="ctab-content hidden space-y-4">
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">My Jobs & Applications</h3>
+        <div id="myJobsList" class="space-y-4"></div>
+      </div>
+    </div>
+
+    <!-- Freelancers Tab -->
+    <div id="ctab-freelancers" class="ctab-content hidden space-y-4">
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">Browse Freelancers</h3>
+        <div id="freelancersList" class="space-y-3"></div>
+      </div>
+    </div>
+
+    <!-- Messages Tab -->
+    <div id="ctab-messages" class="ctab-content hidden space-y-4">
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">Chats</h3>
+        <div id="clientChatList" class="flex flex-wrap gap-2 mb-4"></div>
+        <div id="clientChatWindow" class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto">
+          <p class="text-muted text-sm">Select a chat to view messages.</p>
+        </div>
+        <div id="clientChatInputArea" class="hidden mt-3 flex gap-2">
+          <input id="clientChatMessageInput" type="text" class="border border-border rounded-xl px-4 py-2 flex-1 bg-white dark:bg-slate-800" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendClientChatMessage()" />
+          <button id="clientSendMessageBtn" onclick="sendClientChatMessage()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Send</button>
+        </div>
       </div>
     </div>
   </div>
-
-  <!-- Bottom nav (worker) -->
-  <div id="workerBottomNav" class="hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-border dark:border-slate-700 px-6 py-3 flex justify-around z-30">
-    <button onclick="switchWorkerTab('tasks')" class="flex flex-col items-center gap-1 text-primary">
-      <i data-lucide="zap" class="w-5 h-5"></i><span class="text-[10px] font-semibold">Tasks</span>
-    </button>
-    <button onclick="switchWorkerTab('history')" class="flex flex-col items-center gap-1 text-muted dark:text-slate-400 hover:text-primary transition-colors">
-      <i data-lucide="list" class="w-5 h-5"></i><span class="text-[10px] font-semibold">History</span>
-    </button>
-    <button onclick="switchWorkerTab('profile')" class="flex flex-col items-center gap-1 text-muted dark:text-slate-400 hover:text-primary transition-colors">
-      <i data-lucide="user" class="w-5 h-5"></i><span class="text-[10px] font-semibold">Profile</span>
-    </button>
-    <button onclick="switchWorkerTab('leaderboard')" class="flex flex-col items-center gap-1 text-muted dark:text-slate-400 hover:text-primary transition-colors">
-      <i data-lucide="trophy" class="w-5 h-5"></i><span class="text-[10px] font-semibold">Leaderboard</span>
-    </button>
-  </div>
 </div>
 
-<!-- Modal: Import CSV -->
-<div id="importModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 animate-fade-slide">
-    <h3 class="font-display font-bold text-lg text-text dark:text-white mb-3 flex items-center gap-2">
-      <i data-lucide="file-csv" class="w-5 h-5 text-primary"></i> Import Users
-    </h3>
-    <p class="text-xs text-muted dark:text-slate-400 mb-3">⚠️ Requires backend worker. If not configured, use "Add Worker" instead.</p>
-    <input type="file" id="csvFileInput" accept=".csv" class="w-full text-sm mb-3" />
-    <div class="flex gap-2 justify-end">
-      <button onclick="closeImportModal()" class="px-4 py-2 text-sm text-muted dark:text-slate-300 border border-border dark:border-slate-600 rounded-lg">Cancel</button>
-      <button onclick="importCSV()" class="px-4 py-2 bg-primary text-white font-bold rounded-lg">Import</button>
-    </div>
-    <p id="importStatus" class="text-xs mt-2 hidden"></p>
-  </div>
-</div>
-
-<!-- Modal: Add Worker -->
-<div id="addWorkerModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 animate-fade-slide">
-    <h3 class="font-display font-bold text-lg text-text dark:text-white mb-3 flex items-center gap-2">
-      <i data-lucide="user-plus" class="w-5 h-5 text-green-500"></i> Add Worker
-    </h3>
-    <input id="newWorkerName" placeholder="Full name" class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-2 text-sm dark:bg-slate-900 dark:text-white" />
-    <input id="newWorkerId" placeholder="Username (e.g., worker_500)" class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-2 text-sm dark:bg-slate-900 dark:text-white" />
-    <input id="newWorkerPass" type="password" placeholder="Password" class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-2 text-sm dark:bg-slate-900 dark:text-white" />
-    <input id="newWorkerTeam" placeholder="Team ID (optional)" class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-3 text-sm dark:bg-slate-900 dark:text-white" />
-    <div class="flex gap-2 justify-end">
-      <button onclick="closeAddWorkerModal()" class="px-4 py-2 text-sm text-muted dark:text-slate-300 border border-border dark:border-slate-600 rounded-lg">Cancel</button>
-      <button onclick="addWorkerManually()" class="px-4 py-2 bg-green-500 text-white font-bold rounded-lg">Create</button>
-    </div>
-    <p id="addWorkerMsg" class="text-xs mt-2 hidden"></p>
-  </div>
-</div>
-
-<!-- Modal: Broadcast message to manager -->
-<div id="broadcastModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 animate-fade-slide">
-    <h3 class="font-display font-bold text-lg text-text dark:text-white mb-3 flex items-center gap-2">
-      <i data-lucide="send" class="w-5 h-5 text-purple-500"></i> Send Message to Manager
-    </h3>
-    <select id="managerSelect" class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-2 text-sm dark:bg-slate-900 dark:text-white">
-      <option value="">Select manager...</option>
-    </select>
-    <textarea id="messageText" rows="3" placeholder="Your message..." class="w-full border border-border dark:border-slate-600 rounded-xl px-3 py-2 mb-3 text-sm dark:bg-slate-900 dark:text-white"></textarea>
-    <div class="flex gap-2 justify-end">
-      <button onclick="closeBroadcastModal()" class="px-4 py-2 text-sm text-muted dark:text-slate-300 border border-border dark:border-slate-600 rounded-lg">Cancel</button>
-      <button onclick="sendMessageToManager()" class="px-4 py-2 bg-purple-500 text-white font-bold rounded-lg">Send</button>
-    </div>
-    <p id="broadcastMsg" class="text-xs mt-2 hidden"></p>
-  </div>
-</div>
+<div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"><div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 max-h-96 overflow-y-auto"><h3 class="font-display font-bold text-lg mb-3">Notifications</h3><div id="notificationsList" class="space-y-2"></div><button onclick="closeNotifications()" class="mt-3 text-xs text-muted">Close</button></div></div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -561,7 +525,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
 <script>
-  // ==================== FIREBASE CONFIG ====================
+  // FIREBASE INIT (same as original)
   firebase.initializeApp({
     apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
     authDomain: "hbwtaskpam.firebaseapp.com",
@@ -574,633 +538,1247 @@
   const auth = firebase.auth();
   const db = firebase.firestore();
 
-  // ==================== GLOBAL VARIABLES ====================
-  let currentUser = null;
-  let firebaseToken = null;
-  let allWorkersCache = [];
-  let managersCache = [];
-  let onlineWorkers = new Set();
-  let chartInstance = null;
-  let adminChartInstance = null;
-  let teamPieChartInstance = null;
+  let currentUser = null, firebaseToken = null;
+  let allUsersCache = [], categoriesCache = [], managersCache = [];
+  let workerUnsubscribe = null, freelancerUnsubscribe = null, clientUnsubscribe = null;
+  let freelancerTabsInitialized = false, clientTabsInitialized = false;
+  let currentClientChatId = null;
 
-  // ==================== DARK MODE ====================
-  function applyDarkMode(pref) {
-    const isDark = pref === 'dark' || (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    updateDarkModeIcon();
-  }
+  function applyDarkMode(pref) { const isDark = pref === 'dark' || (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.classList.toggle('dark', isDark); localStorage.setItem('theme', isDark ? 'dark' : 'light'); }
   function toggleDarkMode() { applyDarkMode(document.documentElement.classList.contains('dark') ? 'light' : 'dark'); }
-  function updateDarkModeIcon() {
-    const icon = document.querySelector('#darkModeToggle i');
-    if (icon) icon.setAttribute('data-lucide', document.documentElement.classList.contains('dark') ? 'sun' : 'moon');
-    lucide.createIcons();
-  }
   applyDarkMode(localStorage.getItem('theme'));
 
-  // ==================== HELPERS ====================
   function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
   function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-  function showToast(msg, duration = 3000) {
-    const toast = document.getElementById('toast');
-    toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`;
-    lucide.createIcons();
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), duration);
-  }
+  function showToast(msg, type = 'info') { const toast = document.getElementById('toast'); toast.className = 'toast-modern'; toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`; lucide.createIcons(); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
 
-  function hideAllViews() {
-    ['workerView','managerView','adminView'].forEach(v => document.getElementById(v).classList.add('hidden'));
-    document.getElementById('workerBottomNav').classList.add('hidden');
-    document.getElementById('navBalance').classList.add('hidden');
-    document.getElementById('mobileBalance').classList.add('hidden');
-  }
+  function hideAllViews() { ['adminView','workerView','freelancerView','clientView'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }); const balance = document.getElementById('navBalance'); if (balance) balance.classList.add('hidden'); }
+  function showRegister() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('registerScreen').classList.remove('hidden'); }
+  function showLogin()  { document.getElementById('registerScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); }
 
-  // ==================== AUTH ====================
-  async function handleLogin() {
-    const id = document.getElementById('loginId').value.trim().toLowerCase();
-    const pass = document.getElementById('loginPass').value;
-    const errBox = document.getElementById('loginError');
-    if (!id || !pass) { errBox.textContent = 'Please fill in all fields.'; errBox.classList.remove('hidden'); return; }
-    showLoading();
-    try {
-      await auth.signInWithEmailAndPassword(`${id}@taskpam.com`, pass);
-      errBox.classList.add('hidden');
-    } catch (e) {
-      errBox.textContent = e.message.replace('Firebase: ', '');
-      errBox.classList.remove('hidden');
-    } finally { hideLoading(); }
-  }
+  async function handleLogin() { const id = document.getElementById('loginId').value.trim().toLowerCase(); const pass = document.getElementById('loginPass').value; if (!id || !pass) return showToast('Please fill all fields', 'error'); showLoading(); try { await auth.signInWithEmailAndPassword(`${id}@taskpam.com`, pass); } catch (e) { showToast('Login failed: ' + e.message, 'error'); } finally { hideLoading(); } }
+
+  async function handleRegister() { const name = document.getElementById('regName').value.trim(); const id = document.getElementById('regId').value.trim().toLowerCase(); const pass = document.getElementById('regPass').value; const role = document.getElementById('regRole').value; if (!name || !id || !pass) return showToast('Please fill all fields', 'error'); showLoading(); try { await auth.createUserWithEmailAndPassword(`${id}@taskpam.com`, pass); const approved = (role === 'client' || role === 'entreprise'); await db.collection('users').doc(id).set({ name, role, approved, balanceHTG: 0, totalTasks: 0, history: [], skills: '', rate: 0, teamId: null, teamName: null, paymentMethod: '', paymentId: '', badge: 'Bronze', createdAt: firebase.firestore.FieldValue.serverTimestamp() }); showToast('Account created! ' + (approved ? 'You can login now.' : 'Pending admin approval.'), 'success'); showLogin(); } catch (e) { showToast('Registration failed: ' + e.message, 'error'); } finally { hideLoading(); } }
 
   function handleLogout() { auth.signOut(); }
 
   auth.onAuthStateChanged(async (user) => {
-    if (!user) {
-      currentUser = null; firebaseToken = null;
-      document.getElementById('appShell').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
-      hideLoading();
-      return;
+    if (!user) { 
+      currentUser = null; 
+      document.getElementById('appShell').classList.add('hidden'); 
+      document.getElementById('loginScreen').classList.remove('hidden'); 
+      document.getElementById('registerScreen').classList.add('hidden'); 
+      if (workerUnsubscribe) { workerUnsubscribe(); workerUnsubscribe = null; }
+      if (freelancerUnsubscribe) { freelancerUnsubscribe(); freelancerUnsubscribe = null; }
+      if (clientUnsubscribe) { clientUnsubscribe(); clientUnsubscribe = null; }
+      hideLoading(); 
+      return; 
     }
-    try {
-      showLoading();
-      firebaseToken = await user.getIdToken();
-      const email = user.email || '';
-      const userId = email.replace('@taskpam.com', '');
-      const doc = await db.collection('users').doc(userId).get();
-      if (!doc.exists) { showToast('User document not found.'); await auth.signOut(); hideLoading(); return; }
-      currentUser = { id: userId, ...doc.data() };
-      if (!currentUser.role) { showToast('User role missing.'); await auth.signOut(); hideLoading(); return; }
-      showApp();
-    } catch (e) {
-      showToast('Auth error: ' + e.message);
-      await auth.signOut();
-    } finally { hideLoading(); }
+    try { 
+      showLoading(); 
+      firebaseToken = await user.getIdToken(); 
+      const userId = user.email.replace('@taskpam.com', ''); 
+      const doc = await db.collection('users').doc(userId).get(); 
+      if (!doc.exists) { 
+        showToast('User document not found', 'error'); 
+        await auth.signOut(); 
+        hideLoading(); 
+        return; 
+      } 
+      currentUser = { id: userId, ...doc.data() }; 
+      showApp(); 
+    } catch (e) { 
+      showToast('Auth error: ' + e.message, 'error'); 
+      await auth.signOut(); 
+    } finally { 
+      hideLoading(); 
+    }
   });
 
   function showApp() {
-    document.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('appShell').classList.remove('hidden');
-    document.getElementById('navUserId').textContent = currentUser.id;
-    document.getElementById('roleTag').textContent = currentUser.role.toUpperCase();
+    document.getElementById('loginScreen').classList.add('hidden'); 
+    document.getElementById('registerScreen').classList.add('hidden'); 
+    document.getElementById('appShell').classList.remove('hidden'); 
+    document.getElementById('navUserId').textContent = currentUser.id; 
+    document.getElementById('roleTag').textContent = currentUser.role.toUpperCase(); 
     hideAllViews();
-    if (currentUser.role === 'worker') renderWorker();
-    else if (currentUser.role === 'manager') renderManager();
-    else if (currentUser.role === 'admin') renderAdmin();
+    if (currentUser.role === 'admin') renderAdmin();
+    else if (currentUser.role === 'worker') renderWorker();
+    else if (currentUser.role === 'freelancer') renderFreelancer();
+    else if (currentUser.role === 'client' || currentUser.role === 'entreprise') renderClient();
   }
 
-  // ==================== WORKER TAB SWITCH ====================
-  function switchWorkerTab(tab) {
-    const tabs = ['tasks','history','profile','leaderboard'];
-    const btns = document.querySelectorAll('.worker-tab-btn');
-    btns.forEach((b, i) => {
-      b.classList.remove('bg-primary','text-white');
-      b.classList.add('bg-gray-100','dark:bg-gray-700','text-text','dark:text-slate-200');
-    });
-    tabs.forEach(t => document.getElementById(`worker${t.charAt(0).toUpperCase()+t.slice(1)}Tab`).classList.add('hidden'));
-    const activeIndex = tabs.indexOf(tab);
-    if (activeIndex !== -1) {
-      btns[activeIndex].classList.add('bg-primary','text-white');
-      btns[activeIndex].classList.remove('bg-gray-100','dark:bg-gray-700','text-text','dark:text-slate-200');
-      document.getElementById(`worker${tab.charAt(0).toUpperCase()+tab.slice(1)}Tab`).classList.remove('hidden');
-    }
-  }
-
-  // ==================== WORKER RENDER ====================
-  async function renderWorker() {
-    document.getElementById('workerView').classList.remove('hidden');
-    document.getElementById('workerBottomNav').classList.remove('hidden');
+  // ================== WORKER IMPLEMENTATION (unchanged) ==================
+  function renderWorker() {
+    const workerView = document.getElementById('workerView');
+    workerView.classList.remove('hidden');
     document.getElementById('navBalance').classList.remove('hidden');
-
-    db.collection('users').doc(currentUser.id).onSnapshot(async (doc) => {
-      if (!doc.exists) return;
-      const data = doc.data();
-      document.getElementById('workerName').textContent = data.name;
-      document.getElementById('workerBalanceHTG').textContent = (data.balanceHTG || 0).toLocaleString();
-      document.getElementById('workerWeekEarnings').textContent = (data.weekEarnings || 0).toLocaleString() + ' HTG';
-      document.getElementById('workerTaskCount').textContent = data.totalTasks || 0;
-      document.getElementById('navBalanceAmt').textContent = (data.balanceHTG || 0).toLocaleString() + ' HTG';
-      document.getElementById('mobileBalanceAmt').textContent = (data.balanceHTG || 0).toLocaleString() + ' HTG';
-
-      renderWorkerHistory(data.history || []);
-
-      document.getElementById('profileName').textContent = data.name;
-      document.getElementById('profileId').textContent = '@' + currentUser.id;
-      document.getElementById('profileTasks').textContent = data.totalTasks || 0;
-      document.getElementById('profileEarned').textContent = (data.balanceHTG || 0) + ' HTG';
-      document.getElementById('profileAvatar').textContent = (data.name || 'W')[0].toUpperCase();
-
-      if (data.teamId) {
-        const teamSnap = await db.collection('users').where('teamId','==',data.teamId).where('role','==','manager').limit(1).get();
-        if (!teamSnap.empty) {
-          const managerData = teamSnap.docs[0].data();
-          document.getElementById('profileManager').textContent = managerData.name || 'N/A';
-          document.getElementById('profileTeam').textContent = managerData.teamName || data.teamId;
-        } else {
-          document.getElementById('profileManager').textContent = 'No manager';
-          document.getElementById('profileTeam').textContent = data.teamId;
+    
+    if (workerUnsubscribe) workerUnsubscribe();
+    
+    workerUnsubscribe = db.collection('users').doc(currentUser.id)
+      .onSnapshot(async (doc) => {
+        if (!doc.exists) {
+          showToast('Your account has been deleted.', 'error');
+          auth.signOut();
+          return;
         }
-      } else {
-        document.getElementById('profileTeam').textContent = 'No team';
-        document.getElementById('profileManager').textContent = 'N/A';
-      }
-
-      document.getElementById('offerWallUserId').textContent = 'ID: ' + currentUser.id;
-      const frame = document.getElementById('offerWallFrame');
-      frame.src = `https://wall.monlix.com/app?appid=VOTRE_APP_ID_MONLIX&userid=${encodeURIComponent(currentUser.id)}`;
-      frame.onerror = () => {
-        frame.style.display = 'none';
-        document.getElementById('offerWallFallback').classList.remove('hidden');
-        document.getElementById('fallbackWId').textContent = currentUser.id;
-      };
-
-      // Leaderboard
-      if (data.teamId) {
-        const teamSnap = await db.collection('users').where('teamId','==',data.teamId).where('role','==','worker').get();
-        const teamWorkers = teamSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-        renderWorkerTeamLeaderboard(teamWorkers, currentUser.id);
-      }
+        currentUser = { id: doc.id, ...doc.data() };
+        updateWorkerUI();
+      }, (error) => {
+        console.error('Worker snapshot error:', error);
+        showToast('Live update failed', 'error');
+      });
+    
+    updateWorkerUI();
+    
+    document.getElementById('btnWithdraw')?.addEventListener('click', () => {
+      document.getElementById('withdrawModal').classList.remove('hidden');
     });
-
-    switchWorkerTab('tasks');
+    document.getElementById('cancelWithdraw')?.addEventListener('click', () => {
+      document.getElementById('withdrawModal').classList.add('hidden');
+    });
+    document.getElementById('submitWithdraw')?.addEventListener('click', submitWithdrawal);
   }
 
-  function renderWorkerHistory(history) {
-    const container = document.getElementById('workerTaskHistory');
-    container.innerHTML = '';
-    if (!history.length) {
-      container.innerHTML = `<div class="text-center py-8"><i data-lucide="inbox" class="w-10 h-10 text-muted dark:text-slate-400 mx-auto mb-2"></i><p class="text-muted dark:text-slate-400 text-sm">No earnings yet</p></div>`;
-      lucide.createIcons();
+  async function updateWorkerUI() {
+    if (!currentUser) return;
+    const approved = currentUser.approved === true;
+    
+    const banner = document.getElementById('pendingBanner');
+    const dashboard = document.getElementById('workerDashboard');
+    if (!approved) {
+      banner.classList.remove('hidden');
+      dashboard.classList.add('hidden');
+      document.getElementById('navApprovedStatus').textContent = '(pending)';
       return;
     }
-    history.slice().reverse().forEach((t, i) => {
-      const isNeg = t.amountHTG < 0;
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between px-3 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors animate-fade-slide';
-      div.style.animationDelay = `${i*0.05}s`;
-      div.innerHTML = `<div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl flex items-center justify-center ${isNeg?'bg-red-50 dark:bg-red-900/20':'bg-primary/10'}"><i data-lucide="${isNeg?'minus-circle':'check-circle'}" class="w-4 h-4 ${isNeg?'text-red-500':'text-primary'}"></i></div><div><p class="text-sm font-medium text-text dark:text-white">${t.label}</p><p class="text-xs text-muted dark:text-slate-400">${t.date}</p></div></div><span class="font-display font-bold text-sm ${isNeg?'text-red-500':'text-primary'}">${isNeg?'':'+'}${t.amountHTG} HTG</span>`;
-      container.appendChild(div);
-    });
+    
+    banner.classList.add('hidden');
+    dashboard.classList.remove('hidden');
+    document.getElementById('navApprovedStatus').textContent = '✅ Approved';
+    
+    const balance = currentUser.balanceHTG || 0;
+    document.getElementById('workerBalance').textContent = balance.toLocaleString();
+    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
+    
+    const totalTasks = currentUser.totalTasks || 0;
+    let badge = 'Bronze';
+    if (totalTasks >= 100) badge = 'Gold';
+    else if (totalTasks >= 50) badge = 'Silver';
+    if (currentUser.badge !== badge) {
+      try {
+        await db.collection('users').doc(currentUser.id).update({ badge });
+      } catch (e) {
+        console.error('Badge update error:', e);
+      }
+    }
+    document.getElementById('workerBadge').textContent = badge;
+    
+    const historyContainer = document.getElementById('historyContainer');
+    const history = currentUser.history || [];
+    if (history.length === 0) {
+      historyContainer.innerHTML = '<div class="text-muted italic">No earnings yet.</div>';
+    } else {
+      historyContainer.innerHTML = history.map((entry, idx) => {
+        const amount = entry.amount || 0;
+        const description = entry.description || 'Task reward';
+        const time = entry.timestamp ? new Date(entry.timestamp.seconds * 1000).toLocaleString() : 'recent';
+        return `<div class="flex justify-between items-center border-b border-border py-1 px-2">
+          <span>${description}</span>
+          <span class="font-semibold text-lakay">+${amount} HTG <span class="text-xs text-muted">${time}</span></span>
+        </div>`;
+      }).join('');
+    }
+    
+    document.getElementById('profileName').textContent = currentUser.name || currentUser.id;
+    document.getElementById('profileTeam').textContent = currentUser.teamName || 'None';
+    
+    let managerName = 'None';
+    if (currentUser.teamId) {
+      try {
+        const teamDoc = await db.collection('teams').doc(currentUser.teamId).get();
+        if (teamDoc.exists && teamDoc.data().managerId) {
+          const manDoc = await db.collection('users').doc(teamDoc.data().managerId).get();
+          if (manDoc.exists) managerName = manDoc.data().name || teamDoc.data().managerId;
+        }
+      } catch (e) { /* ignore */ }
+    }
+    document.getElementById('profileManager').textContent = managerName;
+    
+    await loadAgencyTasks();
+    
     lucide.createIcons();
   }
 
-  function renderWorkerTeamLeaderboard(workers, currentWorkerId) {
-    const sorted = [...workers].sort((a,b) => (b.balanceHTG||0) - (a.balanceHTG||0));
-    const container = document.getElementById('workerTeamLeaderboard');
-    container.innerHTML = '';
-    sorted.forEach((w, index) => {
-      const isMe = w.id === currentWorkerId;
-      const div = document.createElement('div');
-      div.className = `flex items-center justify-between p-3 rounded-xl border dark:border-slate-600 ${isMe ? 'bg-primary/5 dark:bg-slate-700' : ''}`;
-      div.innerHTML = `
-        <div class="flex items-center gap-3">
-          <span class="font-bold text-primary">#${index+1}</span>
-          <div>
-            <p class="text-sm font-medium text-text dark:text-white">${w.name} ${isMe ? '(You)' : ''}</p>
-            <p class="text-xs text-muted dark:text-slate-400">${w.totalTasks||0} tasks</p>
-          </div>
-        </div>
-        <span class="font-bold text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</span>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  // ==================== MANAGER RENDER ====================
-  async function renderManager() {
-    document.getElementById('managerView').classList.remove('hidden');
-    const teamId = currentUser.teamId;
-    if (!teamId) {
-      document.getElementById('managerName').textContent = currentUser.name + ' (no team)';
+  async function submitWithdrawal() {
+    const amountStr = document.getElementById('withdrawAmount').value.trim();
+    const method = document.getElementById('withdrawMethod').value.trim();
+    const amount = parseFloat(amountStr);
+    
+    if (isNaN(amount) || amount <= 0) {
+      showToast('Please enter a valid amount', 'error');
       return;
     }
-    document.getElementById('managerName').textContent = currentUser.name;
-    document.getElementById('teamNameDisplay').textContent = currentUser.teamName || teamId;
-
-    const snap = await db.collection('users').where('teamId','==',teamId).where('role','==','worker').get();
-    const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    allWorkersCache = workers;
-
-    const totalHTG = workers.reduce((s,w) => s + (w.balanceHTG||0), 0);
-    const totalTasks = workers.reduce((s,w) => s + (w.totalTasks||0), 0);
-    document.getElementById('teamTotalEarnings').textContent = totalHTG.toLocaleString() + ' HTG';
-    document.getElementById('teamTotalTasks').textContent = totalTasks;
-    document.getElementById('teamCount').textContent = workers.length + ' workers';
-
-    const container = document.getElementById('teamWorkersList');
-    container.innerHTML = '';
-    workers.forEach((w,i) => {
-      const initials = w.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between p-3 rounded-xl border border-border dark:border-slate-600 animate-fade-slide';
-      div.innerHTML = `<div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">${initials}</div><div><p class="text-sm font-semibold text-text dark:text-white">${w.name}</p><p class="text-xs text-muted dark:text-slate-400">${w.id} · ${w.totalTasks||0} tasks</p></div></div><div class="text-right"><p class="font-display font-bold text-sm text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</p></div>`;
-      container.appendChild(div);
-    });
-
-    drawTeamChart(workers);
-    renderManagerTeamLeaderboard(workers);
-  }
-
-  function drawTeamChart(workers) {
-    const ctx = document.getElementById('teamChart')?.getContext('2d');
-    if (!ctx) return;
-    if (chartInstance) chartInstance.destroy();
-    const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const data = labels.map(() => Math.floor(Math.random() * 500 + 100));
-    chartInstance = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Team earnings (HTG)',
-          data,
-          borderColor: '#6366f1',
-          backgroundColor: 'rgba(99,102,241,0.1)',
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
-  }
-
-  function renderManagerTeamLeaderboard(workers) {
-    const sorted = [...workers].sort((a,b) => (b.balanceHTG||0) - (a.balanceHTG||0));
-    const container = document.getElementById('managerTeamLeaderboard');
-    container.innerHTML = '';
-    sorted.forEach((w, index) => {
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between p-3 rounded-xl border dark:border-slate-600';
-      div.innerHTML = `
-        <div class="flex items-center gap-3">
-          <span class="font-bold text-primary">#${index+1}</span>
-          <div>
-            <p class="text-sm font-medium text-text dark:text-white">${w.name}</p>
-            <p class="text-xs text-muted dark:text-slate-400">${w.totalTasks||0} tasks</p>
-          </div>
-        </div>
-        <span class="font-bold text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</span>
-      `;
-      container.appendChild(div);
-    });
-  }
-
-  // ==================== ADMIN RENDER ====================
-  async function renderAdmin() {
-    document.getElementById('adminView').classList.remove('hidden');
-    updateAdminClock();
-
-    const snap = await db.collection('users').where('role','==','worker').get();
-    const workers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    allWorkersCache = workers;
-
-    const rateDoc = await db.collection('config').doc('exchange_rate').get();
-    const rate = rateDoc.exists ? rateDoc.data().rate : 135;
-
-    const managerSnap = await db.collection('users').where('role','==','manager').get();
-    const managers = managerSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    managersCache = managers;
-
-    const totalHTG = workers.reduce((s,w) => s + (w.balanceHTG||0), 0);
-    const totalTasks = workers.reduce((s,w) => s + (w.totalTasks||0), 0);
-    document.getElementById('adminTotalUSD').textContent = '$' + (totalHTG / rate).toFixed(2);
-    document.getElementById('adminTotalHTG').textContent = totalHTG.toLocaleString() + ' HTG';
-    document.getElementById('adminActiveWorkers').textContent = workers.length;
-    document.getElementById('adminTotalTasks').textContent = totalTasks;
-    document.getElementById('adminRateBadge').textContent = '1:' + rate;
-    document.getElementById('exchangeRateInput').value = rate;
-    document.getElementById('currentRateDisplay').textContent = rate + ' HTG';
-
-    const marketRate = 150;
-    const margin = (((marketRate - rate) / marketRate) * 100).toFixed(1);
-    document.getElementById('marginDisplay').textContent = margin + '%';
-
-    // Online status
-    const now = Date.now();
-    onlineWorkers.clear();
-    workers.forEach(w => {
-      if (w.lastActive && (now - w.lastActive) < 300000) onlineWorkers.add(w.id);
-      else onlineWorkers.add(w.id);
-    });
-    document.getElementById('onlineCount').textContent = onlineWorkers.size + ' online';
-
-    // Team leaderboard
-    const teamStats = {};
-    workers.forEach(w => {
-      const team = w.teamId || 'no-team';
-      if (!teamStats[team]) teamStats[team] = { earnings:0, tasks:0, count:0 };
-      teamStats[team].earnings += w.balanceHTG || 0;
-      teamStats[team].tasks += w.totalTasks || 0;
-      teamStats[team].count++;
-    });
-    const sortedTeams = Object.entries(teamStats).sort((a,b) => b[1].earnings - a[1].earnings);
-    const leaderboardContainer = document.getElementById('teamLeaderboard');
-    leaderboardContainer.innerHTML = '';
-    sortedTeams.forEach(([team, data], index) => {
-      const manager = managers.find(m => m.teamId === team);
-      const teamName = manager ? (manager.teamName || team) : team;
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between p-3 rounded-xl border border-border dark:border-slate-600 animate-fade-slide';
-      div.innerHTML = `
-        <div class="flex items-center gap-3">
-          <span class="text-lg font-bold text-primary">#${index+1}</span>
-          <div>
-            <p class="font-semibold text-sm text-text dark:text-white">${teamName}</p>
-            <p class="text-xs text-muted dark:text-slate-400">${data.count} workers · ${data.tasks} tasks</p>
-          </div>
-        </div>
-        <span class="font-display font-bold text-primary">${data.earnings.toLocaleString()} HTG</span>
-      `;
-      leaderboardContainer.appendChild(div);
-    });
-
-    // Top 5 workers
-    const topWorkers = [...workers].sort((a,b) => (b.balanceHTG||0) - (a.balanceHTG||0)).slice(0,5);
-    const topContainer = document.getElementById('topWorkersList');
-    topContainer.innerHTML = '';
-    topWorkers.forEach((w,i) => {
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg';
-      div.innerHTML = `
-        <div class="flex items-center gap-2">
-          <span class="text-sm font-bold text-primary">#${i+1}</span>
-          <span class="text-sm font-medium text-text dark:text-white">${w.name}</span>
-        </div>
-        <span class="text-sm font-bold text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</span>
-      `;
-      topContainer.appendChild(div);
-    });
-
-    // Team filter
-    const teamFilter = document.getElementById('teamFilter');
-    teamFilter.innerHTML = '<option value="">All teams</option>';
-    managers.forEach(m => {
-      teamFilter.innerHTML += `<option value="${m.teamId}">${m.teamName || m.teamId}</option>`;
-    });
-
-    // Workers list
-    const search = document.getElementById('workerSearch')?.value.toLowerCase() || '';
-    const selectedTeam = teamFilter.value || '';
-    const filtered = workers.filter(w => {
-      const matchSearch = w.name.toLowerCase().includes(search) || w.id.includes(search);
-      const matchTeam = !selectedTeam || w.teamId === selectedTeam;
-      return matchSearch && matchTeam;
-    });
-    const container = document.getElementById('adminWorkersList');
-    container.innerHTML = '';
-    filtered.forEach(w => {
-      const isOnline = onlineWorkers.has(w.id);
-      const div = document.createElement('div');
-      div.className = 'flex items-center justify-between p-3 rounded-xl border border-border dark:border-slate-600 animate-fade-slide';
-      div.innerHTML = `
-        <div class="flex items-center gap-3">
-          <div class="relative">
-            <div class="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">${w.name[0]?.toUpperCase() || 'W'}</div>
-            <span class="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white dark:border-slate-800 ${isOnline?'bg-green-500':'bg-gray-400'}"></span>
-          </div>
-          <div>
-            <p class="text-sm font-semibold text-text dark:text-white">${w.name}</p>
-            <p class="text-xs text-muted dark:text-slate-400">${w.id} · ${w.teamId || 'no team'} · ${w.totalTasks || 0} tasks</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <span class="font-display font-bold text-sm text-primary">${(w.balanceHTG||0).toLocaleString()} HTG</span>
-          <button onclick="editWorker('${w.id}')" class="text-xs text-muted dark:text-slate-400 hover:text-primary"><i data-lucide="edit-2" class="w-3 h-3"></i></button>
-          <button onclick="deleteWorker('${w.id}')" class="text-xs text-muted dark:text-slate-400 hover:text-danger"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-    document.getElementById('adminWorkerCount').textContent = workers.length + ' workers';
-
-    drawAdminChart(workers);
-    drawTeamPieChart(teamStats);
-    loadLiveFeed();
-
-    lucide.createIcons();
-  }
-
-  function updateAdminClock() {
-    const el = document.getElementById('adminTime');
-    if (el) el.textContent = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-  }
-  setInterval(updateAdminClock, 1000);
-
-  function drawAdminChart(workers) {
-    const ctx = document.getElementById('adminChart')?.getContext('2d');
-    if (!ctx) return;
-    if (adminChartInstance) adminChartInstance.destroy();
-    const labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-    const data = labels.map(() => Math.floor(Math.random()*2000+500));
-    adminChartInstance = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Total earnings (HTG)',
-          data,
-          backgroundColor: '#6366f1',
-          borderRadius: 8
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
-  }
-
-  function drawTeamPieChart(teamStats) {
-    const ctx = document.getElementById('teamPieChart')?.getContext('2d');
-    if (!ctx) return;
-    if (teamPieChartInstance) teamPieChartInstance.destroy();
-    const labels = Object.keys(teamStats);
-    const data = Object.values(teamStats).map(t => t.earnings);
-    teamPieChartInstance = new Chart(ctx, {
-      type: 'doughnut',
-      data: {
-        labels,
-        datasets: [{
-          data,
-          backgroundColor: ['#6366f1','#8b5cf6','#a78bfa','#c084fc','#e0e7ff']
-        }]
-      },
-      options: { plugins: { legend: { position: 'bottom' } } }
-    });
-  }
-
-  async function loadLiveFeed() {
-    const feedContainer = document.getElementById('adminLiveFeed');
-    feedContainer.innerHTML = '';
+    if (amount > (currentUser.balanceHTG || 0)) {
+      showToast('Insufficient balance', 'error');
+      return;
+    }
+    if (!method) {
+      showToast('Please enter a payment method', 'error');
+      return;
+    }
+    
+    showLoading();
     try {
-      const snap = await db.collection('logs').orderBy('timestamp','desc').limit(5).get();
+      await db.collection('withdrawals').add({
+        userId: currentUser.id,
+        userName: currentUser.name || currentUser.id,
+        amount,
+        method,
+        status: 'pending',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      
+      const newBalance = (currentUser.balanceHTG || 0) - amount;
+      await db.collection('users').doc(currentUser.id).update({
+        balanceHTG: newBalance
+      });
+      
+      const historyEntry = {
+        amount: -amount,
+        description: `Withdrawal request (${method})`,
+        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      await db.collection('users').doc(currentUser.id).update({
+        history: firebase.firestore.FieldValue.arrayUnion(historyEntry)
+      });
+      
+      document.getElementById('withdrawModal').classList.add('hidden');
+      document.getElementById('withdrawAmount').value = '';
+      document.getElementById('withdrawMethod').value = '';
+      showToast('Withdrawal request submitted!', 'success');
+    } catch (e) {
+      showToast('Failed: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function loadAgencyTasks() {
+    const container = document.getElementById('agencyTasksContainer');
+    if (!container) return;
+    
+    try {
+      const snap = await db.collection('agencyTasks').orderBy('createdAt', 'desc').limit(20).get();
       if (snap.empty) {
-        feedContainer.innerHTML = '<p class="text-muted dark:text-slate-400">No recent activity.</p>';
+        container.innerHTML = '<div class="text-muted italic">No HBW Agency tasks available right now.</div>';
         return;
       }
+      
+      container.innerHTML = '';
       snap.forEach(doc => {
-        const log = doc.data();
+        const task = doc.data();
+        const taskId = doc.id;
+        const title = task.title || 'Untitled Task';
+        const description = task.description || '';
+        const reward = task.rewardHTG || 0;
+        
         const div = document.createElement('div');
-        div.className = 'flex items-center gap-2 text-muted dark:text-slate-400';
-        div.innerHTML = `<span class="text-primary">•</span> <span>${log.message}</span> <span class="text-xs">${new Date(log.timestamp?.toDate()).toLocaleTimeString()}</span>`;
-        feedContainer.appendChild(div);
+        div.className = 'flex items-center justify-between border border-border rounded-xl p-3 bg-gray-50 dark:bg-slate-800';
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold">${title} <span class="text-xs text-muted ml-2">+${reward} HTG</span></p>
+            <p class="text-xs text-muted">${description}</p>
+          </div>
+          <div class="flex gap-2">
+            <button class="mark-task-btn bg-lakay/10 text-lakay font-semibold px-3 py-1 rounded-lg text-sm hover:bg-lakay/20 transition" data-taskid="${taskId}" data-reward="${reward}" data-title="${title}">✅ Yes (Done)</button>
+            <button class="bg-gray-200 dark:bg-gray-700 text-muted px-3 py-1 rounded-lg text-sm">No</button>
+          </div>
+        `;
+        container.appendChild(div);
       });
+      
+      document.querySelectorAll('.mark-task-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const taskId = btn.dataset.taskid;
+          const reward = parseFloat(btn.dataset.reward) || 0;
+          const title = btn.dataset.title;
+          await markTaskDone(taskId, reward, title);
+        });
+      });
+      
     } catch (e) {
-      feedContainer.innerHTML = '<p class="text-danger">Could not load feed.</p>';
+      console.error('Load tasks error:', e);
+      container.innerHTML = '<div class="text-danger">Failed to load tasks.</div>';
     }
   }
 
-  function openBroadcastModal() {
-    document.getElementById('broadcastModal').classList.remove('hidden');
-    const select = document.getElementById('managerSelect');
-    select.innerHTML = '<option value="">Select manager...</option>';
-    managersCache.forEach(m => {
-      select.innerHTML += `<option value="${m.id}">${m.name} (${m.teamName || m.teamId})</option>`;
-    });
-  }
-  function closeBroadcastModal() { document.getElementById('broadcastModal').classList.add('hidden'); }
-
-  async function sendMessageToManager() {
-    const managerId = document.getElementById('managerSelect').value;
-    const text = document.getElementById('messageText').value.trim();
-    if (!managerId || !text) { showToast('Please select a manager and enter a message.'); return; }
+  async function markTaskDone(taskId, reward, title) {
+    if (!currentUser || !currentUser.approved) {
+      showToast('Your account is not approved yet.', 'error');
+      return;
+    }
+    showLoading();
     try {
-      await db.collection('messages').add({
-        from: currentUser.id,
-        to: managerId,
-        text,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        read: false
-      });
-      showToast('Message sent!');
-      closeBroadcastModal();
-      await db.collection('logs').add({
-        message: `Admin sent message to manager ${managerId}`,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    } catch (e) {
-      showToast('Error: ' + e.message);
-    }
-  }
-
-  async function updateExchangeRate() {
-    const rate = parseInt(document.getElementById('exchangeRateInput').value);
-    if (isNaN(rate) || rate < 1) { showToast('Invalid rate'); return; }
-    await db.collection('config').doc('exchange_rate').set({ rate });
-    await db.collection('logs').add({
-      message: `Admin updated exchange rate to ${rate}`,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast('Rate updated');
-    renderAdmin();
-  }
-
-  async function applyMaintenanceFee() {
-    const snap = await db.collection('users').where('role','==','worker').get();
-    const batch = db.batch();
-    snap.forEach(doc => {
-      batch.update(doc.ref, {
-        balanceHTG: firebase.firestore.FieldValue.increment(-250),
+      const newBalance = (currentUser.balanceHTG || 0) + reward;
+      const newTotal = (currentUser.totalTasks || 0) + 1;
+      
+      await db.collection('users').doc(currentUser.id).update({
+        balanceHTG: newBalance,
+        totalTasks: newTotal,
         history: firebase.firestore.FieldValue.arrayUnion({
-          date: new Date().toISOString().split('T')[0],
-          label: 'Maintenance fee',
-          amountHTG: -250
+          amount: reward,
+          description: `Agency task: ${title}`,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
         })
       });
-    });
-    await batch.commit();
-    await db.collection('logs').add({
-      message: `Admin applied 250 HTG fee to all workers`,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast(`Fee applied to ${snap.size} workers`);
-    renderAdmin();
-  }
-
-  async function deleteWorker(workerId) {
-    if (!confirm('Delete worker ' + workerId + '?')) return;
-    await db.collection('users').doc(workerId).delete();
-    await db.collection('logs').add({
-      message: `Admin deleted worker ${workerId}`,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast('Worker deleted');
-    renderAdmin();
-  }
-
-  async function editWorker(workerId) {
-    const newName = prompt('New name:');
-    if (newName) {
-      await db.collection('users').doc(workerId).update({ name: newName });
-      await db.collection('logs').add({
-        message: `Admin renamed worker ${workerId} to ${newName}`,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      showToast('Worker updated');
-      renderAdmin();
-    }
-  }
-
-  async function addWorkerManually() {
-    const name = document.getElementById('newWorkerName').value.trim();
-    const id = document.getElementById('newWorkerId').value.trim().toLowerCase();
-    const pass = document.getElementById('newWorkerPass').value;
-    const team = document.getElementById('newWorkerTeam').value.trim();
-    if (!name || !id || !pass) { showToast('Fill all fields'); return; }
-    try {
-      await auth.createUserWithEmailAndPassword(`${id}@taskpam.com`, pass);
-      await db.collection('users').doc(id).set({
-        name, role: 'worker', teamId: team || null,
-        balanceHTG: 0, totalTasks: 0, weekEarnings: 0, history: []
-      });
-      showToast('Worker created');
-      closeAddWorkerModal();
-      renderAdmin();
+      
+      showToast(`Task "${title}" completed! +${reward} HTG`, 'success');
     } catch (e) {
-      showToast('Error: ' + e.message);
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
     }
   }
 
-  function openAddWorkerModal() { document.getElementById('addWorkerModal').classList.remove('hidden'); }
-  function closeAddWorkerModal() { document.getElementById('addWorkerModal').classList.add('hidden'); }
+  // ================== FREELANCER IMPLEMENTATION (unchanged) ==================
+  let currentChatId = null;
 
-  function exportCSV() {
-    const rows = [['id','name','role','teamId','balanceHTG','totalTasks']];
-    allWorkersCache.forEach(w => rows.push([w.id,w.name,w.role,w.teamId||'',w.balanceHTG||0,w.totalTasks||0]));
-    const csv = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob([csv],{type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'workers_export.csv';
-    a.click();
+  function renderFreelancer() {
+    const freelancerView = document.getElementById('freelancerView');
+    freelancerView.classList.remove('hidden');
+    document.getElementById('navBalance').classList.remove('hidden');
+    
+    const approved = currentUser.approved === true;
+    const banner = document.getElementById('freelancerPendingBanner');
+    const main = document.getElementById('freelancerMain');
+    if (!approved) {
+      banner.classList.remove('hidden');
+      main.classList.add('hidden');
+      document.getElementById('navApprovedStatus').textContent = '(pending)';
+      return;
+    }
+    banner.classList.add('hidden');
+    main.classList.remove('hidden');
+    document.getElementById('navApprovedStatus').textContent = '✅ Approved';
+    
+    updateFreelancerBalance();
+    
+    if (freelancerUnsubscribe) freelancerUnsubscribe();
+    freelancerUnsubscribe = db.collection('users').doc(currentUser.id)
+      .onSnapshot(doc => {
+        if (doc.exists) {
+          currentUser = { id: doc.id, ...doc.data() };
+          updateFreelancerBalance();
+        } else {
+          auth.signOut();
+        }
+      });
+    
+    if (!freelancerTabsInitialized) {
+      initFreelancerTabs();
+      freelancerTabsInitialized = true;
+    } else {
+      const activeTab = document.querySelector('.ftab-btn.tab-active');
+      if (activeTab) activeTab.click();
+    }
   }
 
-  function openImportModal() { document.getElementById('importModal').classList.remove('hidden'); }
-  function closeImportModal() { document.getElementById('importModal').classList.add('hidden'); }
-  async function importCSV() {
-    showToast('CSV import requires backend worker. Use "Add Worker" instead.');
-    closeImportModal();
+  function updateFreelancerBalance() {
+    const balance = currentUser.balanceHTG || 0;
+    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
   }
 
-  // Init lucide icons
+  function initFreelancerTabs() {
+    document.querySelectorAll('.ftab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tabId = btn.getAttribute('data-ftab');
+        document.querySelectorAll('.ftab-content').forEach(tc => tc.classList.add('hidden'));
+        document.getElementById(`ftab-${tabId}`).classList.remove('hidden');
+        document.querySelectorAll('.ftab-btn').forEach(b => b.classList.remove('tab-active'));
+        btn.classList.add('tab-active');
+        
+        switch(tabId) {
+          case 'dashboard': freelancerLoadDashboard(); break;
+          case 'profile': freelancerLoadProfile(); break;
+          case 'marketplace': freelancerLoadMarketplace(); break;
+          case 'applications': freelancerLoadApplications(); break;
+          case 'messages': freelancerLoadChats(); break;
+        }
+      });
+    });
+    const defaultTab = document.querySelector('.ftab-btn[data-ftab="dashboard"]');
+    if (defaultTab) defaultTab.click();
+  }
+
+  async function freelancerLoadDashboard() {
+    let revenue = 0;
+    let completedJobs = 0;
+    try {
+      const contractsSnap = await db.collection('contracts')
+        .where('freelancerId', '==', currentUser.id)
+        .where('status', '==', 'completed')
+        .get();
+      contractsSnap.forEach(doc => {
+        const data = doc.data();
+        revenue += data.payment || 0;
+        completedJobs++;
+      });
+    } catch (e) { console.error(e); }
+    document.getElementById('freelancerRevenue').textContent = revenue.toLocaleString();
+    document.getElementById('freelancerCompleted').textContent = completedJobs;
+  }
+
+  async function freelancerLoadProfile() {
+    document.getElementById('freelancerSkills').value = currentUser.skills || '';
+    document.getElementById('freelancerRate').value = currentUser.hourlyRate || '';
+  }
+
+  async function freelancerSaveProfile() {
+    const skills = document.getElementById('freelancerSkills').value.trim();
+    const rate = parseFloat(document.getElementById('freelancerRate').value);
+    if (isNaN(rate) || rate <= 0) {
+      showToast('Enter a valid hourly rate', 'error');
+      return;
+    }
+    showLoading();
+    try {
+      await db.collection('users').doc(currentUser.id).update({ skills, hourlyRate: rate });
+      showToast('Profile updated!', 'success');
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function freelancerLoadMarketplace() {
+    const container = document.getElementById('openJobsList');
+    container.innerHTML = '<p class="text-muted">Loading...</p>';
+    try {
+      const jobsSnap = await db.collection('jobs').where('status', '==', 'open').get();
+      if (jobsSnap.empty) {
+        container.innerHTML = '<p class="text-muted">No open jobs right now.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      jobsSnap.forEach(doc => {
+        const job = doc.data();
+        const jobId = doc.id;
+        const div = document.createElement('div');
+        div.className = 'border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 space-y-2';
+        div.innerHTML = `
+          <h4 class="font-semibold">${job.title}</h4>
+          <p class="text-sm text-muted">${job.description || ''}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-sm font-semibold text-lakay">Budget: ${job.budget || 0} HTG</span>
+            <button class="apply-btn bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold" data-jobid="${jobId}">Apply</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+      document.querySelectorAll('.apply-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const jobId = btn.dataset.jobid;
+          applyToJob(jobId);
+        });
+      });
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p class="text-danger">Failed to load jobs.</p>';
+    }
+  }
+
+  async function applyToJob(jobId) {
+    if (!currentUser.approved) {
+      showToast('You are not approved yet', 'error');
+      return;
+    }
+    showLoading();
+    try {
+      const existing = await db.collection('applications')
+        .where('jobId', '==', jobId)
+        .where('freelancerId', '==', currentUser.id)
+        .get();
+      if (!existing.empty) {
+        showToast('You have already applied to this job.', 'info');
+        hideLoading();
+        return;
+      }
+      await db.collection('applications').add({
+        jobId,
+        freelancerId: currentUser.id,
+        freelancerName: currentUser.name || currentUser.id,
+        status: 'pending',
+        appliedAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('Application submitted!', 'success');
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function freelancerLoadApplications() {
+    const container = document.getElementById('applicationsList');
+    container.innerHTML = '<p class="text-muted">Loading...</p>';
+    try {
+      const appsSnap = await db.collection('applications')
+        .where('freelancerId', '==', currentUser.id)
+        .orderBy('appliedAt', 'desc')
+        .get();
+      if (appsSnap.empty) {
+        container.innerHTML = '<p class="text-muted">No applications yet.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const appDoc of appsSnap.docs) {
+        const app = appDoc.data();
+        const appId = appDoc.id;
+        let jobTitle = 'Unknown Job';
+        let jobStatus = '';
+        let clientId = null;
+        try {
+          const jobSnap = await db.collection('jobs').doc(app.jobId).get();
+          if (jobSnap.exists) {
+            const j = jobSnap.data();
+            jobTitle = j.title;
+            jobStatus = j.status;
+            clientId = j.clientId;
+          }
+        } catch(e){}
+        const div = document.createElement('div');
+        div.className = 'border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 flex flex-wrap justify-between items-center';
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold">${jobTitle}</p>
+            <p class="text-xs text-muted">Status: <span class="font-semibold ${app.status === 'accepted' ? 'text-lakay' : (app.status === 'rejected' ? 'text-danger' : 'text-warn')}">${app.status}</span></p>
+            ${app.status === 'accepted' && jobStatus === 'open' ? '<p class="text-xs text-lakay">Job is now in progress</p>' : ''}
+          </div>
+          <div class="text-sm text-muted">Applied: ${app.appliedAt?.toDate?.()?.toLocaleDateString() || 'N/A'}</div>
+        `;
+        container.appendChild(div);
+        
+        if (app.status === 'accepted' && jobStatus === 'open' && clientId) {
+          await updateJobToInProgress(app.jobId, app.freelancerId, clientId);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p class="text-danger">Failed to load applications.</p>';
+    }
+  }
+
+  async function updateJobToInProgress(jobId, freelancerId, clientId) {
+    try {
+      const jobRef = db.collection('jobs').doc(jobId);
+      const jobDoc = await jobRef.get();
+      if (!jobDoc.exists) return;
+      const jobData = jobDoc.data();
+      if (jobData.status !== 'open') return;
+      await jobRef.update({ status: 'in_progress', freelancerId: freelancerId });
+      await db.collection('contracts').add({
+        jobId,
+        freelancerId,
+        clientId,
+        startDate: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'active',
+        payment: jobData.budget || 0
+      });
+      const chatExists = await db.collection('chats')
+        .where('participants', 'array-contains', freelancerId)
+        .where('participants', 'array-contains', clientId)
+        .get();
+      if (chatExists.empty) {
+        await db.collection('chats').add({
+          participants: [freelancerId, clientId],
+          messages: []
+        });
+      }
+    } catch (e) {
+      console.error('Error updating job:', e);
+    }
+  }
+
+  async function freelancerLoadChats() {
+    const chatListDiv = document.getElementById('chatList');
+    chatListDiv.innerHTML = 'Loading...';
+    try {
+      const chatsSnap = await db.collection('chats')
+        .where('participants', 'array-contains', currentUser.id)
+        .get();
+      chatListDiv.innerHTML = '';
+      if (chatsSnap.empty) {
+        chatListDiv.innerHTML = '<p class="text-muted text-sm">No chats yet.</p>';
+        return;
+      }
+      chatsSnap.forEach(doc => {
+        const chat = doc.data();
+        const otherParticipant = chat.participants.find(p => p !== currentUser.id) || 'Unknown';
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-1.5 rounded-full border border-border text-sm hover:bg-primary/10 transition';
+        btn.textContent = `💬 ${otherParticipant}`;
+        btn.onclick = () => openChat(doc.id, otherParticipant);
+        chatListDiv.appendChild(btn);
+      });
+    } catch (e) {
+      console.error(e);
+      chatListDiv.innerHTML = '<p class="text-danger">Failed to load chats.</p>';
+    }
+  }
+
+  async function openChat(chatId, participantName) {
+    currentChatId = chatId;
+    document.getElementById('chatInputArea').classList.remove('hidden');
+    const chatWindow = document.getElementById('chatWindow');
+    chatWindow.innerHTML = '<p class="text-muted">Loading messages...</p>';
+    try {
+      const chatDoc = await db.collection('chats').doc(chatId).get();
+      if (!chatDoc.exists) {
+        chatWindow.innerHTML = '<p class="text-danger">Chat not found.</p>';
+        return;
+      }
+      const messages = chatDoc.data().messages || [];
+      if (messages.length === 0) {
+        chatWindow.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
+      } else {
+        chatWindow.innerHTML = messages.map(m => {
+          const isMe = m.senderId === currentUser.id;
+          return `<div class="mb-2 flex ${isMe ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[75%] p-2 rounded-xl ${isMe ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-slate-600'}">
+              <p class="text-sm">${m.text}</p>
+              <span class="text-[10px] opacity-70">${m.timestamp?.toDate?.()?.toLocaleTimeString() || ''}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    } catch (e) {
+      console.error(e);
+      chatWindow.innerHTML = '<p class="text-danger">Error loading messages.</p>';
+    }
+  }
+
+  async function sendChatMessage() {
+    if (!currentChatId) return;
+    const input = document.getElementById('chatMessageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    try {
+      await db.collection('chats').doc(currentChatId).update({
+        messages: firebase.firestore.FieldValue.arrayUnion({
+          senderId: currentUser.id,
+          text,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+      });
+      await openChat(currentChatId, '');
+    } catch (e) {
+      showToast('Failed to send message', 'error');
+    }
+  }
+
+  // ================== CLIENT/ENTREPRISE IMPLEMENTATION ==================
+  function renderClient() {
+    const clientView = document.getElementById('clientView');
+    clientView.classList.remove('hidden');
+    document.getElementById('navBalance').classList.remove('hidden');
+    
+    document.getElementById('navApprovedStatus').textContent = '✅ Approved'; // client/entreprise always approved on register
+    
+    if (clientUnsubscribe) clientUnsubscribe();
+    clientUnsubscribe = db.collection('users').doc(currentUser.id)
+      .onSnapshot(doc => {
+        if (doc.exists) {
+          currentUser = { id: doc.id, ...doc.data() };
+          updateClientBalance();
+        } else {
+          auth.signOut();
+        }
+      });
+    
+    updateClientBalance();
+    
+    if (!clientTabsInitialized) {
+      initClientTabs();
+      clientTabsInitialized = true;
+    } else {
+      const activeTab = document.querySelector('.ctab-btn.tab-active');
+      if (activeTab) activeTab.click();
+    }
+  }
+
+  function updateClientBalance() {
+    const balance = currentUser.balanceHTG || 0;
+    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
+    const balEl = document.getElementById('clientBalance');
+    if (balEl) balEl.textContent = balance.toLocaleString();
+  }
+
+  function initClientTabs() {
+    document.querySelectorAll('.ctab-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const tabId = btn.getAttribute('data-ctab');
+        document.querySelectorAll('.ctab-content').forEach(tc => tc.classList.add('hidden'));
+        document.getElementById(`ctab-${tabId}`).classList.remove('hidden');
+        document.querySelectorAll('.ctab-btn').forEach(b => b.classList.remove('tab-active'));
+        btn.classList.add('tab-active');
+        
+        switch(tabId) {
+          case 'dashboard': clientLoadDashboard(); break;
+          case 'postjob': clientLoadCategories(); break;
+          case 'myjobs': clientLoadMyJobs(); break;
+          case 'freelancers': clientLoadFreelancers(); break;
+          case 'messages': clientLoadChats(); break;
+        }
+      });
+    });
+    
+    document.getElementById('depositBtn')?.addEventListener('click', clientDeposit);
+    document.getElementById('postJobBtn')?.addEventListener('click', clientPostJob);
+    
+    const defaultTab = document.querySelector('.ctab-btn[data-ctab="dashboard"]');
+    if (defaultTab) defaultTab.click();
+  }
+
+  async function clientLoadDashboard() {
+    let jobsCount = 0;
+    let activeContracts = 0;
+    try {
+      const jobsSnap = await db.collection('jobs').where('clientId', '==', currentUser.id).get();
+      jobsCount = jobsSnap.size;
+      jobsSnap.forEach(doc => {
+        if (doc.data().status === 'in_progress') activeContracts++;
+      });
+    } catch (e) { console.error(e); }
+    document.getElementById('clientJobsCount').textContent = jobsCount;
+    document.getElementById('clientActiveContracts').textContent = activeContracts;
+    updateClientBalance();
+  }
+
+  async function clientLoadCategories() {
+    const select = document.getElementById('jobCategory');
+    select.innerHTML = '<option value="">Select category</option>';
+    try {
+      const doc = await db.collection('config').doc('categories').get();
+      const categories = doc.exists ? doc.data().list : [];
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        select.appendChild(opt);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function clientPostJob() {
+    const title = document.getElementById('jobTitle').value.trim();
+    const description = document.getElementById('jobDescription').value.trim();
+    const budget = parseFloat(document.getElementById('jobBudget').value);
+    const category = document.getElementById('jobCategory').value;
+    
+    if (!title || !description || isNaN(budget) || budget <= 0 || !category) {
+      showToast('Please fill all fields correctly', 'error');
+      return;
+    }
+    
+    showLoading();
+    try {
+      await db.collection('jobs').add({
+        clientId: currentUser.id,
+        title,
+        description,
+        budget,
+        category,
+        status: 'open',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      showToast('Job published successfully!', 'success');
+      document.getElementById('jobTitle').value = '';
+      document.getElementById('jobDescription').value = '';
+      document.getElementById('jobBudget').value = '';
+      document.getElementById('jobCategory').value = '';
+      // Refresh dashboard & my jobs
+      clientLoadDashboard();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientLoadMyJobs() {
+    const container = document.getElementById('myJobsList');
+    container.innerHTML = '<p class="text-muted">Loading...</p>';
+    try {
+      const jobsSnap = await db.collection('jobs')
+        .where('clientId', '==', currentUser.id)
+        .orderBy('createdAt', 'desc')
+        .get();
+      if (jobsSnap.empty) {
+        container.innerHTML = '<p class="text-muted">No jobs posted yet.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      for (const jobDoc of jobsSnap.docs) {
+        const job = jobDoc.data();
+        const jobId = jobDoc.id;
+        
+        // Fetch applications for this job
+        const appsSnap = await db.collection('applications')
+          .where('jobId', '==', jobId)
+          .get();
+        
+        let applicationsHtml = '';
+        appsSnap.forEach(appDoc => {
+          const app = appDoc.data();
+          const appId = appDoc.id;
+          const acceptDisabled = app.status === 'accepted' ? 'disabled' : '';
+          const rejectDisabled = app.status === 'rejected' ? 'disabled' : '';
+          applicationsHtml += `
+            <div class="flex items-center justify-between py-1 px-2 bg-gray-100 dark:bg-slate-700 rounded-lg mb-1">
+              <span class="text-sm">${app.freelancerName} (${app.freelancerId})</span>
+              <div class="flex gap-1">
+                <button onclick="clientAcceptApplication('${appId}', '${jobId}', '${app.freelancerId}')" ${acceptDisabled} class="text-xs bg-lakay/10 text-lakay px-2 py-0.5 rounded">Accept</button>
+                <button onclick="clientRejectApplication('${appId}')" ${rejectDisabled} class="text-xs bg-red-100 text-danger px-2 py-0.5 rounded">Reject</button>
+              </div>
+            </div>
+          `;
+        });
+        
+        if (applicationsHtml === '') {
+          applicationsHtml = '<p class="text-xs text-muted italic">No applications yet.</p>';
+        }
+        
+        // Contract actions
+        let contractActions = '';
+        if (job.status === 'in_progress') {
+          contractActions = `
+            <div class="mt-2">
+              <button onclick="clientMarkJobCompleted('${jobId}')" class="text-sm bg-warn/10 text-warn px-3 py-1 rounded-lg font-semibold">Mark as Completed</button>
+            </div>`;
+        } else if (job.status === 'completed') {
+          // Check if payment already released (using contract)
+          const contractSnap = await db.collection('contracts')
+            .where('jobId', '==', jobId)
+            .where('status', '==', 'active')
+            .get();
+          let paymentReleased = false;
+          contractSnap.forEach(cDoc => {
+            if (cDoc.data().paymentReleased) paymentReleased = true;
+          });
+          if (!paymentReleased) {
+            contractActions = `
+              <div class="mt-2">
+                <button onclick="clientReleasePayment('${jobId}')" class="text-sm bg-lakay text-white px-4 py-1.5 rounded-lg font-semibold">Release Payment (10% fee)</button>
+              </div>`;
+          } else {
+            contractActions = `<p class="text-sm text-lakay mt-2">✅ Payment released</p>`;
+          }
+        }
+        
+        const div = document.createElement('div');
+        div.className = 'border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800';
+        div.innerHTML = `
+          <h4 class="font-semibold">${job.title} <span class="text-xs text-muted ml-2">[${job.status}]</span></h4>
+          <p class="text-sm text-muted">Budget: ${job.budget} HTG | Category: ${job.category}</p>
+          <div class="mt-2">
+            <p class="text-xs font-semibold text-muted">Applications:</p>
+            ${applicationsHtml}
+          </div>
+          ${contractActions}
+        `;
+        container.appendChild(div);
+      }
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p class="text-danger">Failed to load jobs.</p>';
+    }
+  }
+
+  async function clientAcceptApplication(appId, jobId, freelancerId) {
+    showLoading();
+    try {
+      // Update application status
+      await db.collection('applications').doc(appId).update({ status: 'accepted' });
+      // Update job status to in_progress
+      const jobRef = db.collection('jobs').doc(jobId);
+      await jobRef.update({ status: 'in_progress', freelancerId: freelancerId });
+      // Create contract
+      const jobDoc = await jobRef.get();
+      const budget = jobDoc.data().budget || 0;
+      await db.collection('contracts').add({
+        jobId,
+        freelancerId,
+        clientId: currentUser.id,
+        startDate: firebase.firestore.FieldValue.serverTimestamp(),
+        status: 'active',
+        payment: budget
+      });
+      // Create chat if not exists
+      const chatExists = await db.collection('chats')
+        .where('participants', 'array-contains', freelancerId)
+        .where('participants', 'array-contains', currentUser.id)
+        .get();
+      if (chatExists.empty) {
+        await db.collection('chats').add({
+          participants: [freelancerId, currentUser.id],
+          messages: []
+        });
+      }
+      // Optionally reject other pending applications
+      const otherApps = await db.collection('applications')
+        .where('jobId', '==', jobId)
+        .where('status', '==', 'pending')
+        .get();
+      otherApps.forEach(async doc => {
+        if (doc.id !== appId) await doc.ref.update({ status: 'rejected' });
+      });
+      showToast('Freelancer accepted! Contract created.', 'success');
+      clientLoadMyJobs();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientRejectApplication(appId) {
+    showLoading();
+    try {
+      await db.collection('applications').doc(appId).update({ status: 'rejected' });
+      showToast('Application rejected.', 'info');
+      clientLoadMyJobs();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientMarkJobCompleted(jobId) {
+    showLoading();
+    try {
+      await db.collection('jobs').doc(jobId).update({ status: 'completed' });
+      // Update contract status to completed
+      const contractsSnap = await db.collection('contracts')
+        .where('jobId', '==', jobId)
+        .where('status', '==', 'active')
+        .get();
+      contractsSnap.forEach(async doc => {
+        await doc.ref.update({ status: 'completed', endDate: firebase.firestore.FieldValue.serverTimestamp() });
+      });
+      showToast('Job marked as completed. You can now release payment.', 'success');
+      clientLoadMyJobs();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientReleasePayment(jobId) {
+    // Check client balance
+    const jobDoc = await db.collection('jobs').doc(jobId).get();
+    if (!jobDoc.exists) return;
+    const jobData = jobDoc.data();
+    const budget = jobData.budget || 0;
+    if ((currentUser.balanceHTG || 0) < budget) {
+      showToast('Insufficient balance. Please deposit funds first.', 'error');
+      return;
+    }
+    
+    showLoading();
+    try {
+      // Deduct from client
+      const newClientBalance = currentUser.balanceHTG - budget;
+      await db.collection('users').doc(currentUser.id).update({
+        balanceHTG: newClientBalance
+      });
+      
+      // Credit freelancer 90%
+      const freelancerId = jobData.freelancerId;
+      const freelancerDoc = await db.collection('users').doc(freelancerId).get();
+      if (freelancerDoc.exists) {
+        const freelancerBalance = freelancerDoc.data().balanceHTG || 0;
+        await db.collection('users').doc(freelancerId).update({
+          balanceHTG: freelancerBalance + (budget * 0.9)
+        });
+      }
+      
+      // Admin commission 10%
+      const adminSnap = await db.collection('users').doc('admin').get();
+      if (adminSnap.exists) {
+        const adminBalance = adminSnap.data().balanceHTG || 0;
+        await db.collection('users').doc('admin').update({
+          balanceHTG: adminBalance + (budget * 0.1)
+        });
+      } else {
+        // create admin user with balance
+        await db.collection('users').doc('admin').set({
+          balanceHTG: budget * 0.1,
+          role: 'admin',
+          approved: true,
+          name: 'Admin'
+        }, { merge: true });
+      }
+      
+      // Mark contract as payment released
+      const contractsSnap = await db.collection('contracts')
+        .where('jobId', '==', jobId)
+        .where('status', '==', 'completed')
+        .get();
+      contractsSnap.forEach(async doc => {
+        await doc.ref.update({ paymentReleased: true });
+      });
+      
+      showToast(`Payment of ${budget} HTG released. 10% commission deducted.`, 'success');
+      clientLoadMyJobs();
+      clientLoadDashboard();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientDeposit() {
+    const amount = parseFloat(document.getElementById('depositAmount').value);
+    if (isNaN(amount) || amount <= 0) {
+      showToast('Enter a valid amount', 'error');
+      return;
+    }
+    showLoading();
+    try {
+      const newBalance = (currentUser.balanceHTG || 0) + amount;
+      await db.collection('users').doc(currentUser.id).update({
+        balanceHTG: newBalance
+      });
+      document.getElementById('depositAmount').value = '';
+      showToast(`Deposited ${amount} HTG. New balance: ${newBalance.toLocaleString()}`, 'success');
+      clientLoadDashboard();
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientLoadFreelancers() {
+    const container = document.getElementById('freelancersList');
+    container.innerHTML = '<p class="text-muted">Loading...</p>';
+    try {
+      const freelancersSnap = await db.collection('users')
+        .where('role', '==', 'freelancer')
+        .where('approved', '==', true)
+        .get();
+      if (freelancersSnap.empty) {
+        container.innerHTML = '<p class="text-muted">No freelancers available.</p>';
+        return;
+      }
+      container.innerHTML = '';
+      freelancersSnap.forEach(doc => {
+        const f = doc.data();
+        const freelancerId = doc.id;
+        const div = document.createElement('div');
+        div.className = 'border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 flex flex-wrap justify-between items-center';
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold">${f.name || freelancerId}</p>
+            <p class="text-sm text-muted">Skills: ${f.skills || 'N/A'}</p>
+            <p class="text-sm text-muted">Rate: ${f.hourlyRate || 'N/A'} HTG/hr</p>
+          </div>
+          <button onclick="clientStartChat('${freelancerId}')" class="bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-semibold">💬 Message</button>
+        `;
+        container.appendChild(div);
+      });
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = '<p class="text-danger">Failed to load freelancers.</p>';
+    }
+  }
+
+  async function clientStartChat(freelancerId) {
+    showLoading();
+    try {
+      const existing = await db.collection('chats')
+        .where('participants', 'array-contains', currentUser.id)
+        .where('participants', 'array-contains', freelancerId)
+        .get();
+      if (!existing.empty) {
+        existing.forEach(doc => {
+          currentClientChatId = doc.id;
+        });
+      } else {
+        const newChat = await db.collection('chats').add({
+          participants: [currentUser.id, freelancerId],
+          messages: []
+        });
+        currentClientChatId = newChat.id;
+      }
+      // Switch to messages tab and open chat
+      document.querySelector('.ctab-btn[data-ctab="messages"]').click();
+      clientOpenChat(currentClientChatId, freelancerId);
+    } catch (e) {
+      showToast('Error: ' + e.message, 'error');
+    } finally {
+      hideLoading();
+    }
+  }
+
+  async function clientLoadChats() {
+    const chatListDiv = document.getElementById('clientChatList');
+    chatListDiv.innerHTML = 'Loading...';
+    try {
+      const chatsSnap = await db.collection('chats')
+        .where('participants', 'array-contains', currentUser.id)
+        .get();
+      chatListDiv.innerHTML = '';
+      if (chatsSnap.empty) {
+        chatListDiv.innerHTML = '<p class="text-muted text-sm">No chats yet.</p>';
+        return;
+      }
+      chatsSnap.forEach(doc => {
+        const chat = doc.data();
+        const otherParticipant = chat.participants.find(p => p !== currentUser.id) || 'Unknown';
+        const btn = document.createElement('button');
+        btn.className = 'px-3 py-1.5 rounded-full border border-border text-sm hover:bg-primary/10 transition';
+        btn.textContent = `💬 ${otherParticipant}`;
+        btn.onclick = () => clientOpenChat(doc.id, otherParticipant);
+        chatListDiv.appendChild(btn);
+      });
+    } catch (e) {
+      console.error(e);
+      chatListDiv.innerHTML = '<p class="text-danger">Failed to load chats.</p>';
+    }
+  }
+
+  async function clientOpenChat(chatId, participantName) {
+    currentClientChatId = chatId;
+    document.getElementById('clientChatInputArea').classList.remove('hidden');
+    const chatWindow = document.getElementById('clientChatWindow');
+    chatWindow.innerHTML = '<p class="text-muted">Loading messages...</p>';
+    try {
+      const chatDoc = await db.collection('chats').doc(chatId).get();
+      if (!chatDoc.exists) {
+        chatWindow.innerHTML = '<p class="text-danger">Chat not found.</p>';
+        return;
+      }
+      const messages = chatDoc.data().messages || [];
+      if (messages.length === 0) {
+        chatWindow.innerHTML = '<p class="text-muted">No messages yet. Start the conversation!</p>';
+      } else {
+        chatWindow.innerHTML = messages.map(m => {
+          const isMe = m.senderId === currentUser.id;
+          return `<div class="mb-2 flex ${isMe ? 'justify-end' : 'justify-start'}">
+            <div class="max-w-[75%] p-2 rounded-xl ${isMe ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-slate-600'}">
+              <p class="text-sm">${m.text}</p>
+              <span class="text-[10px] opacity-70">${m.timestamp?.toDate?.()?.toLocaleTimeString() || ''}</span>
+            </div>
+          </div>`;
+        }).join('');
+      }
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    } catch (e) {
+      console.error(e);
+      chatWindow.innerHTML = '<p class="text-danger">Error loading messages.</p>';
+    }
+  }
+
+  async function sendClientChatMessage() {
+    if (!currentClientChatId) return;
+    const input = document.getElementById('clientChatMessageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    try {
+      await db.collection('chats').doc(currentClientChatId).update({
+        messages: firebase.firestore.FieldValue.arrayUnion({
+          senderId: currentUser.id,
+          text,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        })
+      });
+      await clientOpenChat(currentClientChatId, '');
+    } catch (e) {
+      showToast('Failed to send message', 'error');
+    }
+  }
+
+  // Expose client functions to global scope for onclick attributes
+  window.clientAcceptApplication = clientAcceptApplication;
+  window.clientRejectApplication = clientRejectApplication;
+  window.clientMarkJobCompleted = clientMarkJobCompleted;
+  window.clientReleasePayment = clientReleasePayment;
+  window.clientStartChat = clientStartChat;
+
+  // ================== OTHER ROLES (unchanged) ==================
+  function openNotifications() { }
+  function closeNotifications() { document.getElementById('notificationsModal').classList.add('hidden'); }
+
+  // ================== ADMIN IMPLEMENTATION (unchanged) ==================
+  let gainsChart = null;
+
+  async function addLog(action, details) { if (!currentUser) return; await db.collection('logs').add({ timestamp: firebase.firestore.FieldValue.serverTimestamp(), userId: currentUser.id, userRole: currentUser.role, action, details }); }
+
+  async function approveUser(userId) { showLoading(); try { await db.collection('users').doc(userId).update({ approved: true }); await addLog('APPROVE_USER', `Approved user ${userId}`); showToast('User approved'); await refreshAllAdminData(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+  async function deleteUser(userId) { if(!confirm('Delete user? This action cannot be undone.')) return; showLoading(); try { await db.collection('users').doc(userId).delete(); await addLog('DELETE_USER', `Deleted user ${userId}`); await refreshAllAdminData(); showToast('User deleted'); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+  async function promoteUser(userId, newRole) { showLoading(); try { await db.collection('users').doc(userId).update({ role: newRole }); await addLog('PROMOTE_USER', `User ${userId} promoted to ${newRole}`); await refreshAllAdminData(); showToast(`Role updated to ${newRole}`); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+
+  async function updateExchangeRate() { const rate = parseFloat(document.getElementById('exchangeRateInput').value); if(isNaN(rate) || rate<=0) return showToast('Invalid rate','error'); showLoading(); try { await db.collection('config').doc('exchangeRate').set({ value: rate }); await addLog('UPDATE_RATE', `Exchange rate set to ${rate}`); await loadExchangeRate(); showToast('Rate updated'); await refreshStats(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+
+  async function addCategory() { const name = document.getElementById('newCategoryInput').value.trim(); if(!name) return; showLoading(); try { const ref = db.collection('config').doc('categories'); const doc = await ref.get(); let arr = doc.exists ? doc.data().list : []; if(!arr.includes(name)) arr.push(name); await ref.set({ list: arr }); await addLog('ADD_CATEGORY', name); await loadCategories(); document.getElementById('newCategoryInput').value = ''; } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+  async function removeCategory(catName) { showLoading(); try { const ref = db.collection('config').doc('categories'); const doc = await ref.get(); let arr = doc.exists ? doc.data().list : []; arr = arr.filter(c => c !== catName); await ref.set({ list: arr }); await addLog('REMOVE_CATEGORY', catName); await loadCategories(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+
+  async function createTeam() { const name = document.getElementById('teamNameInput').value.trim(); const managerId = document.getElementById('teamManagerSelect').value; if(!name) return; showLoading(); try { const teamRef = await db.collection('teams').add({ name, managerId: managerId || null, createdAt: firebase.firestore.FieldValue.serverTimestamp() }); await addLog('CREATE_TEAM', `Team ${name} created`); await refreshTeams(); document.getElementById('teamNameInput').value = ''; } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+  async function deleteTeam(teamId, teamName) { if(!confirm(`Delete team "${teamName}"?`)) return; showLoading(); try { await db.collection('teams').doc(teamId).delete(); await db.collection('users').where('teamId','==',teamId).get().then(snap => snap.forEach(doc=> doc.ref.update({ teamId: null, teamName: null }))); await addLog('DELETE_TEAM', teamName); await refreshTeams(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+  async function updateTeamManager(teamId, newManagerId) { showLoading(); try { await db.collection('teams').doc(teamId).update({ managerId: newManagerId || null }); await addLog('UPDATE_TEAM_MANAGER', `Team ${teamId} manager changed`); await refreshTeams(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+
+  async function markWithdrawalPaid(requestId) { showLoading(); try { await db.collection('withdrawalRequests').doc(requestId).update({ status: 'paid', processedAt: firebase.firestore.FieldValue.serverTimestamp() }); await addLog('PAY_WITHDRAWAL', `Request ${requestId} marked paid`); await loadWithdrawals(); } catch(e){ showToast(e.message,'error'); } finally { hideLoading(); } }
+
+  async function refreshAllAdminData() { await Promise.all([refreshStats(), loadPendingApprovals(), loadAllUsersTable(), loadTeams(), loadCategories(), loadExchangeRate(), loadWithdrawals(), loadLogs(), refreshChart()]); }
+
+  async function refreshStats() { const usersSnap = await db.collection('users').get(); const total = usersSnap.size; let pending = 0, totalBalance = 0; usersSnap.forEach(d => { if(!d.data().approved) pending++; totalBalance += d.data().balanceHTG || 0; }); const rateDoc = await db.collection('config').doc('exchangeRate').get(); const rate = rateDoc.exists ? rateDoc.data().value : 130; const usdEq = (totalBalance / rate).toFixed(2); document.getElementById('statTotalUsers').innerText = total; document.getElementById('statPending').innerText = pending; document.getElementById('statTotalHTG').innerText = totalBalance.toLocaleString(); document.getElementById('statTotalUSD').innerText = usdEq; }
+
+  async function loadPendingApprovals() { const snap = await db.collection('users').where('approved','==',false).get(); const container = document.getElementById('pendingUsersList'); if(!container) return; if(snap.empty) { container.innerHTML = '<div class="text-muted text-sm">No pending approvals</div>'; return; } container.innerHTML = ''; snap.forEach(doc => { const u = doc.data(); const div = document.createElement('div'); div.className='flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-3 rounded-xl'; div.innerHTML = `<div><span class="font-medium">${u.name}</span> (${doc.id}) - ${u.role}</div><button onclick="approveUser('${doc.id}')" class="bg-primary text-white px-3 py-1 rounded-lg text-xs">Approve</button>`; container.appendChild(div); }); }
+
+  async function loadAllUsersTable() { const snap = await db.collection('users').get(); let users = []; snap.forEach(d => users.push({ id: d.id, ...d.data() })); allUsersCache = users; const search = document.getElementById('userSearchInput')?.value.toLowerCase() || ''; const filtered = users.filter(u => u.id.toLowerCase().includes(search) || u.name.toLowerCase().includes(search)); const tbody = document.getElementById('usersTbody'); if(!tbody) return; tbody.innerHTML = ''; filtered.forEach(u => { const tr = document.createElement('tr'); tr.className = 'border-b border-border dark:border-slate-700'; tr.innerHTML = `<td class="py-2">${u.id}</td><td>${u.name}</td><td>${u.role}</td><td>${u.balanceHTG || 0}</td><td>${u.approved ? '✅' : '⏳'}</td><td class="space-x-1"><button onclick="promoteUser('${u.id}', 'manager')" class="text-xs bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">→Manager</button><button onclick="deleteUser('${u.id}')" class="text-xs bg-red-100 dark:bg-red-900 px-2 py-1 rounded">Delete</button></td>`; tbody.appendChild(tr); }); }
+
+  async function loadTeams() { const teamsSnap = await db.collection('teams').get(); const usersSnap = await db.collection('users').get(); const managerOptions = []; usersSnap.forEach(u => { if(u.data().role === 'manager' || true) managerOptions.push({ id: u.id, name: u.data().name }); }); const select = document.getElementById('teamManagerSelect'); if(select) { select.innerHTML = '<option value="">-- Select Manager --</option>'; managerOptions.forEach(m => { select.innerHTML += `<option value="${m.id}">${m.name} (${m.id})</option>`; }); } const container = document.getElementById('teamsListContainer'); if(!container) return; container.innerHTML = ''; for(const teamDoc of teamsSnap.docs){ const team = { id: teamDoc.id, ...teamDoc.data() }; let managerName = 'None'; if(team.managerId){ const manDoc = await db.collection('users').doc(team.managerId).get(); if(manDoc.exists) managerName = manDoc.data().name; } const div = document.createElement('div'); div.className = 'bg-gray-50 dark:bg-slate-800 p-4 rounded-xl'; div.innerHTML = `<div class="flex flex-wrap justify-between items-center"><div><strong>${team.name}</strong><span class="text-xs ml-2 text-muted">Manager: ${managerName}</span></div><div class="flex gap-2 mt-2 sm:mt-0"><select id="mgrSelect-${team.id}" class="text-xs border rounded px-2 py-1">${managerOptions.map(m => `<option value="${m.id}" ${team.managerId===m.id ? 'selected' : ''}>${m.name}</option>`).join('')}<option value="">None</option></select><button onclick="updateTeamManager('${team.id}', document.getElementById('mgrSelect-${team.id}').value)" class="text-primary text-xs bg-primary/10 px-3 py-1 rounded">Update</button><button onclick="deleteTeam('${team.id}','${team.name}')" class="text-danger text-xs bg-red-100 px-3 py-1 rounded">Delete</button></div></div>`; container.appendChild(div); } if(teamsSnap.empty) container.innerHTML = '<div class="text-muted">No teams yet</div>'; }
+
+  async function loadCategories() { const doc = await db.collection('config').doc('categories').get(); const cats = doc.exists ? doc.data().list : []; const container = document.getElementById('categoriesList'); if(container){ container.innerHTML = cats.map(c => `<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2">${c}<button onclick="removeCategory('${c.replace(/'/g, "\\'")}')" class="text-danger hover:bg-red-100 rounded-full w-5 h-5 inline-flex items-center justify-center">✕</button></span>`).join(''); } }
+
+  async function loadExchangeRate() { const doc = await db.collection('config').doc('exchangeRate').get(); const rate = doc.exists ? doc.data().value : 130; document.getElementById('currentRateDisplay').innerText = `Current: 1 USD = ${rate} HTG`; document.getElementById('exchangeRateInput').value = rate; }
+
+  async function loadWithdrawals() { const snap = await db.collection('withdrawalRequests').where('status','==','pending').orderBy('createdAt','desc').get(); const container = document.getElementById('withdrawalsRequestsList'); if(!container) return; if(snap.empty) { container.innerHTML = '<div class="text-muted">No pending withdrawals</div>'; return; } container.innerHTML = ''; snap.forEach(doc => { const req = doc.data(); const div = document.createElement('div'); div.className = 'flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-3 rounded-xl'; div.innerHTML = `<div><span class="font-medium">${req.userName || req.userId}</span> - ${req.amount} HTG (${req.method || 'N/A'})</div><button onclick="markWithdrawalPaid('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Mark Paid</button>`; container.appendChild(div); }); }
+
+  async function loadLogs() { const snap = await db.collection('logs').orderBy('timestamp','desc').limit(20).get(); const container = document.getElementById('logsContainer'); if(!container) return; container.innerHTML = ''; snap.forEach(d => { const data = d.data(); const time = data.timestamp?.toDate?.()?.toLocaleString() || 'recent'; container.innerHTML += `<div class="border-b border-border pb-1 text-muted">[${time}] <span class="font-mono font-bold">${data.action}</span> — ${data.details}</div>`; }); }
+
+  async function refreshChart() { const usersSnap = await db.collection('users').get(); const monthly = {}; usersSnap.forEach(doc => { const ts = doc.data().createdAt; if(ts && ts.toDate){ const date = ts.toDate(); const key = `${date.getFullYear()}-${date.getMonth()+1}`; monthly[key] = (monthly[key] || 0) + 1; } }); const sorted = Object.keys(monthly).sort().slice(-6); const labels = sorted; const counts = sorted.map(k => monthly[k]); const ctx = document.getElementById('adminGainsChart')?.getContext('2d'); if(ctx){ if(gainsChart) gainsChart.destroy(); gainsChart = new Chart(ctx, { type: 'line', data: { labels, datasets: [{ label: 'New users', data: counts, borderColor: '#6366f1', tension: 0.3, fill: true, backgroundColor: 'rgba(99,102,241,0.1)' }] }, options: { responsive: true, maintainAspectRatio: true } }); } }
+
+  async function refreshTeams() { await loadTeams(); }
+
+  function initAdminTabs() { document.querySelectorAll('.tab-btn').forEach(btn => { btn.addEventListener('click', (e) => { const tabId = btn.getAttribute('data-tab'); document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden')); document.getElementById(`tab-${tabId}`).classList.remove('hidden'); document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('tab-active')); btn.classList.add('tab-active'); }); }); document.querySelector('.tab-btn')?.click(); }
+
+  async function renderAdmin() {
+    const adminDiv = document.getElementById('adminView'); if(adminDiv) adminDiv.classList.remove('hidden');
+    await refreshAllAdminData();
+    initAdminTabs();
+    document.getElementById('updateExchangeBtn')?.addEventListener('click', updateExchangeRate);
+    document.getElementById('addCategoryBtn')?.addEventListener('click', addCategory);
+    document.getElementById('createTeamBtn')?.addEventListener('click', createTeam);
+    document.getElementById('userSearchInput')?.addEventListener('input', ()=>loadAllUsersTable());
+    lucide.createIcons();
+  }
+
+  window.approveUser = approveUser; window.deleteUser = deleteUser; window.promoteUser = promoteUser; window.removeCategory = removeCategory; window.deleteTeam = deleteTeam; window.updateTeamManager = updateTeamManager; window.markWithdrawalPaid = markWithdrawalPaid;
+  window.freelancerSaveProfile = freelancerSaveProfile;
+  window.sendChatMessage = sendChatMessage;
   lucide.createIcons();
 </script>
 </body>
