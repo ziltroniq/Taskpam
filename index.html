@@ -570,6 +570,83 @@
     <button onclick="document.getElementById('userDetailModal').classList.add('hidden')" class="mt-4 text-xs text-muted">Close</button>
   </div>
 </div>
+  <!-- ========== MANAGER VIEW ========== -->
+<div id="managerView" class="hidden p-4 md:p-6 space-y-6">
+  <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
+    <p class="text-white/70 text-sm">Manager Dashboard</p>
+    <h2 id="managerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
+    <p id="managerTeamDisplay" class="text-white/80 text-sm mt-1"></p>
+  </div>
+
+  <div class="px-4 -mt-8 space-y-4">
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div class="card-premium p-4 flex flex-col">
+        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Team Balance</span>
+        <span id="managerTeamBalance" class="font-display font-extrabold text-2xl text-primary mt-1">0 HTG</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col">
+        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Team Members</span>
+        <span id="managerTeamCount" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col">
+        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Tasks Completed</span>
+        <span id="managerTeamTasks" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
+      </div>
+      <div class="card-premium p-4 flex flex-col">
+        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Your Commission</span>
+        <span id="managerBalance" class="font-display font-extrabold text-2xl text-lakay mt-1">0 HTG</span>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
+      <button data-mtab="team" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 My Team</button>
+      <button data-mtab="stats" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Statistics</button>
+      <button data-mtab="notifications" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🔔 Notifications</button>
+      <button data-mtab="withdraw" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💰 Withdraw</button>
+    </div>
+
+    <!-- Tab: My Team -->
+    <div id="mtab-team" class="mtab-content space-y-4">
+      <div class="card-premium p-4">
+        <h3 class="font-display font-semibold text-lg mb-3">Team Members</h3>
+        <div id="managerTeamList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Statistics -->
+    <div id="mtab-stats" class="mtab-content hidden space-y-4">
+      <div class="card-premium p-4">
+        <h3 class="font-display font-semibold text-lg mb-3">Team Activity (7 days)</h3>
+        <canvas id="managerChart" height="150"></canvas>
+      </div>
+    </div>
+
+    <!-- Tab: Notifications -->
+    <div id="mtab-notifications" class="mtab-content hidden space-y-4">
+      <div class="card-premium p-4">
+        <h3 class="font-display font-semibold text-lg mb-3">Recent Notifications</h3>
+        <div id="managerNotificationsList" class="space-y-2 text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Withdraw -->
+    <div id="mtab-withdraw" class="mtab-content hidden space-y-4">
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">Withdraw Commission</h3>
+        <div class="flex gap-2 items-end">
+          <div>
+            <label class="text-sm text-muted">Amount (HTG)</label>
+            <input id="managerWithdrawAmount" type="number" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800" placeholder="500">
+          </div>
+          <button onclick="managerWithdraw()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Request</button>
+        </div>
+        <p id="managerWithdrawMsg" class="text-xs mt-2"></p>
+      </div>
+    </div>
+  </div>
+        </div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
