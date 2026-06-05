@@ -552,25 +552,7 @@
     </div>
   </div>
 </div>
-
-<!-- Notifications Modal -->
-<div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 max-h-96 overflow-y-auto">
-    <h3 class="font-display font-bold text-lg mb-3">Notifications</h3>
-    <div id="notificationsList" class="space-y-2"></div>
-    <button onclick="closeNotifications()" class="mt-3 text-xs text-muted">Close</button>
-  </div>
-</div>
-
-<!-- User Detail Modal (Admin) -->
-<div id="userDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
-    <h3 class="font-display font-bold text-lg mb-3">User Details</h3>
-    <div id="userDetailContent" class="text-sm space-y-2"></div>
-    <button onclick="document.getElementById('userDetailModal').classList.add('hidden')" class="mt-4 text-xs text-muted">Close</button>
-  </div>  
-
-    <!-- ========== MANAGER VIEW (ENHANCED) ========== -->
+      <!-- ========== MANAGER VIEW (ENHANCED) ========== -->
 <div id="managerView" class="hidden pt-0 p-0 md:p-0 space-y-0">
   <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
     <p class="text-white/70 text-sm">Manager Dashboard</p>
@@ -655,7 +637,8 @@
           <button onclick="addTeamMember()" class="bg-lakay text-white px-6 py-2 rounded-xl font-semibold">Add Member</button>
           <span id="memberMsg" class="text-sm text-muted"></span>
         </div>
-        <p class="text-xs text-muted mt-2">Username and password will be auto-generated.</p>
+      
+    <p class="text-xs text-muted mt-2">Username and password will be auto-generated.</p>
       </div>
     </div>
 
@@ -691,7 +674,25 @@
     </div>
   </div>
 </div>
+
+<!-- Notifications Modal -->
+<div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 max-h-96 overflow-y-auto">
+    <h3 class="font-display font-bold text-lg mb-3">Notifications</h3>
+    <div id="notificationsList" class="space-y-2"></div>
+    <button onclick="closeNotifications()" class="mt-3 text-xs text-muted">Close</button>
+  </div>
 </div>
+
+<!-- User Detail Modal (Admin) -->
+<div id="userDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+    <h3 class="font-display font-bold text-lg mb-3">User Details</h3>
+    <div id="userDetailContent" class="text-sm space-y-2"></div>
+    <button onclick="document.getElementById('userDetailModal').classList.add('hidden')" class="mt-4 text-xs text-muted">Close</button>
+  </div>
+  </div>
+
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
