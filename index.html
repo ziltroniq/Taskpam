@@ -753,7 +753,7 @@
   function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
   function showToast(msg, type = 'info') { const toast = document.getElementById('toast'); toast.className = 'toast-modern'; toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`; lucide.createIcons(); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
 
-  function hideAllViews() { ['adminView','workerView','freelancerView','clientView'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }); const balance = document.getElementById('navBalance'); if (balance) balance.classList.add('hidden'); }
+  function hideAllViews() { ['adminView','workerView','freelancerView','clientView','managerView'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.add('hidden'); }); const balance = document.getElementById('navBalance'); if (balance) balance.classList.add('hidden'); }
   function showRegister() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('registerScreen').classList.remove('hidden'); }
   function showLogin()  { document.getElementById('registerScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); }
 
