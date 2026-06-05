@@ -570,7 +570,9 @@
     <button onclick="document.getElementById('userDetailModal').classList.add('hidden')" class="mt-4 text-xs text-muted">Close</button>
   </div>
 </div>
-  <!-- ========== MANAGER VIEW ========== -->
+  
+
+    <!-- ========== MANAGER VIEW (ENHANCED) ========== -->
 <div id="managerView" class="hidden p-4 md:p-6 space-y-6">
   <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
     <p class="text-white/70 text-sm">Manager Dashboard</p>
@@ -602,20 +604,64 @@
     <!-- Tabs -->
     <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
       <button data-mtab="team" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 My Team</button>
+      <button data-mtab="addmember" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">➕ Add Member</button>
       <button data-mtab="stats" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Statistics</button>
       <button data-mtab="notifications" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🔔 Notifications</button>
       <button data-mtab="withdraw" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💰 Withdraw</button>
     </div>
 
-    <!-- Tab: My Team -->
+    <!-- Tab: My Team (list + creation) -->
     <div id="mtab-team" class="mtab-content space-y-4">
-      <div class="card-premium p-4">
-        <h3 class="font-display font-semibold text-lg mb-3">Team Members</h3>
-        <div id="managerTeamList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+      <div id="noTeamYet" class="card-premium p-5 text-center hidden">
+        <i data-lucide="users-plus" class="w-12 h-12 text-primary mx-auto mb-2"></i>
+        <p class="font-semibold text-lg">You haven't created a team yet.</p>
+        <p class="text-muted text-sm mb-3">Create your team and start adding members.</p>
+        <input id="newTeamName" type="text" placeholder="Enter team name" class="border border-border rounded-xl px-4 py-2 mb-2 w-full max-w-xs">
+        <button onclick="createManagerTeam()" class="bg-primary text-white px-6 py-2 rounded-xl font-semibold">Create Team</button>
+      </div>
+      <div id="teamExists" class="space-y-4 hidden">
+        <div class="card-premium p-4">
+          <h3 class="font-display font-semibold text-lg mb-3">Team Members</h3>
+          <div id="managerTeamList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+        </div>
       </div>
     </div>
 
-    <!-- Tab: Statistics -->
+    <!-- Tab: Add Member (only if team exists) -->
+    <div id="mtab-addmember" class="mtab-content hidden space-y-4">
+      <div class="card-premium p-5">
+        <h3 class="font-display font-semibold text-lg mb-3">Add New Member</h3>
+        <div class="grid sm:grid-cols-2 gap-4 mb-4">
+          <input id="memberFirstName" type="text" placeholder="First Name *" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <input id="memberLastName" type="text" placeholder="Last Name *" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <input id="memberAge" type="number" placeholder="Age" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <select id="memberGender" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+            <option value="other">Other</option>
+          </select>
+          <input id="memberAddress" type="text" placeholder="Address" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <input id="memberEmail" type="email" placeholder="Email (optional)" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <input id="memberPhone" type="text" placeholder="Phone Number" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+          <select id="memberStatus" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
+            <option value="">Select Status</option>
+            <option value="student">Student</option>
+            <option value="university">University</option>
+            <option value="trader">Trader</option>
+            <option value="employee">Employee</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="flex gap-2 items-end">
+          <button onclick="addTeamMember()" class="bg-lakay text-white px-6 py-2 rounded-xl font-semibold">Add Member</button>
+          <span id="memberMsg" class="text-sm text-muted"></span>
+        </div>
+        <p class="text-xs text-muted mt-2">Username and password will be auto-generated.</p>
+      </div>
+    </div>
+
+    <!-- Tab: Statistics (unchanged) -->
     <div id="mtab-stats" class="mtab-content hidden space-y-4">
       <div class="card-premium p-4">
         <h3 class="font-display font-semibold text-lg mb-3">Team Activity (7 days)</h3>
@@ -623,7 +669,7 @@
       </div>
     </div>
 
-    <!-- Tab: Notifications -->
+    <!-- Tab: Notifications (unchanged) -->
     <div id="mtab-notifications" class="mtab-content hidden space-y-4">
       <div class="card-premium p-4">
         <h3 class="font-display font-semibold text-lg mb-3">Recent Notifications</h3>
@@ -631,7 +677,7 @@
       </div>
     </div>
 
-    <!-- Tab: Withdraw -->
+    <!-- Tab: Withdraw (unchanged) -->
     <div id="mtab-withdraw" class="mtab-content hidden space-y-4">
       <div class="card-premium p-5">
         <h3 class="font-display font-semibold text-lg mb-3">Withdraw Commission</h3>
@@ -646,7 +692,7 @@
       </div>
     </div>
   </div>
-        </div>
+</div>
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -774,6 +820,7 @@
     hideAllViews();
     if (currentUser.role === 'admin') renderAdmin();
     else if (currentUser.role === 'worker') renderWorker();
+    else if (currentUser.role === 'manager') renderManager();   // ← À AJOUTER
     else if (currentUser.role === 'freelancer') renderFreelancer();
     else if (currentUser.role === 'client' || currentUser.role === 'entreprise') renderClient();
   }
@@ -2158,9 +2205,11 @@ showApp = function() {
 window.addEventListener('load', () => {
   setTimeout(initAllTabs, 500);
 });
-  let managerTabsInitialized = false;
+      
+    let managerTabsInitialized = false;
 let managerChartInstance = null;
 
+// Fonction principale appelée lors de la connexion d'un manager
 async function renderManager() {
   const managerView = document.getElementById('managerView');
   managerView.classList.remove('hidden');
@@ -2170,29 +2219,8 @@ async function renderManager() {
   document.getElementById('managerName').textContent = currentUser.name || currentUser.id;
   document.getElementById('managerTeamDisplay').textContent = currentUser.teamName || 'No team';
 
-  // ---- AJOUT : assigner automatiquement l'équipe si le manager n'a pas encore de teamId ----
-  if (!currentUser.teamId) {
-    try {
-      const teamSnap = await db.collection('teams')
-        .where('managerId', '==', currentUser.id)
-        .limit(1)
-        .get();
-      if (!teamSnap.empty) {
-        const team = teamSnap.docs[0];
-        const teamData = team.data();
-        await db.collection('users').doc(currentUser.id).update({
-          teamId: team.id,
-          teamName: teamData.name
-        });
-        currentUser.teamId = team.id;
-        currentUser.teamName = teamData.name;
-        document.getElementById('managerTeamDisplay').textContent = teamData.name;
-      }
-    } catch (e) {
-      console.error('Auto-assign team error:', e);
-    }
-  }
-  // ---- FIN AJOUT ----
+  // Vérifier/créer l'équipe du manager si nécessaire
+  await checkManagerTeam();
 
   // Mettre à jour les stats et le solde
   updateManagerUI();
@@ -2206,7 +2234,7 @@ async function renderManager() {
     else document.querySelector('.mtab-btn[data-mtab="team"]')?.click();
   }
 
-  // Écouter les changements en temps réel
+  // Écouter les changements en temps réel sur le document du manager
   db.collection('users').doc(currentUser.id).onSnapshot(doc => {
     if (doc.exists) {
       currentUser = { id: doc.id, ...doc.data() };
@@ -2215,53 +2243,125 @@ async function renderManager() {
   });
 }
 
-// Le reste du bloc (updateManagerUI, loadManagerTeam, etc.) reste IDENTIQUE.
-// Je le remets pour que le bloc soit complet :
-
+// Mise à jour des affichages simples (solde, etc.)
 function updateManagerUI() {
   document.getElementById('managerBalance').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
   document.getElementById('navBalanceAmt').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
 }
 
+// Vérifie si le manager a une équipe, sinon affiche le formulaire de création
+async function checkManagerTeam() {
+  const noTeamDiv = document.getElementById('noTeamYet');
+  const teamExistsDiv = document.getElementById('teamExists');
+  const addMemberTab = document.querySelector('.mtab-btn[data-mtab="addmember"]');
+  
+  if (currentUser.teamId) {
+    // L'équipe existe déjà
+    noTeamDiv.classList.add('hidden');
+    teamExistsDiv.classList.remove('hidden');
+    if (addMemberTab) addMemberTab.classList.remove('hidden');
+    await loadManagerTeam();
+  } else {
+    // Pas d'équipe encore
+    noTeamDiv.classList.remove('hidden');
+    teamExistsDiv.classList.add('hidden');
+    if (addMemberTab) addMemberTab.classList.add('hidden');
+  }
+}
+
+// Créer une équipe pour ce manager
+async function createManagerTeam() {
+  const teamName = document.getElementById('newTeamName').value.trim();
+  if (!teamName) {
+    showToast('Please enter a team name', 'error');
+    return;
+  }
+  showLoading();
+  try {
+    // Vérifier que le manager n'a pas déjà une équipe
+    const existing = await db.collection('teams').where('managerId', '==', currentUser.id).get();
+    if (!existing.empty) {
+      showToast('You already have a team', 'error');
+      hideLoading();
+      return;
+    }
+
+    // Créer l'équipe
+    const teamRef = await db.collection('teams').add({
+      name: teamName,
+      managerId: currentUser.id,
+      managerName: currentUser.name || currentUser.id,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Mettre à jour le document utilisateur du manager
+    await db.collection('users').doc(currentUser.id).update({
+      teamId: teamRef.id,
+      teamName: teamName
+    });
+
+    // Mettre à jour l'objet courant
+    currentUser.teamId = teamRef.id;
+    currentUser.teamName = teamName;
+    document.getElementById('managerTeamDisplay').textContent = teamName;
+
+    showToast('Team created successfully!', 'success');
+    await checkManagerTeam();
+  } catch (e) {
+    showToast('Error: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Charger la liste des membres de l'équipe
 async function loadManagerTeam() {
   const container = document.getElementById('managerTeamList');
-  if (!container) return;
+  if (!container || !currentUser.teamId) return;
+  
   container.innerHTML = '<p class="text-muted text-sm">Loading team members...</p>';
 
   try {
-    const teamId = currentUser.teamId;
-    if (!teamId) {
-      container.innerHTML = '<p class="text-muted">You are not assigned to any team.</p>';
-      return;
-    }
-    const snap = await db.collection('users').where('teamId', '==', teamId).get();
+    const snap = await db.collection('users')
+      .where('teamId', '==', currentUser.teamId)
+      .where('role', '==', 'worker')
+      .get();
+    
     const members = [];
     snap.forEach(doc => members.push({ id: doc.id, ...doc.data() }));
 
+    // Calcul des statistiques
     let totalBalance = 0, totalTasks = 0;
     members.forEach(m => {
       totalBalance += m.balanceHTG || 0;
       totalTasks += m.totalTasks || 0;
     });
+
     document.getElementById('managerTeamBalance').textContent = totalBalance.toLocaleString() + ' HTG';
     document.getElementById('managerTeamCount').textContent = members.length;
     document.getElementById('managerTeamTasks').textContent = totalTasks;
 
-    container.innerHTML = '';
-    members.forEach(m => {
-      const div = document.createElement('div');
-      div.className = 'flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-xl';
-      div.innerHTML = `
-        <div>
-          <p class="font-semibold">${m.name || m.id}</p>
-          <p class="text-xs text-muted">${m.id} · ${m.badge || 'Bronze'}</p>
-        </div>
-        <div class="text-right">
-          <p class="font-bold text-primary">${(m.balanceHTG || 0).toLocaleString()} HTG</p>
-          <p class="text-xs text-muted">${m.totalTasks || 0} tasks</p>
-        </div>`;
-      container.appendChild(div);
-    });
+    // Afficher la liste
+    if (members.length === 0) {
+      container.innerHTML = '<p class="text-muted">No members in your team yet. Go to "Add Member" tab.</p>';
+    } else {
+      container.innerHTML = '';
+      members.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-xl';
+        div.innerHTML = `
+          <div>
+            <p class="font-semibold">${m.name || m.id}</p>
+            <p class="text-xs text-muted">${m.id} · ${m.badge || 'Bronze'}</p>
+            <p class="text-xs text-muted">${m.status || ''} ${m.phone ? '· ' + m.phone : ''}</p>
+          </div>
+          <div class="text-right">
+            <p class="font-bold text-primary">${(m.balanceHTG || 0).toLocaleString()} HTG</p>
+            <p class="text-xs text-muted">${m.totalTasks || 0} tasks</p>
+          </div>`;
+        container.appendChild(div);
+      });
+    }
 
     drawManagerChart(members);
   } catch (e) {
@@ -2269,6 +2369,114 @@ async function loadManagerTeam() {
   }
 }
 
+// Ajouter un membre à l'équipe
+async function addTeamMember() {
+  if (!currentUser.teamId) {
+    showToast('You need to create a team first', 'error');
+    return;
+  }
+
+  const firstName = document.getElementById('memberFirstName').value.trim();
+  const lastName = document.getElementById('memberLastName').value.trim();
+  if (!firstName || !lastName) {
+    showToast('First name and last name are required', 'error');
+    return;
+  }
+
+  const age = document.getElementById('memberAge').value.trim();
+  const gender = document.getElementById('memberGender').value;
+  const address = document.getElementById('memberAddress').value.trim();
+  const email = document.getElementById('memberEmail').value.trim();
+  const phone = document.getElementById('memberPhone').value.trim();
+  const status = document.getElementById('memberStatus').value;
+
+  showLoading();
+  document.getElementById('memberMsg').textContent = '';
+
+  try {
+    // Générer un username unique
+    const username = await generateUniqueUsername();
+    // Générer un mot de passe aléatoire de 8 caractères
+    const password = generateRandomPassword(8);
+
+    // Créer le compte Firebase Auth
+    const emailForAuth = `${username}@taskpam.com`;
+    await auth.createUserWithEmailAndPassword(emailForAuth, password);
+
+    // Créer le document Firestore pour le nouveau membre
+    const fullName = `${firstName} ${lastName}`;
+    await db.collection('users').doc(username).set({
+      name: fullName,
+      firstName,
+      lastName,
+      age: age || null,
+      gender: gender || null,
+      address: address || null,
+      email: email || null,
+      phone: phone || null,
+      status: status || null,
+      role: 'worker',
+      approved: true,  // Vous pouvez changer si besoin d'approbation admin
+      teamId: currentUser.teamId,
+      teamName: currentUser.teamName,
+      balanceHTG: 0,
+      totalTasks: 0,
+      badge: 'Bronze',
+      history: [],
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Afficher les credentials générés dans un message
+    document.getElementById('memberMsg').innerHTML = 
+      `✅ Member created! <br>Username: <strong>${username}</strong><br>Password: <strong>${password}</strong>`;
+    
+    // Vider le formulaire
+    document.getElementById('memberFirstName').value = '';
+    document.getElementById('memberLastName').value = '';
+    document.getElementById('memberAge').value = '';
+    document.getElementById('memberGender').value = '';
+    document.getElementById('memberAddress').value = '';
+    document.getElementById('memberEmail').value = '';
+    document.getElementById('memberPhone').value = '';
+    document.getElementById('memberStatus').value = '';
+
+    // Rafraîchir la liste de l'équipe
+    await loadManagerTeam();
+    showToast('Member added successfully!', 'success');
+  } catch (e) {
+    document.getElementById('memberMsg').textContent = 'Error: ' + e.message;
+    showToast('Error: ' + e.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Générer un username unique de type worker_XXX
+async function generateUniqueUsername() {
+  let username = '';
+  let exists = true;
+  while (exists) {
+    const num = Math.floor(Math.random() * 90000) + 10000; // 5 chiffres aléatoires
+    username = `worker_${num}`;
+    const doc = await db.collection('users').doc(username).get();
+    if (!doc.exists) {
+      exists = false;
+    }
+  }
+  return username;
+}
+
+// Générer un mot de passe aléatoire de la longueur spécifiée
+function generateRandomPassword(length = 8) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
+  let password = '';
+  for (let i = 0; i < length; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return password;
+}
+
+// Fonctions existantes (graphique, notifications, retrait)
 function drawManagerChart(members) {
   const ctx = document.getElementById('managerChart')?.getContext('2d');
   if (!ctx) return;
@@ -2302,11 +2510,9 @@ async function loadManagerNotifications() {
       .orderBy('createdAt', 'desc')
       .limit(20)
       .get();
-    if (snap.empty) {
-      container.innerHTML = '<p class="text-muted text-sm">No notifications.</p>';
-      return;
-    }
-    container.innerHTML = '';
+    container.innerHTML = snap.empty
+      ? '<p class="text-muted text-sm">No notifications.</p>'
+      : '';
     snap.forEach(doc => {
       const notif = doc.data();
       const div = document.createElement('div');
@@ -2370,7 +2576,6 @@ function initManagerTabs() {
 
   container.querySelector('.mtab-btn[data-mtab="team"]')?.click();
   }
-
   lucide.createIcons();
 </script>
 </body>
