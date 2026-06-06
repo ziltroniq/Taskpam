@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="fr"
+<html lang="fr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HBW Task & Travail en ligne</title>
+  <title>HBW Task &amp; Travail en ligne</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,7 +29,6 @@
   <link rel="stylesheet" href="style.css" />
 
   <script>
-    // Tailwind Config
     tailwind.config = {
       darkMode: 'class',
       theme: {
@@ -398,30 +397,64 @@
         <!-- ==================== PAGE : ADMIN MAINTENANCE ==================== -->
         <div id="page-admin-maintenance" class="page hidden">
           <div class="page-toolbar">
-            <h3 class="section-title">Gestion des Maintenances</h3>
+            <div class="tabs-bar">
+              <button class="tab-btn active" onclick="switchMaintenanceTab('list')" id="mtab-list">
+                <i data-lucide="list" class="w-4 h-4"></i> Maintenances actives
+              </button>
+              <button class="tab-btn" onclick="switchMaintenanceTab('proofs')" id="mtab-proofs">
+                <i data-lucide="image" class="w-4 h-4"></i> Preuves soumises
+                <span id="proofs-count-badge" class="notif-badge hidden" style="position:relative;top:auto;right:auto;margin-left:4px">0</span>
+              </button>
+            </div>
             <button class="btn-primary" onclick="showAddMaintenanceModal()">
               <i data-lucide="plus" class="w-4 h-4"></i> Activer maintenance
             </button>
           </div>
 
-          <div class="card table-card">
-            <div class="table-responsive">
-              <table class="data-table">
-                <thead>
-                  <tr>
-                    <th>Worker</th>
-                    <th>Équipe</th>
-                    <th>Montant</th>
-                    <th>Preuve</th>
-                    <th>Statut</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody id="maintenance-tbody">
-                  <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
-                </tbody>
-              </table>
+          <!-- Tab: Liste des maintenances -->
+          <div id="maintenance-tab-list">
+            <div class="card table-card">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Worker</th>
+                      <th>Équipe</th>
+                      <th>Montant</th>
+                      <th>Preuve</th>
+                      <th>Statut</th>
+                      <th>Date</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="maintenance-tbody">
+                    <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Preuves soumises (status=paid) -->
+          <div id="maintenance-tab-proofs" class="hidden">
+            <div class="card table-card">
+              <div class="table-responsive">
+                <table class="data-table">
+                  <thead>
+                    <tr>
+                      <th>Worker</th>
+                      <th>Équipe</th>
+                      <th>Montant</th>
+                      <th>Date soumission</th>
+                      <th>Preuve</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="proofs-tbody">
+                    <tr><td colspan="6" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
@@ -502,7 +535,7 @@
               <div class="settings-form">
                 <div class="form-group">
                   <label class="form-label">1 USD = ? HTG</label>
-                  <input type="number" id="exchange-rate-input" class="form-input" placeholder="130" />
+                  <input type="number" id="exchange-rate-input" class="form-input no-icon" placeholder="130" />
                 </div>
                 <button class="btn-primary" onclick="saveExchangeRate()">
                   <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
@@ -518,12 +551,33 @@
               <div class="settings-form">
                 <div class="form-group">
                   <label class="form-label">Montant par défaut (HTG)</label>
-                  <input type="number" id="maintenance-fee-input" class="form-input" placeholder="250" />
+                  <input type="number" id="maintenance-fee-input" class="form-input no-icon" placeholder="250" />
                 </div>
                 <button class="btn-primary" onclick="saveMaintenanceFee()">
                   <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
                 </button>
                 <p class="settings-current" id="current-maintenance-fee">Frais actuels : chargement...</p>
+              </div>
+            </div>
+
+            <!-- NOUVEAU : Numéros de paiement MonCash / Natcash -->
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="smartphone" class="w-5 h-5"></i> Numéros de Paiement</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label class="form-label">Numéro MonCash</label>
+                  <input type="tel" id="moncash-number-input" class="form-input no-icon" placeholder="509-XXXX-XXXX" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Numéro Natcash</label>
+                  <input type="tel" id="natcash-number-input" class="form-input no-icon" placeholder="509-XXXX-XXXX" />
+                </div>
+                <button class="btn-primary" onclick="savePaymentNumbers()">
+                  <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
+                </button>
+                <p class="settings-current" id="current-payment-numbers">Chargement...</p>
               </div>
             </div>
 
@@ -534,11 +588,11 @@
               <div class="info-list">
                 <div class="info-item">
                   <span class="info-key">Plateforme</span>
-                  <span class="info-val">HBW Task & Travail en ligne</span>
+                  <span class="info-val">HBW Task &amp; Travail en ligne</span>
                 </div>
                 <div class="info-item">
                   <span class="info-key">Version</span>
-                  <span class="info-val">1.0.0</span>
+                  <span class="info-val">1.1.0</span>
                 </div>
                 <div class="info-item">
                   <span class="info-key">Firebase Project</span>
@@ -558,15 +612,20 @@
               <div class="settings-form">
                 <div class="form-group">
                   <label class="form-label">Nom complet</label>
-                  <input type="text" id="new-manager-name" class="form-input" placeholder="Jean Dupont" />
+                  <input type="text" id="new-manager-name" class="form-input no-icon" placeholder="Jean Dupont" />
                 </div>
                 <div class="form-group">
                   <label class="form-label">Nom d'utilisateur</label>
-                  <input type="text" id="new-manager-username" class="form-input" placeholder="manager_02" />
+                  <input type="text" id="new-manager-username" class="form-input no-icon" placeholder="manager_02" />
                 </div>
                 <div class="form-group">
-                  <label class="form-label">Mot de passe</label>
-                  <input type="text" id="new-manager-password" class="form-input" placeholder="Mot de passe sécurisé" />
+                  <label class="form-label">Mot de passe du nouveau manager</label>
+                  <input type="text" id="new-manager-password" class="form-input no-icon" placeholder="Mot de passe sécurisé" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Votre mot de passe admin (pour rester connecté)</label>
+                  <input type="password" id="admin-confirm-password" class="form-input no-icon" placeholder="••••••••" />
+                  <p class="form-hint">Nécessaire pour maintenir votre session admin après la création.</p>
                 </div>
                 <button class="btn-primary" onclick="createManagerAccount()">
                   <i data-lucide="user-plus" class="w-4 h-4"></i> Créer le compte
@@ -579,6 +638,12 @@
 
         <!-- ==================== PAGE : MANAGER DASHBOARD ==================== -->
         <div id="page-manager-dashboard" class="page hidden">
+          <!-- Bannière équipe -->
+          <div id="manager-team-banner" class="team-info-banner hidden">
+            <i data-lucide="users" class="w-5 h-5"></i>
+            <span>Vous gérez l'équipe : <strong id="manager-team-name-display">—</strong></span>
+          </div>
+
           <div class="stats-grid">
             <div class="stat-card blue">
               <div class="stat-icon"><i data-lucide="users" class="w-6 h-6"></i></div>
@@ -606,6 +671,14 @@
               <div class="stat-info">
                 <p class="stat-label">Solde total équipe</p>
                 <p class="stat-value" id="mgr-stat-balance">0 HTG</p>
+              </div>
+            </div>
+            <!-- NOUVEAU : Mes gains (commission 10%) -->
+            <div class="stat-card green">
+              <div class="stat-icon"><i data-lucide="coins" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Mes gains (commission)</p>
+                <p class="stat-value" id="mgr-stat-commission">0 HTG</p>
               </div>
             </div>
           </div>
@@ -880,26 +953,49 @@
               </div>
             </div>
 
+            <!-- Numéros de paiement affichés au worker -->
+            <div id="payment-numbers-display" class="payment-numbers-box hidden">
+              <p class="payment-numbers-title"><i data-lucide="smartphone" class="w-4 h-4"></i> Envoyez le paiement à :</p>
+              <div id="moncash-display" class="payment-number-item hidden">
+                <span class="method-logo moncash" style="width:28px;height:28px;font-size:0.75rem;border-radius:6px">M</span>
+                <span>MonCash : <strong id="moncash-number-display">—</strong></span>
+              </div>
+              <div id="natcash-display" class="payment-number-item hidden">
+                <span class="method-logo natcash" style="width:28px;height:28px;font-size:0.75rem;border-radius:6px">N</span>
+                <span>Natcash : <strong id="natcash-number-display">—</strong></span>
+              </div>
+            </div>
+
             <div class="maintenance-form" id="maintenance-form">
               <div class="form-group">
-                <label class="form-label">Preuve de paiement</label>
-                <p class="form-hint">Uploadez une capture d'écran ou entrez l'URL de votre preuve</p>
-                <input type="text" id="maintenance-proof-url" class="form-input" placeholder="URL de la preuve (ex: https://...)" />
+                <label class="form-label">Entrer l'URL de la preuve</label>
+                <p class="form-hint">Collez ici le lien vers votre capture d'écran hébergée en ligne</p>
+                <input type="text" id="maintenance-proof-url" class="form-input no-icon" placeholder="https://i.imgur.com/... ou autre URL" />
               </div>
               <div class="form-group">
-                <label class="form-label">Ou uploadez une image</label>
-                <div class="file-upload-zone" id="maintenance-file-zone">
+                <label class="form-label">Ou uploadez directement une image</label>
+                <p class="form-hint">Sélectionnez une photo depuis votre galerie ou prenez une photo. Elle sera uploadée automatiquement.</p>
+                <div class="file-upload-zone" id="maintenance-file-zone" onclick="document.getElementById('maintenance-file').click()">
                   <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400"></i>
-                  <p>Cliquez ou glissez une image</p>
-                  <input type="file" id="maintenance-file" accept="image/*" class="hidden" onchange="handleMaintenanceFile()" />
+                  <p>Cliquez ici pour choisir une image</p>
+                  <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">JPG, PNG, GIF acceptés</p>
+                  <input type="file" id="maintenance-file" accept="image/*" capture="environment" class="hidden" onchange="handleMaintenanceFile(event)" />
+                </div>
+                <div id="upload-progress-container" class="hidden" style="margin-top:8px">
+                  <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="upload-progress-bar" style="width:0%"></div>
+                  </div>
+                  <p id="upload-progress-text" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Upload en cours...</p>
                 </div>
               </div>
-              <button class="btn-primary w-full" onclick="submitMaintenanceProof()">
-                <i data-lucide="send" class="w-4 h-4"></i> Soumettre la preuve
+              <button class="btn-primary w-full" id="submit-proof-btn" onclick="submitMaintenanceProof()">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span id="submit-proof-btn-text">Soumettre la preuve</span>
+                <span id="submit-proof-spinner" class="spinner hidden"></span>
               </button>
-              <div id="maintenance-submitted-msg" class="hidden success-banner">
+              <div id="maintenance-submitted-msg" class="hidden success-banner" style="margin-top:1rem">
                 <i data-lucide="check-circle" class="w-5 h-5"></i>
-                Preuve soumise. En attente de validation par l'admin.
+                Preuve soumise avec succès. En attente de validation par l'admin.
               </div>
             </div>
           </div>
@@ -939,16 +1035,18 @@
 
               <div class="form-group">
                 <label class="form-label">Montant (HTG)</label>
-                <input type="number" id="wd-amount" class="form-input" placeholder="Montant à retirer" min="100" />
+                <input type="number" id="wd-amount" class="form-input no-icon" placeholder="Montant minimum : 100 HTG" min="100" />
               </div>
 
               <div class="form-group">
                 <label class="form-label">Numéro de téléphone</label>
-                <input type="tel" id="wd-phone" class="form-input" placeholder="509-XXXX-XXXX" />
+                <input type="tel" id="wd-phone" class="form-input no-icon" placeholder="509-XXXX-XXXX" />
               </div>
 
-              <button class="btn-primary w-full" onclick="requestWithdrawal()">
-                <i data-lucide="send" class="w-4 h-4"></i> Envoyer la demande
+              <button class="btn-primary w-full" onclick="requestWithdrawal()" id="withdrawal-btn">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span id="withdrawal-btn-text">Envoyer la demande</span>
+                <span id="withdrawal-spinner" class="spinner hidden"></span>
               </button>
             </div>
 
@@ -1008,7 +1106,7 @@
       <input type="hidden" id="team-modal-id" />
       <div class="form-group">
         <label class="form-label">Nom de l'équipe</label>
-        <input type="text" id="team-name-input" class="form-input" placeholder="Équipe Alpha" />
+        <input type="text" id="team-name-input" class="form-input no-icon" placeholder="Équipe Alpha" />
       </div>
       <div class="form-group">
         <label class="form-label">Manager (optionnel)</label>
@@ -1032,7 +1130,7 @@
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label">Titre</label>
-        <input type="text" id="task-title-input" class="form-input" placeholder="Nom de la tâche" />
+        <input type="text" id="task-title-input" class="form-input no-icon" placeholder="Nom de la tâche" />
       </div>
       <div class="form-group">
         <label class="form-label">Description / Instructions</label>
@@ -1040,7 +1138,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Récompense (HTG)</label>
-        <input type="number" id="task-reward-input" class="form-input" placeholder="500" />
+        <input type="number" id="task-reward-input" class="form-input no-icon" placeholder="500" />
       </div>
     </div>
     <div class="modal-footer">
@@ -1063,7 +1161,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">URL de la preuve</label>
-        <input type="text" id="task-proof-url" class="form-input" placeholder="Lien vers la capture d'écran..." />
+        <input type="text" id="task-proof-url" class="form-input no-icon" placeholder="Lien vers la capture d'écran..." />
       </div>
     </div>
     <div class="modal-footer">
@@ -1087,7 +1185,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">Montant (HTG)</label>
-        <input type="number" id="maintenance-amount-input" class="form-input" placeholder="250" />
+        <input type="number" id="maintenance-amount-input" class="form-input no-icon" placeholder="250" />
       </div>
       <div class="form-group">
         <label class="form-label">Raison (optionnel)</label>
@@ -1096,7 +1194,13 @@
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" onclick="activateMaintenance()">Activer</button>
+      <!-- NOUVEAU : Bouton "Activer sur tous les workers" -->
+      <button class="btn-danger" onclick="activateMaintenanceAll()" title="Appliquer cette maintenance à TOUS les workers">
+        <i data-lucide="users" class="w-4 h-4"></i> Tous les workers
+      </button>
+      <button class="btn-primary" onclick="activateMaintenance()">
+        <i data-lucide="user" class="w-4 h-4"></i> Ce worker
+      </button>
     </div>
   </div>
 
@@ -1110,15 +1214,15 @@
       <div class="form-grid-2">
         <div class="form-group">
           <label class="form-label">Prénom *</label>
-          <input type="text" id="member-firstname" class="form-input" placeholder="Jean" />
+          <input type="text" id="member-firstname" class="form-input no-icon" placeholder="Jean" />
         </div>
         <div class="form-group">
           <label class="form-label">Nom *</label>
-          <input type="text" id="member-lastname" class="form-input" placeholder="Dupont" />
+          <input type="text" id="member-lastname" class="form-input no-icon" placeholder="Dupont" />
         </div>
         <div class="form-group">
           <label class="form-label">Âge</label>
-          <input type="number" id="member-age" class="form-input" placeholder="25" min="16" max="65" />
+          <input type="number" id="member-age" class="form-input no-icon" placeholder="25" min="16" max="65" />
         </div>
         <div class="form-group">
           <label class="form-label">Sexe</label>
@@ -1129,7 +1233,7 @@
         </div>
         <div class="form-group">
           <label class="form-label">Téléphone</label>
-          <input type="tel" id="member-phone" class="form-input" placeholder="509-XXXX-XXXX" />
+          <input type="tel" id="member-phone" class="form-input no-icon" placeholder="509-XXXX-XXXX" />
         </div>
         <div class="form-group">
           <label class="form-label">Statut</label>
@@ -1142,16 +1246,22 @@
         </div>
         <div class="form-group col-span-2">
           <label class="form-label">Adresse</label>
-          <input type="text" id="member-address" class="form-input" placeholder="Adresse complète" />
+          <input type="text" id="member-address" class="form-input no-icon" placeholder="Adresse complète" />
         </div>
       </div>
-      <div class="form-group">
-  <label class="form-label">Votre mot de passe manager *</label>
-  <input type="password" id="manager-password-input" class="form-input no-icon" placeholder="••••••••" />
+
+      <!-- Champ mot de passe manager — OBLIGATOIRE pour reconnecter après création -->
+      <div class="form-group" style="margin-top:1rem">
+        <label class="form-label">🔐 Votre mot de passe manager *</label>
+        <input type="password" id="manager-password-input" class="form-input no-icon" placeholder="••••••••" autocomplete="current-password" />
+        <p class="form-hint" style="color:#facc15">
+          <i data-lucide="info" style="width:12px;height:12px;display:inline"></i>
+          Entrez votre propre mot de passe pour confirmer la création et rester connecté.
+        </p>
       </div>
 
       <div class="generated-credentials" id="generated-credentials">
-        <div class="cred-header"><i data-lucide="key" class="w-4 h-4"></i> Identifiants générés</div>
+        <div class="cred-header"><i data-lucide="key" class="w-4 h-4"></i> Identifiants générés automatiquement</div>
         <div class="cred-item">
           <span class="cred-key">Nom d'utilisateur :</span>
           <span class="cred-val" id="gen-username">worker_XXXXX</span>
@@ -1172,8 +1282,10 @@
         <i data-lucide="refresh-cw" class="w-4 h-4"></i> Régénérer
       </button>
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" onclick="createWorkerAccount()">
-        <i data-lucide="user-plus" class="w-4 h-4"></i> Créer le compte
+      <button class="btn-primary" onclick="createWorkerAccount()" id="create-worker-btn">
+        <i data-lucide="user-plus" class="w-4 h-4"></i>
+        <span id="create-worker-btn-text">Créer le compte</span>
+        <span id="create-worker-spinner" class="spinner hidden"></span>
       </button>
     </div>
   </div>
@@ -1187,7 +1299,7 @@
     <div class="modal-body" id="modal-maintenance-proof-body">
     </div>
     <div class="modal-footer">
-      <input type="hidden" id="proof-maintenance-user-id" />
+      <input type="hidden" id="proof-maintenance-id" />
       <button class="btn-secondary" onclick="closeModal()">Fermer</button>
       <button class="btn-danger" onclick="rejectMaintenanceProof()">
         <i data-lucide="x-circle" class="w-4 h-4"></i> Rejeter
@@ -1219,4 +1331,4 @@
   <!-- App Script -->
   <script src="app.js"></script>
 </body>
-            </html>
+  </html>
