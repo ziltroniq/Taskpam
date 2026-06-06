@@ -2059,7 +2059,7 @@ function generateWorkerCredentials() {
   document.getElementById('gen-password').textContent = randomPass;
 }
 
-async function createWorkerAccount() {
+ async function createWorkerAccount() {
   const firstName = document.getElementById('member-firstname').value.trim();
   const lastName = document.getElementById('member-lastname').value.trim();
   const age = document.getElementById('member-age').value;
@@ -2077,26 +2077,40 @@ async function createWorkerAccount() {
     return;
   }
 
+  // Sauvegarder les credentials du manager pour le reconnecter après
+  const managerEmail = currentUser.email;   // email du manager connecté
+  const managerPass = prompt(
+    'Pour des raisons de sécurité, entrez votre mot de passe manager pour rester connecté après la création :'
+  );
+  if (!managerPass) {
+    showToast('Mot de passe manager requis.', 'error');
+    return;
+  }
+
+  showLoading();
   try {
     // Vérifier l'unicité du username
     const existing = await db.collection('users').where('username', '==', username).limit(1).get();
     if (!existing.empty) {
       showToast('Nom d\'utilisateur déjà pris. Régénérez.', 'error');
+      hideLoading();
       return;
     }
 
-    // Créer dans Firebase Auth
+    // Créer le compte Auth (ceci déconnecte le manager et connecte le worker)
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     const uid = cred.user.uid;
 
-    // Obtenir le nom de l'équipe
+    // Reconnecter immédiatement le manager
+    await auth.signInWithEmailAndPassword(managerEmail, managerPass);
+
+    // Maintenant que le manager est reconnecté, créer le document Firestore
     let teamName = '';
     if (currentUser.teamId) {
       const teamDoc = await db.collection('teams').doc(currentUser.teamId).get();
       if (teamDoc.exists) teamName = teamDoc.data().name || '';
     }
 
-    // Créer dans Firestore
     await db.collection('users').doc(uid).set({
       username,
       email,
@@ -2128,30 +2142,19 @@ async function createWorkerAccount() {
 
     await addLog('user', `Worker ${username} créé par manager ${currentUser.username}`, currentUser.username);
 
-    // Reconnecter le manager
-    const managerEmail = currentUser.email;
-    const managerPass = currentUserAuth.email; // on va utiliser un workaround
-
     showToast(`Worker "${username}" créé avec succès !`, 'success');
-
-    // Note : re-signIn du manager après createUser
-    // Dans un vrai projet, utiliser Firebase Admin SDK via Cloud Functions
-    showToast('Reconnexion manager en cours...', 'info');
-    setTimeout(async () => {
-      try {
-        // On recharge la page pour forcer la re-auth
-        // Alternative propre: Cloud Function createUser
-        window.location.reload();
-      } catch (e) {}
-    }, 2000);
-
     closeModal();
     await loadMembers();
   } catch (err) {
     console.error('Erreur création worker :', err);
     showToast('Erreur : ' + err.message, 'error');
+    // Essayer de reconnecter le manager si besoin
+    try { await auth.signInWithEmailAndPassword(managerEmail, managerPass); } catch(e) {}
+  } finally {
+    hideLoading();
   }
-}
+ }
+      
 
 // =====================================================
 // 20. MANAGER — MESSAGERIE
