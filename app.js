@@ -2072,27 +2072,20 @@ function generateWorkerCredentials() {
   const email = document.getElementById('gen-email').textContent.trim();
   const password = document.getElementById('gen-password').textContent.trim();
 
+  // ⚠️ Lire le mot de passe du manager dans le champ ajouté
+  const managerPassInput = document.getElementById('manager-password-input');
+  const managerPass = managerPassInput ? managerPassInput.value.trim() : '';
+
   if (!firstName || !lastName) {
     showToast('Prénom et nom sont requis.', 'error');
     return;
   }
-
-  // Sauvegarder les credentials du manager (si non déjà stockés)
-  if (!sessionStorage.getItem('mgr_email')) {
-    const mgrEmail = currentUser.email;
-    const mgrPass = prompt(
-      'Pour des raisons de sécurité, entrez votre mot de passe manager (une seule fois par session) :'
-    );
-    if (!mgrPass) {
-      showToast('Mot de passe manager requis.', 'error');
-      return;
-    }
-    sessionStorage.setItem('mgr_email', mgrEmail);
-    sessionStorage.setItem('mgr_pass', mgrPass);
+  if (!managerPass) {
+    showToast('Veuillez entrer votre mot de passe manager.', 'error');
+    return;
   }
 
-  const managerEmail = sessionStorage.getItem('mgr_email');
-  const managerPass = sessionStorage.getItem('mgr_pass');
+  const managerEmail = currentUser.email; // email du manager connecté
 
   showLoading();
   try {
@@ -2104,14 +2097,14 @@ function generateWorkerCredentials() {
       return;
     }
 
-    // Créer le compte Auth (ceci déconnecte temporairement le manager)
+    // Créer le compte Auth (le manager est déconnecté)
     const cred = await auth.createUserWithEmailAndPassword(email, password);
     const workerUid = cred.user.uid;
 
-    // Reconnecter immédiatement le manager avec les identifiants stockés
+    // Reconnecter immédiatement le manager avec le mot de passe fourni
     await auth.signInWithEmailAndPassword(managerEmail, managerPass);
 
-    // Maintenant que le manager est reconnecté, créer le document Firestore du worker
+    // Maintenant le manager est reconnecté, on peut écrire dans Firestore
     let teamName = '';
     if (currentUser.teamId) {
       try {
@@ -2142,7 +2135,7 @@ function generateWorkerCredentials() {
       createdBy: currentUser.id
     });
 
-    // Incrémenter le compteur de l'équipe (si autorisé par les règles)
+    // Incrémenter le compteur de l'équipe (non bloquant)
     if (currentUser.teamId) {
       try {
         await db.collection('teams').doc(currentUser.teamId).update({
@@ -2153,17 +2146,22 @@ function generateWorkerCredentials() {
 
     await addLog('user', `Worker ${username} créé par manager ${currentUser.username}`, currentUser.username);
     showToast(`Worker "${username}" créé avec succès !`, 'success');
+    
+    // Vider le champ mot de passe pour la sécurité
+    if (managerPassInput) managerPassInput.value = '';
+    
     closeModal();
     await loadMembers();
   } catch (err) {
     console.error('Erreur création worker :', err);
     showToast('Erreur : ' + err.message, 'error');
-    // Tenter de reconnecter le manager si nécessaire
+    // Tenter de reconnecter le manager en cas d'échec
     try { await auth.signInWithEmailAndPassword(managerEmail, managerPass); } catch (e) {}
   } finally {
     hideLoading();
   }
      }
+
 // =====================================================
 // 20. MANAGER — MESSAGERIE
 // =====================================================
