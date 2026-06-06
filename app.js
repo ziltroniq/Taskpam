@@ -6,14 +6,13 @@
 // =====================================================
 // 1. CONFIGURATION FIREBASE & INITIALISATION
 // =====================================================
-
 const firebaseConfig = {
-  apiKey: "AIzaSyBxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+  apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
   authDomain: "hbwtaskpam.firebaseapp.com",
   projectId: "hbwtaskpam",
   storageBucket: "hbwtaskpam.appspot.com",
-  messagingSenderId: "000000000000",
-  appId: "1:000000000000:web:xxxxxxxxxxxxxxxx"
+  messagingSenderId: "142029895340",
+  appId: "1:142029895340:web:ce94830569430491ef5109"
 };
 
 // Initialisation Firebase
