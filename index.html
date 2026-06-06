@@ -1,2592 +1,1218 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Taskpam & LakayWork & HBW Agency | Admin Console</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HBW Task & Travail en ligne</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Firebase SDK Compat -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css" />
+
   <script>
+    // Tailwind Config
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            primary: { DEFAULT: '#6366f1', light: '#818cf8', dark: '#4f46e5', subtle: '#eef2ff' },
-            surface: '#ffffff', bg: '#f8fafc', card: '#ffffff', border: '#e2e8f0',
-            text: '#0f172a', muted: '#64748b', danger: '#ef4444', warn: '#f59e0b',
-            lakay: '#16a34a', agency: '#0ea5e9',
-          },
           fontFamily: {
-            display: ['Poppins', 'sans-serif'], body: ['Inter', 'sans-serif'],
+            poppins: ['Poppins', 'sans-serif'],
+            inter: ['Inter', 'sans-serif'],
           },
-        },
-      },
+          colors: {
+            primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+            brand: { dark: '#1e3a5f', mid: '#2d5a87', light: '#3b7cc9' },
+            success: '#16a34a',
+            warning: '#eab308',
+            danger: '#dc2626',
+          }
+        }
+      }
     }
   </script>
-
-  <!-- Lucide Icons -->
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-  <style>
-    :root {
-      --glass-bg: rgba(255,255,255,0.08); --glass-border: rgba(255,255,255,0.15);
-      --glass-shadow: 0 20px 45px rgba(0,0,0,0.25);
-      --login-bg: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-    }
-    .dark {
-      --glass-bg: rgba(15,23,42,0.45); --glass-border: rgba(255,255,255,0.08);
-      --glass-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    }
-    body { font-family: 'Inter', sans-serif; transition: background 0.3s, color 0.3s; }
-
-    .login-screen {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
-      background: var(--login-bg); position: relative; overflow: hidden;
-    }
-    .login-screen::before, .login-screen::after {
-      content: ''; position: absolute; border-radius: 50%; filter: blur(80px);
-      opacity: 0.4; z-index: 0; animation: floatShape 20s infinite alternate ease-in-out;
-    }
-    .login-screen::before { width: 500px; height: 500px; background: rgba(99,102,241,0.2); top:-150px; left:-100px; }
-    .login-screen::after  { width: 400px; height: 400px; background: rgba(168,85,247,0.15); bottom:-120px; right:-80px; animation-delay:-10s; }
-    @keyframes floatShape { 0%{transform:translate(0,0) scale(1)} 50%{transform:translate(40px,30px) scale(1.1)} 100%{transform:translate(-20px,-20px) scale(0.95)} }
-
-    .login-card {
-      background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-      border:1px solid var(--glass-border); border-radius:2rem; padding:2.5rem 2rem; width:100%;
-      max-width:400px; box-shadow: var(--glass-shadow); text-align:center; z-index:1; animation: fadeSlideUp 0.6s ease;
-    }
-    .login-input {
-      width:100%; padding:0.9rem 1rem; margin:0.5rem 0; border-radius:1rem;
-      border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.05); color:white; outline:none;
-      font-size:0.95rem; transition:0.2s;
-    }
-    .login-input:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,0.3); }
-    .login-btn {
-      width:100%; padding:0.9rem; border-radius:1rem; border:none;
-      background: linear-gradient(135deg,#6366f1,#8b5cf6); color:white; font-weight:700; font-family:'Poppins',sans-serif;
-      letter-spacing:0.5px; cursor:pointer; transition:0.2s; box-shadow:0 8px 24px rgba(99,102,241,0.4); margin-top:0.5rem;
-      display:flex; align-items:center; justify-content:center; gap:0.5rem;
-    }
-    .login-btn:hover { transform:translateY(-1px); box-shadow:0 12px 28px rgba(99,102,241,0.5); }
-
-    .nav-blur {
-      background:rgba(255,255,255,0.85); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
-      border-bottom:1px solid rgba(0,0,0,0.05);
-    }
-    .dark .nav-blur { background:rgba(15,23,42,0.8); border-bottom:1px solid rgba(255,255,255,0.05); }
-
-    .card-premium {
-      background:white; border-radius:1.5rem;
-      box-shadow:0 4px 20px rgba(0,0,0,0.03),0 1px 3px rgba(0,0,0,0.04);
-      transition:all 0.2s;
-    }
-    .dark .card-premium { background:#1e293b; box-shadow:0 4px 20px rgba(0,0,0,0.3),0 1px 3px rgba(0,0,0,0.4); }
-    .tab-active { border-bottom: 2px solid #6366f1; color: #6366f1; font-weight: 600; }
-    .dark .tab-active { border-bottom: 2px solid #818cf8; color: #a5b4fc; }
-
-    @keyframes fadeSlideUp { from{opacity:0;transform:translateY(15px)} to{opacity:1;transform:translateY(0)} }
-    .animate-fade-slide { animation:fadeSlideUp 0.4s ease forwards; }
-
-    .toast-modern {
-      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px);
-      background:#1e293b; color:white; padding:0.8rem 1.5rem; border-radius:2rem; font-weight:600;
-      font-size:0.9rem; box-shadow:0 12px 30px rgba(0,0,0,0.25); z-index:9999; display:flex;
-      align-items:center; gap:0.5rem; opacity:0; transition:transform 0.3s ease, opacity 0.3s ease; pointer-events:none;
-    }
-    .toast-modern.show { transform:translateX(-50%) translateY(0); opacity:1; }
-    .loading-overlay {
-      position:fixed; inset:0; background:rgba(0,0,0,0.5); backdrop-filter:blur(4px);
-      display:flex; align-items:center; justify-content:center; z-index:9998;
-    }
-    .spinner { width:36px; height:36px; border:3px solid rgba(255,255,255,0.3); border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite; }
-    @keyframes spin { to{transform:rotate(360deg)} }
-
-    /* Custom scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 3px; }
-    .dark ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); }
-  </style>
 </head>
-<body class="bg-bg text-text antialiased dark:bg-slate-900 dark:text-slate-200">
 
-<!-- Loading / Toast -->
-<div id="loadingOverlay" class="loading-overlay hidden"><div class="spinner"></div></div>
-<div id="toast" class="toast-modern"></div>
+<body class="font-inter bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
 
-<!-- ========== LOGIN ========== -->
-<div id="loginScreen" class="login-screen">
-  <div class="login-card">
-    <div class="flex justify-center mb-3">
-      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-        <span class="text-white font-display font-extrabold text-xl">T</span>
-      </div>
-    </div>
-    <h1 class="text-white font-display font-bold text-xl">Taskpam & LakayWork</h1>
-    <p class="text-indigo-200 text-xs font-semibold tracking-widest uppercase mt-0.5 mb-5">HBW Agency</p>
-    <input id="loginId" type="text" placeholder="Username" class="login-input" autocomplete="username" />
-    <input id="loginPass" type="password" placeholder="Password" class="login-input" onkeydown="if(event.key==='Enter') handleLogin()" />
-    <button onclick="handleLogin()" class="login-btn"><i data-lucide="log-in" class="w-4 h-4"></i> Sign in</button>
-    <p id="loginError" class="text-red-300 text-sm mt-3 hidden"></p>
-    <p class="text-white/50 text-xs mt-5">No account? <a href="#" onclick="showRegister()" class="text-indigo-300 underline">Register</a></p>
-  </div>
-</div>
-
-<!-- ========== REGISTER ========== -->
-<div id="registerScreen" class="hidden login-screen">
-  <div class="login-card">
-    <h2 class="text-white text-xl font-display font-semibold">Create your account</h2>
-    <p class="text-white/50 text-xs mb-5">Join the platform</p>
-    <input id="regName" type="text" placeholder="Full name" class="login-input" />
-    <input id="regId" type="text" placeholder="Username" class="login-input" />
-    <input id="regPass" type="password" placeholder="Password (min 6 chars)" class="login-input" />
-    <select id="regRole" class="login-input" style="background:rgba(15,23,42,0.6);">
-      <option value="worker" class="text-black">👷 Worker</option>
-      <option value="freelancer" class="text-black">💼 Freelancer</option>
-      <option value="client" class="text-black">🧑‍💻 Client</option>
-      <option value="entreprise" class="text-black">🏢 Entreprise</option>
-    </select>
-    <button onclick="handleRegister()" class="login-btn mt-2"><i data-lucide="user-plus" class="w-4 h-4"></i> Register</button>
-    <p id="regError" class="text-red-300 text-sm mt-3 hidden"></p>
-    <p class="text-white/50 text-xs mt-5">Already have an account? <a href="#" onclick="showLogin()" class="text-indigo-300 underline">Sign in</a></p>
-  </div>
-</div>
-
-<!-- ========== APP SHELL ========== -->
-<div id="appShell" class="hidden min-h-screen flex flex-col">
-  <!-- Navbar -->
-  <nav class="nav-blur sticky top-0 z-40 px-4 py-3 flex items-center justify-between gap-2">
-    <div class="flex items-center gap-2.5 min-w-0">
-      <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shrink-0">
-        <span class="text-white font-display font-black text-sm">T</span>
-      </div>
-      <span class="font-display font-bold text-base text-text dark:text-slate-200 truncate hidden sm:block">Taskpam & LakayWork</span>
-    </div>
-    <div class="flex items-center gap-2 shrink-0">
-      <div id="navBalance" class="hidden items-center gap-1.5 bg-primary/10 px-2.5 py-1 rounded-full">
-        <i data-lucide="wallet" class="w-3.5 h-3.5 text-primary"></i>
-        <span id="navBalanceAmt" class="text-xs font-semibold text-primary">0 HTG</span>
-      </div>
-      <div id="notificationBadge" class="hidden relative cursor-pointer" onclick="openNotifications()">
-        <i data-lucide="bell" class="w-5 h-5 text-text dark:text-slate-200"></i>
-        <span id="notifCount" class="absolute -top-1 -right-1 bg-danger text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
-      </div>
-      <div class="flex items-center gap-1.5 bg-primary-subtle dark:bg-indigo-900/40 px-2.5 py-1 rounded-full">
-        <span id="navUserId" class="text-xs font-semibold text-primary truncate max-w-[80px]"></span>
-      </div>
-      <button id="darkModeToggle" onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700">
-        <i data-lucide="moon" class="w-4 h-4 text-text dark:text-slate-200"></i>
-      </button>
-      <button onclick="handleLogout()" class="text-xs font-medium text-muted hover:text-danger border border-border px-2.5 py-1.5 rounded-lg hover:border-danger/30 transition-all dark:text-slate-300 dark:border-slate-600">
-        <i data-lucide="log-out" class="w-3.5 h-3.5"></i> <span class="hidden sm:inline">Exit</span>
-      </button>
-    </div>
-  </nav>
-
-  <div class="bg-primary px-4 py-1.5 flex items-center justify-between text-white/90 text-xs">
-    <div class="flex items-center gap-2"><span>Connected as</span><span id="roleTag" class="bg-white/20 px-2 py-0.5 rounded-full font-bold uppercase tracking-wide"></span></div>
-    <span id="navApprovedStatus" class="text-xs"></span>
-  </div>
-
-  <!-- ========== ADMIN VIEW ENHANCED ========== -->
-  <div id="adminView" class="hidden p-5 md:p-6 space-y-6">
-    <!-- TABS -->
-    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
-      <button data-tab="overview" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Overview</button>
-      <button data-tab="users" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 Users</button>
-      <button data-tab="approvals" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">⏳ Approvals</button>
-      <button data-tab="teams" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🏢 Teams</button>
-      <button data-tab="subscriptions" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📦 Subscriptions</button>
-      <button data-tab="categories" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🏷️ Categories</button>
-      <button data-tab="withdrawals" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💰 Withdrawals</button>
-      <button data-tab="logs" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📜 Logs</button>
-      <button data-tab="settings" class="tab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">⚙️ Settings</button>
+  <!-- =====================================================
+       ÉCRAN DE CONNEXION
+  ===================================================== -->
+  <div id="login-screen" class="login-screen">
+    <!-- Animated Background -->
+    <div class="login-bg">
+      <div class="particles-container" id="particles"></div>
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
     </div>
 
-    <!-- TAB CONTENT: OVERVIEW -->
-    <div id="tab-overview" class="tab-content space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="card-premium p-5"><div class="flex justify-between items-start"><div><p class="text-muted text-xs">Total Users</p><p id="statTotalUsers" class="text-3xl font-bold">0</p></div><i data-lucide="users" class="w-8 h-8 text-primary/70"></i></div></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Pending Approvals</p><p id="statPending" class="text-3xl font-bold text-warn">0</p></div><i data-lucide="clock" class="w-8 h-8 text-warn/70 mt-2"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Total Balance (HTG)</p><p id="statTotalHTG" class="text-3xl font-bold">0</p></div><i data-lucide="trending-up" class="w-8 h-8 text-lakay/70"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">≈ USD (exch rate)</p><p id="statTotalUSD" class="text-3xl font-bold">0</p></div><i data-lucide="dollar-sign" class="w-8 h-8 text-agency/70"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Active Workers</p><p id="statActiveWorkers" class="text-3xl font-bold">0</p></div><i data-lucide="hard-hat" class="w-8 h-8 text-primary/70"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Active Freelancers</p><p id="statActiveFreelancers" class="text-3xl font-bold">0</p></div><i data-lucide="briefcase" class="w-8 h-8 text-primary/70"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Active Subscriptions</p><p id="statActiveSubs" class="text-3xl font-bold">0</p></div><i data-lucide="repeat" class="w-8 h-8 text-primary/70"></i></div>
-        <div class="card-premium p-5"><div><p class="text-muted text-xs">Monthly Revenue (est.)</p><p id="statMonthlyRevenue" class="text-3xl font-bold">0 HTG</p></div><i data-lucide="banknote" class="w-8 h-8 text-primary/70"></i></div>
+    <!-- Login Card -->
+    <div class="login-card glass-card">
+      <!-- Logo -->
+      <div class="login-logo">
+        <div class="logo-icon">
+          <i data-lucide="zap" class="w-8 h-8"></i>
+        </div>
+        <div>
+          <h1 class="logo-title">HBW Task</h1>
+          <p class="logo-subtitle">Travail en ligne</p>
+        </div>
       </div>
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📈 Monthly Registrations (12 months)</h3><canvas id="adminGainsChart" height="100"></canvas></div>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">🏆 Top 5 Richest Workers</h3><div id="topWorkersList" class="space-y-2"></div></div>
-        <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">💼 Top 5 Clients by Spending</h3><div id="topClientsList" class="space-y-2"></div></div>
-      </div>
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-2">⚙️ Quick Settings</h3><div class="flex flex-wrap gap-3 items-end"><input id="exchangeRateInput" type="number" step="0.01" placeholder="Exchange Rate" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800"><button id="updateExchangeBtn" class="bg-primary text-white px-5 py-2 rounded-xl text-sm font-semibold">Update Rate</button><span id="currentRateDisplay" class="text-muted text-sm ml-2"></span></div></div>
-    </div>
 
-    <!-- TAB CONTENT: USERS -->
-    <div id="tab-users" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5">
-        <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
-          <h3 class="font-display font-semibold">👤 All Users</h3>
-          <div class="flex gap-2 items-center">
-            <input type="text" id="userSearchInput" placeholder="Search name / ID..." class="border border-border rounded-xl px-3 py-1.5 text-sm w-48">
-            <select id="userRoleFilter" class="border border-border rounded-xl px-3 py-1.5 text-sm bg-white dark:bg-slate-800" onchange="loadAllUsersTable()">
-              <option value="">All Roles</option>
-              <option value="worker">Worker</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="client">Client</option>
-              <option value="entreprise">Entreprise</option>
-              <option value="manager">Manager</option>
-              <option value="admin">Admin</option>
-            </select>
-            <button onclick="exportUsersCSV()" class="bg-lakay text-white px-4 py-1.5 rounded-xl text-sm font-semibold flex items-center gap-1"><i data-lucide="download" class="w-4 h-4"></i> CSV</button>
+      <!-- Form -->
+      <div class="login-form-wrapper">
+        <h2 class="login-heading">Bienvenue</h2>
+        <p class="login-subheading">Connectez-vous à votre espace de travail</p>
+
+        <div id="login-error" class="error-banner hidden">
+          <i data-lucide="alert-circle" class="w-4 h-4"></i>
+          <span id="login-error-msg"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nom d'utilisateur</label>
+          <div class="input-wrapper">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" id="login-username" class="form-input" placeholder="ex: worker_001" autocomplete="username" />
           </div>
         </div>
-        <div id="allUsersTable" class="overflow-x-auto">
-          <table class="min-w-full text-sm">
-            <thead class="bg-gray-50 dark:bg-slate-800">
-              <tr><th>ID</th><th>Name</th><th>Role</th><th>Balance(HTG)</th><th>Status</th><th>Last Activity</th><th>Actions</th></tr>
-            </thead>
-            <tbody id="usersTbody"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
-    <!-- TAB CONTENT: APPROVALS -->
-    <div id="tab-approvals" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-display font-semibold">⏳ Pending Approvals</h3>
-          <button id="approveAllBtn" onclick="approveAllPending()" class="bg-lakay text-white px-4 py-1.5 rounded-xl text-sm font-semibold">Approve All</button>
-        </div>
-        <div id="pendingUsersList" class="space-y-2 max-h-96 overflow-auto"></div>
-      </div>
-    </div>
-
-    <!-- TAB TEAMS ENHANCED -->
-    <div id="tab-teams" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">➕ Create New Team</h3><div class="flex flex-wrap gap-3"><input id="teamNameInput" placeholder="Team name" class="border rounded-xl px-3 py-2"><select id="teamManagerSelect" class="border rounded-xl px-3 py-2 bg-white dark:bg-slate-800"><option value="">-- Select Manager --</option></select><button id="createTeamBtn" class="bg-primary text-white px-5 rounded-xl">Create Team</button></div></div>
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📋 Existing Teams</h3><div id="teamsListContainer" class="space-y-3"></div></div>
-    </div>
-
-    <!-- TAB SUBSCRIPTIONS -->
-    <div id="tab-subscriptions" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold mb-3">📦 Subscription Plans</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4" id="plansListContainer"></div>
-        <div class="border-t pt-4 mt-4">
-          <h4 class="font-semibold mb-2">Add / Edit Plan</h4>
-          <div class="flex flex-wrap gap-2 items-end">
-            <input id="planNameInput" placeholder="Plan name" class="border rounded-xl px-3 py-2 text-sm">
-            <input id="planMonthlyPrice" type="number" placeholder="Monthly price" class="border rounded-xl px-3 py-2 text-sm w-28">
-            <input id="planYearlyPrice" type="number" placeholder="Yearly price" class="border rounded-xl px-3 py-2 text-sm w-28">
-            <input id="planFeatures" placeholder="Features (comma separated)" class="border rounded-xl px-3 py-2 text-sm flex-1">
-            <button id="savePlanBtn" class="bg-primary text-white px-4 py-2 rounded-xl text-sm font-semibold">Save Plan</button>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••" autocomplete="current-password" />
+            <button type="button" class="toggle-pass" onclick="togglePassword()">
+              <i data-lucide="eye" class="w-4 h-4" id="eye-icon"></i>
+            </button>
           </div>
         </div>
-      </div>
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold mb-3">💳 Active Subscriptions</h3>
-        <div id="activeSubscriptionsList" class="space-y-2 max-h-96 overflow-auto"></div>
-      </div>
-    </div>
 
-    <!-- TAB CATEGORIES -->
-    <div id="tab-categories" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📌 Add Category</h3><div class="flex gap-2"><input id="newCategoryInput" placeholder="Category name" class="border rounded-xl px-3 py-2 flex-1"><button id="addCategoryBtn" class="bg-primary text-white px-5 rounded-xl">Add</button></div><div id="categoriesList" class="mt-5 flex flex-wrap gap-2"></div></div>
-    </div>
-
-    <!-- TAB WITHDRAWALS -->
-    <div id="tab-withdrawals" class="tab-content hidden"><div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">💸 Withdrawal Requests</h3><div id="withdrawalsRequestsList" class="space-y-3"></div></div></div>
-
-    <!-- TAB LOGS -->
-    <div id="tab-logs" class="tab-content hidden">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold mb-3">📋 Activity Logs</h3>
-        <div id="logsContainer" class="space-y-2 text-xs font-mono max-h-96 overflow-auto"></div>
-        <div class="flex justify-between mt-3">
-          <button id="logsPrevBtn" class="px-3 py-1 border rounded-lg text-sm">Previous</button>
-          <span id="logsPageInfo" class="text-sm text-muted"></span>
-          <button id="logsNextBtn" class="px-3 py-1 border rounded-lg text-sm">Next</button>
-        </div>
+        <button id="login-btn" class="btn-primary w-full" onclick="handleLogin()">
+          <span id="login-btn-text">Se connecter</span>
+          <span id="login-spinner" class="spinner hidden"></span>
+        </button>
       </div>
-    </div>
 
-    <!-- TAB SETTINGS -->
-    <div id="tab-settings" class="tab-content hidden space-y-6">
-      <div class="card-premium p-5 space-y-4">
-        <h3 class="font-display font-semibold">⚙️ Platform Settings</h3>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div>
-            <label class="text-sm text-muted block mb-1">Exchange Rate (1 USD → HTG)</label>
-            <input id="settingsExchangeRate" type="number" step="0.01" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800">
-          </div>
-          <div>
-            <label class="text-sm text-muted block mb-1">Commission Percentage (%)</label>
-            <input id="settingsCommission" type="number" step="0.1" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800">
-          </div>
-          <div>
-            <label class="text-sm text-muted block mb-1">Admin Wallet (crypto address)</label>
-            <input id="settingsAdminWallet" type="text" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="0x...">
-          </div>
-        </div>
-        <div class="flex gap-3">
-          <button onclick="saveSettings()" class="bg-primary text-white px-5 py-2 rounded-xl font-semibold">Save All</button>
-        </div>
-      </div>
+      <p class="login-footer">
+        <i data-lucide="shield" class="w-3 h-3"></i>
+        Plateforme privée — Accès sur invitation uniquement
+      </p>
     </div>
   </div>
 
-  <!-- ========== WORKER VIEW ENHANCED ========== -->
-  <div id="workerView" class="hidden p-4 md:p-6 space-y-6">
-    <div id="pendingBanner" class="hidden bg-warn/10 border border-warn/30 text-warn font-semibold p-4 rounded-xl text-center flex items-center justify-center gap-2">
-      <i data-lucide="alert-triangle" class="w-5 h-5"></i> Pending Approval – your account is under review.
-    </div>
-    <div id="workerDashboard" class="hidden space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div class="card-premium p-5 flex items-center justify-between">
-          <div><p class="text-muted text-xs">Balance (HTG)</p><p id="workerBalance" class="text-3xl font-bold">0</p></div>
-          <i data-lucide="wallet" class="w-8 h-8 text-primary/70"></i>
+  <!-- =====================================================
+       APPLICATION PRINCIPALE
+  ===================================================== -->
+  <div id="app" class="hidden app-layout">
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <!-- Brand -->
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <i data-lucide="zap" class="w-5 h-5"></i>
         </div>
-        <div class="card-premium p-5 flex items-center justify-between">
-          <div><p class="text-muted text-xs">Badge</p><p id="workerBadge" class="text-2xl font-bold">Bronze</p></div>
-          <i data-lucide="shield-check" class="w-8 h-8 text-lakay/70"></i>
+        <div class="brand-text">
+          <span class="brand-name">HBW Task</span>
+          <span class="brand-tagline">Travail en ligne</span>
         </div>
-        <div class="card-premium p-5 flex items-center justify-center">
-          <button id="btnWithdraw" class="bg-primary text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2">
-            <i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Request Withdrawal
+        <button class="sidebar-close-btn" onclick="toggleSidebar()" id="sidebar-close">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- User Info -->
+      <div class="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <p class="user-name" id="sidebar-username">Chargement...</p>
+          <span class="user-badge" id="sidebar-role-badge">---</span>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- Items injected by JS based on role -->
+      </nav>
+
+      <!-- Bottom Actions -->
+      <div class="sidebar-footer">
+        <button class="sidebar-footer-btn" onclick="toggleTheme()" title="Changer le thème">
+          <i data-lucide="moon" class="w-4 h-4" id="theme-icon"></i>
+          <span>Mode sombre</span>
+        </button>
+        <button class="sidebar-footer-btn danger" onclick="handleLogout()">
+          <i data-lucide="log-out" class="w-4 h-4"></i>
+          <span>Déconnexion</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- OVERLAY MOBILE -->
+    <div class="sidebar-overlay hidden" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+      <!-- TOPBAR -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="hamburger-btn" onclick="toggleSidebar()" id="hamburger">
+            <i data-lucide="menu" class="w-5 h-5"></i>
           </button>
-        </div>
-      </div>
-      <div class="card-premium p-5">
-        <div class="flex justify-between items-center mb-3">
-          <h3 class="font-display font-semibold text-lg">💰 Offerwalls</h3>
-          <button onclick="updateWorkerBalanceFromOfferwall()" class="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full font-semibold hover:bg-primary/20">↻ Refresh Balance</button>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
-            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Monlix</div>
-            <iframe id="monlixFrame" src="" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Monlix Offerwall"></iframe>
-          </div>
-          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
-            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Adscend</div>
-            <iframe id="adscendFrame" src="" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Adscend Offerwall"></iframe>
-          </div>
-          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
-            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">AyetStudios</div>
-            <iframe id="ayetFrame" src="" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="AyetStudios Offerwall"></iframe>
-          </div>
-          <div class="border border-border rounded-xl overflow-hidden h-64 bg-gray-50 dark:bg-slate-700">
-            <div class="text-xs font-semibold p-2 bg-gray-100 dark:bg-slate-600">Offertoro</div>
-            <iframe id="offertoroFrame" src="" sandbox="allow-scripts allow-same-origin" class="w-full h-full" title="Offertoro Offerwall"></iframe>
-          </div>
-        </div>
-      </div>
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">📋 Earnings History (last 20)</h3>
-        <div id="historyContainer" class="space-y-2 text-sm max-h-64 overflow-y-auto"></div>
-      </div>
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">👤 Profile</h3>
-        <div class="grid sm:grid-cols-2 gap-4 text-sm">
-          <div><span class="font-medium">Name:</span> <span id="profileName">-</span></div>
-          <div><span class="font-medium">Team:</span> <span id="profileTeam">-</span></div>
-          <div><span class="font-medium">Manager:</span> <span id="profileManager">-</span></div>
-        </div>
-      </div>
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">🏢 HBW Agency Tasks</h3>
-        <div id="agencyTasksContainer" class="space-y-3"></div>
-      </div>
-    </div>
-    <!-- Withdrawal Modal -->
-    <div id="withdrawModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
-        <h3 class="font-display font-bold text-lg mb-4">Request Withdrawal</h3>
-        <input id="withdrawAmount" type="number" placeholder="Amount (HTG)" class="border border-border rounded-xl px-4 py-2 w-full mb-3" />
-        <input id="withdrawMethod" type="text" placeholder="Payment method (e.g., MonCash)" class="border border-border rounded-xl px-4 py-2 w-full mb-4" />
-        <div class="flex justify-end gap-3">
-          <button id="cancelWithdraw" class="px-4 py-2 rounded-xl border border-border">Cancel</button>
-          <button id="submitWithdraw" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Submit</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== FREELANCER VIEW ENHANCED ========== -->
-  <div id="freelancerView" class="hidden p-4 md:p-6 space-y-6">
-    <div id="freelancerPendingBanner" class="hidden bg-warn/10 border border-warn/30 text-warn font-semibold p-4 rounded-xl text-center flex items-center justify-center gap-2">
-      <i data-lucide="alert-triangle" class="w-5 h-5"></i> Pending Approval – your account is under review.
-    </div>
-    <div id="freelancerMain" class="hidden space-y-6">
-      <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
-        <button data-ftab="dashboard" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Dashboard</button>
-        <button data-ftab="profile" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👤 Profile</button>
-        <button data-ftab="portfolio" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🖼️ Portfolio</button>
-        <button data-ftab="marketplace" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🛒 Marketplace</button>
-        <button data-ftab="applications" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📄 Applications</button>
-        <button data-ftab="reviews" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">⭐ Reviews</button>
-        <button data-ftab="messages" class="ftab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💬 Messages</button>
-      </div>
-      <div id="ftab-dashboard" class="ftab-content space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div class="card-premium p-5"><p class="text-muted text-xs">Total Revenue (HTG)</p><p id="freelancerRevenue" class="text-3xl font-bold">0</p></div>
-          <div class="card-premium p-5"><p class="text-muted text-xs">Jobs Completed</p><p id="freelancerCompleted" class="text-3xl font-bold">0</p></div>
-        </div>
-      </div>
-      <div id="ftab-profile" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5 space-y-4">
-          <h3 class="font-display font-semibold text-lg">Edit Profile</h3>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <div><label class="text-sm text-muted block mb-1">Skills</label><input id="freelancerSkills" type="text" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="e.g., Web Dev, Design" /></div>
-            <div><label class="text-sm text-muted block mb-1">Hourly Rate (HTG)</label><input id="freelancerRate" type="number" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="Rate" /></div>
-          </div>
-          <button id="freelancerSaveProfileBtn" onclick="freelancerSaveProfile()" class="bg-primary text-white px-5 py-2 rounded-xl font-semibold">Save Profile</button>
-        </div>
-      </div>
-      <div id="ftab-portfolio" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5 space-y-4">
-          <h3 class="font-display font-semibold text-lg">Portfolio Links</h3>
-          <div class="flex gap-2"><input id="portfolioLinkInput" type="url" placeholder="https://..." class="border rounded-xl px-4 py-2 flex-1"><button onclick="addPortfolioLink()" class="bg-primary text-white px-4 py-2 rounded-xl">Add</button></div>
-          <div id="portfolioLinksList" class="space-y-2"></div>
-        </div>
-      </div>
-      <div id="ftab-marketplace" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5">
-          <h3 class="font-display font-semibold text-lg mb-3">Available Jobs</h3>
-          <div class="flex gap-2 mb-3 flex-wrap">
-            <select id="marketplaceCategoryFilter" class="border rounded-xl px-3 py-1.5 text-sm bg-white dark:bg-slate-800"><option value="">All Categories</option></select>
-            <input id="marketplaceMinBudget" type="number" placeholder="Min budget" class="border rounded-xl px-3 py-1.5 text-sm w-28">
-            <button onclick="freelancerLoadMarketplace()" class="text-sm bg-primary/10 text-primary px-3 py-1.5 rounded-full">Search</button>
-          </div>
-          <div id="openJobsList" class="space-y-4"></div>
-        </div>
-      </div>
-      <div id="ftab-applications" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">My Applications</h3><div id="applicationsList" class="space-y-3"></div></div>
-      </div>
-      <div id="ftab-reviews" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">My Reviews</h3><div id="freelancerReviewsList" class="space-y-2"></div><p class="text-sm text-muted mt-2">Average Rating: <span id="freelancerAvgRating">-</span></p></div>
-      </div>
-      <div id="ftab-messages" class="ftab-content hidden space-y-4">
-        <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">Chats</h3><div id="chatList" class="flex flex-wrap gap-2 mb-4"></div><div id="chatWindow" class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto"><p class="text-muted text-sm">Select a chat to view messages.</p></div><div id="chatInputArea" class="hidden mt-3 flex gap-2"><input id="chatMessageInput" type="text" class="border border-border rounded-xl px-4 py-2 flex-1 bg-white dark:bg-slate-800" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendChatMessage()" /><button id="sendMessageBtn" onclick="sendChatMessage()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Send</button></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========== CLIENT/ENTREPRISE VIEW ENHANCED ========== -->
-  <div id="clientView" class="hidden p-4 md:p-6 space-y-6">
-    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
-      <button data-ctab="dashboard" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Dashboard</button>
-      <button data-ctab="postjob" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📝 Post a Job</button>
-      <button data-ctab="myjobs" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💼 My Jobs</button>
-      <button data-ctab="freelancers" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 Freelancers</button>
-      <button data-ctab="subscription" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📦 Subscription</button>
-      <button data-ctab="collaborators" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 Collaborators</button>
-      <button data-ctab="messages" class="ctab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💬 Messages</button>
-    </div>
-
-    <div id="ctab-dashboard" class="ctab-content space-y-6">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div class="card-premium p-5"><p class="text-muted text-xs">Balance (HTG)</p><p id="clientBalance" class="text-3xl font-bold">0</p></div>
-        <div class="card-premium p-5"><p class="text-muted text-xs">Jobs Posted</p><p id="clientJobsCount" class="text-3xl font-bold">0</p></div>
-        <div class="card-premium p-5"><p class="text-muted text-xs">Active Contracts</p><p id="clientActiveContracts" class="text-3xl font-bold">0</p></div>
-        <div class="card-premium p-5"><p class="text-muted text-xs">Subscription</p><p id="clientSubStatus" class="text-lg font-bold text-primary">None</p><p id="clientSubExpiry" class="text-xs text-muted"></p></div>
-      </div>
-      <div class="card-premium p-5"><h3 class="font-display font-semibold mb-3">📈 Monthly Spending</h3><canvas id="clientSpendingChart" height="100"></canvas></div>
-      <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">💰 Add Funds (Simulated)</h3><div class="flex gap-3 items-end"><div><label class="text-sm text-muted">Amount (HTG)</label><input id="depositAmount" type="number" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800" placeholder="5000" min="1"></div><button id="depositBtn" class="bg-primary text-white px-5 py-2 rounded-xl font-semibold">Deposit</button></div></div>
-    </div>
-
-    <div id="ctab-postjob" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5 space-y-4">
-        <h3 class="font-display font-semibold text-lg">Post a New Job</h3>
-        <div><label class="text-sm text-muted">Title</label><input id="jobTitle" type="text" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="e.g., Website redesign"></div>
-        <div><label class="text-sm text-muted">Description</label><textarea id="jobDescription" rows="3" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="Describe the project..."></textarea></div>
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div><label class="text-sm text-muted">Budget (HTG)</label><input id="jobBudget" type="number" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" min="100"></div>
-          <div><label class="text-sm text-muted">Category</label><select id="jobCategory" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800"><option value="">Select category</option></select></div>
-          <div><label class="text-sm text-muted">Deadline</label><input id="jobDeadline" type="date" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800"></div>
-          <div><label class="text-sm text-muted">Attachment (URL)</label><input id="jobAttachment" type="url" class="border border-border rounded-xl px-4 py-2 w-full bg-white dark:bg-slate-800" placeholder="https://..."></div>
-        </div>
-        <button id="postJobBtn" class="bg-primary text-white px-6 py-2 rounded-xl font-semibold">Publish Job</button>
-      </div>
-    </div>
-
-    <div id="ctab-myjobs" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">My Jobs & Applications</h3><div id="myJobsList" class="space-y-4"></div></div>
-    </div>
-
-    <div id="ctab-freelancers" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">Browse Freelancers</h3><div id="freelancersList" class="space-y-3"></div></div>
-    </div>
-
-    <div id="ctab-subscription" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">Choose a Plan</h3>
-        <div id="availablePlansClient" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"></div>
-        <div class="border-t pt-4"><h4 class="font-semibold mb-2">Your Subscription History</h4><div id="clientSubHistory" class="space-y-1 text-sm"></div></div>
-      </div>
-    </div>
-
-    <div id="ctab-collaborators" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">Manage Collaborators</h3>
-        <div class="flex gap-2 mb-4"><input id="collaboratorIdInput" type="text" placeholder="Username" class="border rounded-xl px-4 py-2"><button onclick="addCollaborator()" class="bg-primary text-white px-4 py-2 rounded-xl">Add</button></div>
-        <div id="collaboratorsList" class="space-y-2"></div>
-      </div>
-    </div>
-
-    <div id="ctab-messages" class="ctab-content hidden space-y-4">
-      <div class="card-premium p-5"><h3 class="font-display font-semibold text-lg mb-3">Chats</h3><div id="clientChatList" class="flex flex-wrap gap-2 mb-4"></div><div id="clientChatWindow" class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 max-h-64 overflow-y-auto"><p class="text-muted text-sm">Select a chat to view messages.</p></div><div id="clientChatInputArea" class="hidden mt-3 flex gap-2"><input id="clientChatMessageInput" type="text" class="border border-border rounded-xl px-4 py-2 flex-1 bg-white dark:bg-slate-800" placeholder="Type a message..." onkeydown="if(event.key==='Enter') sendClientChatMessage()" /><button id="clientSendMessageBtn" onclick="sendClientChatMessage()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Send</button></div></div>
-    </div>
-  </div>
-</div>
-      <!-- ========== MANAGER VIEW (ENHANCED) ========== -->
-<div id="managerView" class="hidden pt-0 p-0 md:p-0 space-y-0">
-  <div class="bg-primary px-5 pt-6 pb-12 rounded-b-[2rem]">
-    <p class="text-white/70 text-sm">Manager Dashboard</p>
-    <h2 id="managerName" class="font-display font-extrabold text-white text-2xl mt-0.5"></h2>
-    <p id="managerTeamDisplay" class="text-white/80 text-sm mt-1"></p>
-  </div>
-
-  <div class="px-4 -mt-8 space-y-4">
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-      <div class="card-premium p-4 flex flex-col">
-        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Team Balance</span>
-        <span id="managerTeamBalance" class="font-display font-extrabold text-2xl text-primary mt-1">0 HTG</span>
-      </div>
-      <div class="card-premium p-4 flex flex-col">
-        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Team Members</span>
-        <span id="managerTeamCount" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
-      </div>
-      <div class="card-premium p-4 flex flex-col">
-        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Tasks Completed</span>
-        <span id="managerTeamTasks" class="font-display font-extrabold text-2xl text-text dark:text-white mt-1">0</span>
-      </div>
-      <div class="card-premium p-4 flex flex-col">
-        <span class="text-xs text-muted dark:text-slate-400 uppercase tracking-wider">Your Commission</span>
-        <span id="managerBalance" class="font-display font-extrabold text-2xl text-lakay mt-1">0 HTG</span>
-      </div>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex flex-wrap gap-1 border-b border-border dark:border-slate-700 pb-2">
-      <button data-mtab="team" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">👥 My Team</button>
-      <button data-mtab="addmember" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">➕ Add Member</button>
-      <button data-mtab="stats" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">📊 Statistics</button>
-      <button data-mtab="notifications" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">🔔 Notifications</button>
-      <button data-mtab="withdraw" class="mtab-btn px-4 py-2 rounded-lg text-sm font-medium transition-all">💰 Withdraw</button>
-    </div>
-
-    <!-- Tab: My Team (list + creation) -->
-    <div id="mtab-team" class="mtab-content space-y-4">
-      <div id="noTeamYet" class="card-premium p-5 text-center hidden">
-        <i data-lucide="users-plus" class="w-12 h-12 text-primary mx-auto mb-2"></i>
-        <p class="font-semibold text-lg">You haven't created a team yet.</p>
-        <p class="text-muted text-sm mb-3">Create your team and start adding members.</p>
-        <input id="newTeamName" type="text" placeholder="Enter team name" class="border border-border rounded-xl px-4 py-2 mb-2 w-full max-w-xs">
-        <button onclick="createManagerTeam()" class="bg-primary text-white px-6 py-2 rounded-xl font-semibold">Create Team</button>
-      </div>
-      <div id="teamExists" class="space-y-4 hidden">
-        <div class="card-premium p-4">
-          <h3 class="font-display font-semibold text-lg mb-3">Team Members</h3>
-          <div id="managerTeamList" class="space-y-2 max-h-96 overflow-y-auto"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tab: Add Member (only if team exists) -->
-    <div id="mtab-addmember" class="mtab-content hidden space-y-4">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">Add New Member</h3>
-        <div class="grid sm:grid-cols-2 gap-4 mb-4">
-          <input id="memberFirstName" type="text" placeholder="First Name *" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <input id="memberLastName" type="text" placeholder="Last Name *" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <input id="memberAge" type="number" placeholder="Age" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <select id="memberGender" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-            <option value="">Select Gender</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="other">Other</option>
-          </select>
-          <input id="memberAddress" type="text" placeholder="Address" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <input id="memberEmail" type="email" placeholder="Email (optional)" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <input id="memberPhone" type="text" placeholder="Phone Number" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-          <select id="memberStatus" class="border rounded-xl px-4 py-2 bg-white dark:bg-slate-800">
-            <option value="">Select Status</option>
-            <option value="student">Student</option>
-            <option value="university">University</option>
-            <option value="trader">Trader</option>
-            <option value="employee">Employee</option>
-            <option value="other">Other</option>
-          </select>
-        </div>
-        <div class="flex gap-2 items-end">
-          <button onclick="addTeamMember()" class="bg-lakay text-white px-6 py-2 rounded-xl font-semibold">Add Member</button>
-          <span id="memberMsg" class="text-sm text-muted"></span>
-        </div>
-      
-    <p class="text-xs text-muted mt-2">Username and password will be auto-generated.</p>
-      </div>
-    </div>
-
-    <!-- Tab: Statistics (unchanged) -->
-    <div id="mtab-stats" class="mtab-content hidden space-y-4">
-      <div class="card-premium p-4">
-        <h3 class="font-display font-semibold text-lg mb-3">Team Activity (7 days)</h3>
-        <canvas id="managerChart" height="150"></canvas>
-      </div>
-    </div>
-
-    <!-- Tab: Notifications (unchanged) -->
-    <div id="mtab-notifications" class="mtab-content hidden space-y-4">
-      <div class="card-premium p-4">
-        <h3 class="font-display font-semibold text-lg mb-3">Recent Notifications</h3>
-        <div id="managerNotificationsList" class="space-y-2 text-sm"></div>
-      </div>
-    </div>
-
-    <!-- Tab: Withdraw (unchanged) -->
-    <div id="mtab-withdraw" class="mtab-content hidden space-y-4">
-      <div class="card-premium p-5">
-        <h3 class="font-display font-semibold text-lg mb-3">Withdraw Commission</h3>
-        <div class="flex gap-2 items-end">
           <div>
-            <label class="text-sm text-muted">Amount (HTG)</label>
-            <input id="managerWithdrawAmount" type="number" class="border border-border rounded-xl px-4 py-2 bg-white dark:bg-slate-800" placeholder="500">
+            <h2 class="page-title" id="page-title">Tableau de bord</h2>
+            <p class="page-breadcrumb" id="page-breadcrumb">HBW Task</p>
           </div>
-          <button onclick="managerWithdraw()" class="bg-primary text-white px-4 py-2 rounded-xl font-semibold">Request</button>
         </div>
-        <p id="managerWithdrawMsg" class="text-xs mt-2"></p>
-      </div>
+        <div class="topbar-right">
+          <!-- Solde (worker only) -->
+          <div id="topbar-balance" class="topbar-balance hidden">
+            <i data-lucide="wallet" class="w-4 h-4"></i>
+            <span id="topbar-balance-amount">0 HTG</span>
+          </div>
+          <!-- Notifications -->
+          <button class="notif-btn" onclick="toggleNotifications()" id="notif-toggle">
+            <i data-lucide="bell" class="w-5 h-5"></i>
+            <span class="notif-badge hidden" id="notif-badge">0</span>
+          </button>
+          <!-- Notifications Dropdown -->
+          <div class="notif-dropdown hidden" id="notif-dropdown">
+            <div class="notif-header">
+              <span>Notifications</span>
+              <button onclick="markAllRead()" class="notif-mark-all">Tout lire</button>
+            </div>
+            <div class="notif-list" id="notif-list">
+              <div class="notif-empty">Aucune notification</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- PAGES CONTAINER -->
+      <div class="pages-container" id="pages-container">
+
+        <!-- ==================== PAGE : ADMIN DASHBOARD ==================== -->
+        <div id="page-admin-dashboard" class="page hidden">
+          <div class="stats-grid">
+            <div class="stat-card blue">
+              <div class="stat-icon"><i data-lucide="users" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Total Utilisateurs</p>
+                <p class="stat-value" id="stat-total-users">0</p>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-icon"><i data-lucide="user-check" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Workers Actifs</p>
+                <p class="stat-value" id="stat-active-workers">0</p>
+              </div>
+            </div>
+            <div class="stat-card yellow">
+              <div class="stat-icon"><i data-lucide="briefcase" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Managers</p>
+                <p class="stat-value" id="stat-managers">0</p>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-icon"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Solde Total</p>
+                <p class="stat-value" id="stat-total-balance">0 HTG</p>
+                <p class="stat-sub" id="stat-usd-equiv">≈ 0 USD</p>
+              </div>
+            </div>
+            <div class="stat-card red">
+              <div class="stat-icon"><i data-lucide="clock" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Retraits en attente</p>
+                <p class="stat-value" id="stat-pending-withdrawals">0</p>
+              </div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-icon"><i data-lucide="alert-triangle" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">En Maintenance</p>
+                <p class="stat-value" id="stat-maintenance">0</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <!-- Chart -->
+            <div class="card chart-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trending-up" class="w-5 h-5"></i> Gains des 7 derniers jours</h3>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="admin-earnings-chart"></canvas>
+              </div>
+            </div>
+
+            <!-- Pending Withdrawals -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="arrow-down-circle" class="w-5 h-5"></i> Retraits en attente</h3>
+                <button class="btn-link" onclick="showPage('admin-withdrawals')">Voir tout</button>
+              </div>
+              <div id="pending-withdrawals-list" class="mini-list">
+                <div class="empty-state-sm">Aucun retrait en attente</div>
+              </div>
+            </div>
+
+            <!-- Top Workers -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trophy" class="w-5 h-5"></i> Top 10 Workers</h3>
+              </div>
+              <div id="top-workers-list" class="mini-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+
+            <!-- Maintenance Workers -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="alert-circle" class="w-5 h-5"></i> Workers en Maintenance</h3>
+                <button class="btn-link" onclick="showPage('admin-maintenance')">Voir tout</button>
+              </div>
+              <div id="maintenance-workers-list" class="mini-list">
+                <div class="empty-state-sm">Aucun worker en maintenance</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN UTILISATEURS ==================== -->
+        <div id="page-admin-users" class="page hidden">
+          <div class="page-toolbar">
+            <div class="search-bar">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <input type="text" id="users-search" placeholder="Rechercher un utilisateur..." oninput="filterUsers()" />
+            </div>
+            <div class="filter-group">
+              <select id="users-role-filter" onchange="filterUsers()" class="form-select-sm">
+                <option value="">Tous les rôles</option>
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="worker">Worker</option>
+              </select>
+              <select id="users-team-filter" onchange="filterUsers()" class="form-select-sm">
+                <option value="">Toutes les équipes</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table" id="users-table">
+                <thead>
+                  <tr>
+                    <th>Utilisateur</th>
+                    <th>Rôle</th>
+                    <th>Équipe</th>
+                    <th>Solde</th>
+                    <th>Tâches</th>
+                    <th>Statut</th>
+                    <th>Maintenance</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody">
+                  <tr><td colspan="8" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN ÉQUIPES ==================== -->
+        <div id="page-admin-teams" class="page hidden">
+          <div class="page-toolbar">
+            <button class="btn-primary" onclick="showCreateTeamModal()">
+              <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle équipe
+            </button>
+          </div>
+          <div class="teams-grid" id="teams-grid">
+            <div class="empty-state">Chargement des équipes...</div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN TÂCHES ==================== -->
+        <div id="page-admin-tasks" class="page hidden">
+          <div class="page-toolbar">
+            <div class="tabs-bar">
+              <button class="tab-btn active" onclick="switchTaskTab('available')" id="tab-available">Disponibles</button>
+              <button class="tab-btn" onclick="switchTaskTab('pending')" id="tab-pending">En attente</button>
+              <button class="tab-btn" onclick="switchTaskTab('completed')" id="tab-completed">Complétées</button>
+            </div>
+            <button class="btn-primary" onclick="showCreateTaskModal()">
+              <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle tâche
+            </button>
+          </div>
+
+          <div id="admin-tasks-content" class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Titre</th>
+                    <th>Type</th>
+                    <th>Récompense</th>
+                    <th>Worker</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-tasks-tbody">
+                  <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN MAINTENANCE ==================== -->
+        <div id="page-admin-maintenance" class="page hidden">
+          <div class="page-toolbar">
+            <h3 class="section-title">Gestion des Maintenances</h3>
+            <button class="btn-primary" onclick="showAddMaintenanceModal()">
+              <i data-lucide="plus" class="w-4 h-4"></i> Activer maintenance
+            </button>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Worker</th>
+                    <th>Équipe</th>
+                    <th>Montant</th>
+                    <th>Preuve</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="maintenance-tbody">
+                  <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN RETRAITS ==================== -->
+        <div id="page-admin-withdrawals" class="page hidden">
+          <div class="page-toolbar">
+            <div class="tabs-bar">
+              <button class="tab-btn active" onclick="switchWithdrawalTab('pending')" id="wtab-pending">En attente</button>
+              <button class="tab-btn" onclick="switchWithdrawalTab('approved')" id="wtab-approved">Approuvés</button>
+              <button class="tab-btn" onclick="switchWithdrawalTab('rejected')" id="wtab-rejected">Rejetés</button>
+            </div>
+          </div>
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Utilisateur</th>
+                    <th>Montant</th>
+                    <th>Méthode</th>
+                    <th>Numéro</th>
+                    <th>Statut</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawals-tbody">
+                  <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN LOGS ==================== -->
+        <div id="page-admin-logs" class="page hidden">
+          <div class="page-toolbar">
+            <div class="search-bar">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <input type="text" id="logs-search" placeholder="Rechercher dans les logs..." oninput="filterLogs()" />
+            </div>
+            <select id="logs-type-filter" onchange="filterLogs()" class="form-select-sm">
+              <option value="">Tous les types</option>
+              <option value="login">Connexion</option>
+              <option value="task">Tâche</option>
+              <option value="withdrawal">Retrait</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="user">Utilisateur</option>
+            </select>
+          </div>
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Action</th>
+                    <th>Détails</th>
+                    <th>Utilisateur</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="logs-tbody">
+                  <tr><td colspan="4" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : ADMIN PARAMÈTRES ==================== -->
+        <div id="page-admin-settings" class="page hidden">
+          <div class="settings-grid">
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="dollar-sign" class="w-5 h-5"></i> Taux de Change</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label class="form-label">1 USD = ? HTG</label>
+                  <input type="number" id="exchange-rate-input" class="form-input" placeholder="130" />
+                </div>
+                <button class="btn-primary" onclick="saveExchangeRate()">
+                  <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
+                </button>
+                <p class="settings-current" id="current-exchange-rate">Taux actuel : chargement...</p>
+              </div>
+            </div>
+
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="wrench" class="w-5 h-5"></i> Frais de Maintenance</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label class="form-label">Montant par défaut (HTG)</label>
+                  <input type="number" id="maintenance-fee-input" class="form-input" placeholder="250" />
+                </div>
+                <button class="btn-primary" onclick="saveMaintenanceFee()">
+                  <i data-lucide="save" class="w-4 h-4"></i> Enregistrer
+                </button>
+                <p class="settings-current" id="current-maintenance-fee">Frais actuels : chargement...</p>
+              </div>
+            </div>
+
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="shield" class="w-5 h-5"></i> Informations Plateforme</h3>
+              </div>
+              <div class="info-list">
+                <div class="info-item">
+                  <span class="info-key">Plateforme</span>
+                  <span class="info-val">HBW Task & Travail en ligne</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-key">Version</span>
+                  <span class="info-val">1.0.0</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-key">Firebase Project</span>
+                  <span class="info-val">hbwtaskpam</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-key">Accès</span>
+                  <span class="info-val badge-green">Privé</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="user-plus" class="w-5 h-5"></i> Créer un Manager</h3>
+              </div>
+              <div class="settings-form">
+                <div class="form-group">
+                  <label class="form-label">Nom complet</label>
+                  <input type="text" id="new-manager-name" class="form-input" placeholder="Jean Dupont" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Nom d'utilisateur</label>
+                  <input type="text" id="new-manager-username" class="form-input" placeholder="manager_02" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Mot de passe</label>
+                  <input type="text" id="new-manager-password" class="form-input" placeholder="Mot de passe sécurisé" />
+                </div>
+                <button class="btn-primary" onclick="createManagerAccount()">
+                  <i data-lucide="user-plus" class="w-4 h-4"></i> Créer le compte
+                </button>
+                <div id="manager-creation-result" class="hidden result-box"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER DASHBOARD ==================== -->
+        <div id="page-manager-dashboard" class="page hidden">
+          <div class="stats-grid">
+            <div class="stat-card blue">
+              <div class="stat-icon"><i data-lucide="users" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Membres de l'équipe</p>
+                <p class="stat-value" id="mgr-stat-members">0</p>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-icon"><i data-lucide="check-circle" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Tâches du jour</p>
+                <p class="stat-value" id="mgr-stat-tasks">0</p>
+              </div>
+            </div>
+            <div class="stat-card yellow">
+              <div class="stat-icon"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Gain moyen</p>
+                <p class="stat-value" id="mgr-stat-avg">0 HTG</p>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-icon"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+              <div class="stat-info">
+                <p class="stat-label">Solde total équipe</p>
+                <p class="stat-value" id="mgr-stat-balance">0 HTG</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="card chart-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="bar-chart-2" class="w-5 h-5"></i> Activité de l'équipe (7 jours)</h3>
+              </div>
+              <div class="chart-wrapper">
+                <canvas id="manager-chart"></canvas>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="award" class="w-5 h-5"></i> Classement de l'équipe</h3>
+              </div>
+              <div id="team-ranking-list" class="mini-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER MEMBRES ==================== -->
+        <div id="page-manager-members" class="page hidden">
+          <div class="page-toolbar">
+            <div class="search-bar">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <input type="text" id="members-search" placeholder="Rechercher un membre..." oninput="filterMembers()" />
+            </div>
+            <button class="btn-primary" onclick="showAddMemberModal()">
+              <i data-lucide="user-plus" class="w-4 h-4"></i> Ajouter un membre
+            </button>
+          </div>
+
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Membre</th>
+                    <th>Contact</th>
+                    <th>Solde</th>
+                    <th>Tâches</th>
+                    <th>Badge</th>
+                    <th>Dernière activité</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="members-tbody">
+                  <tr><td colspan="7" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER MESSAGERIE ==================== -->
+        <div id="page-manager-messages" class="page hidden">
+          <div class="card messaging-card">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="message-square" class="w-5 h-5"></i> Envoyer un message</h3>
+            </div>
+            <div class="messaging-form">
+              <div class="form-group">
+                <label class="form-label">Destinataire</label>
+                <select id="msg-recipient" class="form-select">
+                  <option value="all">Toute l'équipe</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Message</label>
+                <textarea id="msg-content" class="form-textarea" rows="4" placeholder="Votre message..."></textarea>
+              </div>
+              <button class="btn-primary" onclick="sendTeamMessage()">
+                <i data-lucide="send" class="w-4 h-4"></i> Envoyer
+              </button>
+            </div>
+
+            <div class="card-header mt-6">
+              <h3 class="card-title"><i data-lucide="inbox" class="w-5 h-5"></i> Messages envoyés</h3>
+            </div>
+            <div id="sent-messages-list" class="mini-list">
+              <div class="empty-state-sm">Aucun message envoyé</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER STATISTIQUES ==================== -->
+        <div id="page-manager-stats" class="page hidden">
+          <div class="card table-card">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="bar-chart" class="w-5 h-5"></i> Performances des membres</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Rang</th>
+                    <th>Membre</th>
+                    <th>Tâches totales</th>
+                    <th>Gain total</th>
+                    <th>Gain moyen/tâche</th>
+                    <th>Badge</th>
+                  </tr>
+                </thead>
+                <tbody id="stats-tbody">
+                  <tr><td colspan="6" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER DASHBOARD ==================== -->
+        <div id="page-worker-dashboard" class="page hidden">
+
+          <!-- Maintenance Banner -->
+          <div id="maintenance-banner" class="maintenance-banner hidden">
+            <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+            <div>
+              <strong>Compte en maintenance !</strong>
+              <p>Vous devez payer <span id="maintenance-amount-banner">250 HTG</span> pour réactiver votre compte.</p>
+            </div>
+            <button class="btn-sm-white" onclick="showPage('worker-maintenance')">Payer maintenant</button>
+          </div>
+
+          <!-- Balance Hero -->
+          <div class="balance-hero">
+            <div class="balance-card">
+              <p class="balance-label">Votre Solde</p>
+              <p class="balance-amount" id="worker-balance">0 HTG</p>
+              <p class="balance-usd" id="worker-balance-usd">≈ 0 USD</p>
+              <div class="badge-display">
+                <span class="worker-badge-icon" id="worker-badge-icon">🥉</span>
+                <span class="worker-badge-name" id="worker-badge-name">Bronze</span>
+              </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+              <div class="progress-header">
+                <span>Progression vers <span id="next-badge-name">Silver</span></span>
+                <span id="progress-count">0 / 50 tâches</span>
+              </div>
+              <div class="progress-bar-wrapper">
+                <div class="progress-bar-fill" id="progress-bar" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="quick-actions">
+              <button class="quick-btn primary" onclick="showPage('worker-withdrawal')">
+                <i data-lucide="arrow-up-circle" class="w-5 h-5"></i>
+                <span>Retrait</span>
+              </button>
+              <button class="quick-btn secondary" onclick="showPage('worker-history')">
+                <i data-lucide="history" class="w-5 h-5"></i>
+                <span>Historique</span>
+              </button>
+              <button class="quick-btn tertiary" onclick="showPage('worker-tasks')">
+                <i data-lucide="briefcase" class="w-5 h-5"></i>
+                <span>Tâches</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="activity" class="w-5 h-5"></i> Activité récente</h3>
+            </div>
+            <div id="worker-recent-activity" class="mini-list">
+              <div class="empty-state-sm">Aucune activité récente</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER OFFERWALLS ==================== -->
+        <div id="page-worker-offerwalls" class="page hidden">
+          <div class="offerwalls-grid">
+            <div class="card offerwall-card" onclick="openOfferwall('monlix')">
+              <div class="offerwall-logo monlix">M</div>
+              <div>
+                <h3 class="offerwall-name">Monlix</h3>
+                <p class="offerwall-desc">Sondages et offres</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('adscend')">
+              <div class="offerwall-logo adscend">A</div>
+              <div>
+                <h3 class="offerwall-name">Adscend Media</h3>
+                <p class="offerwall-desc">Offres premium</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('ayet')">
+              <div class="offerwall-logo ayet">Y</div>
+              <div>
+                <h3 class="offerwall-name">AyetStudios</h3>
+                <p class="offerwall-desc">Jeux et applications</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('offertoro')">
+              <div class="offerwall-logo offertoro">O</div>
+              <div>
+                <h3 class="offerwall-name">Offertoro</h3>
+                <p class="offerwall-desc">Micro-tâches variées</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+          </div>
+
+          <!-- Offerwall iframe -->
+          <div id="offerwall-iframe-container" class="hidden card mt-4">
+            <div class="card-header">
+              <h3 class="card-title" id="offerwall-iframe-title">Offerwall</h3>
+              <button class="btn-link" onclick="closeOfferwall()">
+                <i data-lucide="x" class="w-4 h-4"></i> Fermer
+              </button>
+            </div>
+            <iframe id="offerwall-iframe" src="" class="offerwall-iframe" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER TÂCHES AGENCY ==================== -->
+        <div id="page-worker-tasks" class="page hidden">
+          <div class="tasks-grid" id="worker-tasks-grid">
+            <div class="empty-state">Chargement des tâches...</div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER HISTORIQUE ==================== -->
+        <div id="page-worker-history" class="page hidden">
+          <div class="card table-card">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="history" class="w-5 h-5"></i> Historique des gains</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Description</th>
+                    <th>Montant</th>
+                    <th>Type</th>
+                  </tr>
+                </thead>
+                <tbody id="history-tbody">
+                  <tr><td colspan="4" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER MAINTENANCE ==================== -->
+        <div id="page-worker-maintenance" class="page hidden">
+          <div class="card maintenance-card">
+            <div class="maintenance-icon">
+              <i data-lucide="alert-triangle" class="w-12 h-12 text-yellow-400"></i>
+            </div>
+            <h3 class="maintenance-title">Compte en Maintenance</h3>
+            <div id="maintenance-info" class="maintenance-info">
+              <p>Votre compte nécessite une maintenance. Veuillez payer le montant indiqué et soumettre une preuve de paiement.</p>
+              <div class="maintenance-amount-display">
+                <span class="maintenance-label">Montant à payer :</span>
+                <span class="maintenance-value" id="worker-maintenance-amount">250 HTG</span>
+              </div>
+            </div>
+
+            <div class="maintenance-form" id="maintenance-form">
+              <div class="form-group">
+                <label class="form-label">Preuve de paiement</label>
+                <p class="form-hint">Uploadez une capture d'écran ou entrez l'URL de votre preuve</p>
+                <input type="text" id="maintenance-proof-url" class="form-input" placeholder="URL de la preuve (ex: https://...)" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Ou uploadez une image</label>
+                <div class="file-upload-zone" id="maintenance-file-zone">
+                  <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400"></i>
+                  <p>Cliquez ou glissez une image</p>
+                  <input type="file" id="maintenance-file" accept="image/*" class="hidden" onchange="handleMaintenanceFile()" />
+                </div>
+              </div>
+              <button class="btn-primary w-full" onclick="submitMaintenanceProof()">
+                <i data-lucide="send" class="w-4 h-4"></i> Soumettre la preuve
+              </button>
+              <div id="maintenance-submitted-msg" class="hidden success-banner">
+                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                Preuve soumise. En attente de validation par l'admin.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER RETRAIT ==================== -->
+        <div id="page-worker-withdrawal" class="page hidden">
+          <div class="withdrawal-layout">
+            <div class="card withdrawal-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Demande de retrait</h3>
+              </div>
+
+              <div class="withdrawal-balance-info">
+                <p class="wd-label">Solde disponible</p>
+                <p class="wd-balance" id="wd-balance">0 HTG</p>
+              </div>
+
+              <div id="withdrawal-error" class="error-banner hidden mb-4">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span id="withdrawal-error-msg"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Méthode de paiement</label>
+                <div class="method-selector">
+                  <div class="method-option selected" onclick="selectMethod('MonCash')" id="method-moncash">
+                    <div class="method-logo moncash">M</div>
+                    <span>MonCash</span>
+                  </div>
+                  <div class="method-option" onclick="selectMethod('Natcash')" id="method-natcash">
+                    <div class="method-logo natcash">N</div>
+                    <span>Natcash</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Montant (HTG)</label>
+                <input type="number" id="wd-amount" class="form-input" placeholder="Montant à retirer" min="100" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Numéro de téléphone</label>
+                <input type="tel" id="wd-phone" class="form-input" placeholder="509-XXXX-XXXX" />
+              </div>
+
+              <button class="btn-primary w-full" onclick="requestWithdrawal()">
+                <i data-lucide="send" class="w-4 h-4"></i> Envoyer la demande
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="history" class="w-5 h-5"></i> Mes retraits</h3>
+              </div>
+              <div id="my-withdrawals-list" class="mini-list">
+                <div class="empty-state-sm">Aucun retrait</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : WORKER NOTIFICATIONS ==================== -->
+        <div id="page-worker-notifications" class="page hidden">
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="bell" class="w-5 h-5"></i> Toutes les notifications</h3>
+              <button class="btn-link" onclick="markAllRead()">Tout lire</button>
+            </div>
+            <div id="all-notifications-list" class="notifications-list">
+              <div class="empty-state-sm">Aucune notification</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /pages-container -->
+    </main>
+  </div><!-- /app -->
+
+  <!-- =====================================================
+       MODALES
+  ===================================================== -->
+
+  <!-- Modal Overlay -->
+  <div class="modal-overlay hidden" id="modal-overlay" onclick="closeModal()"></div>
+
+  <!-- Modal : Détail Utilisateur -->
+  <div class="modal hidden" id="modal-user-detail">
+    <div class="modal-header">
+      <h3 class="modal-title">Détail de l'utilisateur</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body" id="modal-user-detail-body">
+      <div class="text-center py-8 text-gray-400">Chargement...</div>
     </div>
   </div>
-</div>
 
-<!-- Notifications Modal -->
-<div id="notificationsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-md w-full mx-4 max-h-96 overflow-y-auto">
-    <h3 class="font-display font-bold text-lg mb-3">Notifications</h3>
-    <div id="notificationsList" class="space-y-2"></div>
-    <button onclick="closeNotifications()" class="mt-3 text-xs text-muted">Close</button>
+  <!-- Modal : Créer/Modifier Équipe -->
+  <div class="modal hidden" id="modal-team">
+    <div class="modal-header">
+      <h3 class="modal-title" id="modal-team-title">Nouvelle équipe</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="team-modal-id" />
+      <div class="form-group">
+        <label class="form-label">Nom de l'équipe</label>
+        <input type="text" id="team-name-input" class="form-input" placeholder="Équipe Alpha" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Manager (optionnel)</label>
+        <select id="team-manager-select" class="form-select">
+          <option value="">Sélectionner un manager</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="saveTeam()">Enregistrer</button>
+    </div>
   </div>
-</div>
 
-<!-- User Detail Modal (Admin) -->
-<div id="userDetailModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
-    <h3 class="font-display font-bold text-lg mb-3">User Details</h3>
-    <div id="userDetailContent" class="text-sm space-y-2"></div>
-    <button onclick="document.getElementById('userDetailModal').classList.add('hidden')" class="mt-4 text-xs text-muted">Close</button>
+  <!-- Modal : Créer Tâche -->
+  <div class="modal hidden" id="modal-task">
+    <div class="modal-header">
+      <h3 class="modal-title">Nouvelle tâche agency</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Titre</label>
+        <input type="text" id="task-title-input" class="form-input" placeholder="Nom de la tâche" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description / Instructions</label>
+        <textarea id="task-desc-input" class="form-textarea" rows="4" placeholder="Instructions détaillées..."></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Récompense (HTG)</label>
+        <input type="number" id="task-reward-input" class="form-input" placeholder="500" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="createTask()">Créer la tâche</button>
+    </div>
   </div>
+
+  <!-- Modal : Valider Tâche Worker -->
+  <div class="modal hidden" id="modal-task-proof">
+    <div class="modal-header">
+      <h3 class="modal-title">Soumettre une preuve</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="task-proof-id" />
+      <div class="form-group">
+        <label class="form-label">Instructions de la tâche</label>
+        <div class="task-instructions-box" id="task-instructions-box"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL de la preuve</label>
+        <input type="text" id="task-proof-url" class="form-input" placeholder="Lien vers la capture d'écran..." />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="submitTaskProof()">Soumettre</button>
+    </div>
   </div>
 
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
-<script>
-  /**********************************************************************
-   * FIRESTORE SECURITY RULES (Recommended)
-   * 
-   * rules_version = '2';
-   * service cloud.firestore {
-   *   match /databases/{database}/documents {
-   *     // Users
-   *     match /users/{userId} {
-   *       allow read: if request.auth != null;
-   *       allow create: if request.auth != null && request.auth.uid == userId
-   *                     && request.resource.data.role in ['worker','freelancer','client','entreprise']
-   *                     && request.resource.data.approved == false;
-   *       allow update: if request.auth != null && 
-   *                     (request.auth.uid == userId || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
-   *                     && !('balanceHTG' in request.resource.data && request.auth.uid != userId); // only admin or self can change balance
-   *       allow delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-   *     }
-   *     // Jobs, Applications, Contracts, Chats, Withdrawals, Logs, Teams, Config, Notifications, Subscriptions, Plans
-   *     // Only authenticated users, admin can manage config/plans. Users can read/write their own data.
-   *   }
-   * }
-   **********************************************************************/
-
-  // FIREBASE INIT
-  firebase.initializeApp({
-    apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
-    authDomain: "hbwtaskpam.firebaseapp.com",
-    projectId: "hbwtaskpam",
-    storageBucket: "hbwtaskpam.firebasestorage.app",
-    messagingSenderId: "142029895340",
-    appId: "1:142029895340:web:ce94830569430491ef5109",
-    measurementId: "G-MN333N948P"
-  });
-  const auth = firebase.auth();
-  const db = firebase.firestore();
-
-  let currentUser = null, firebaseToken = null;
-  let allUsersCache = [], categoriesCache = [], managersCache = [];
-  let workerUnsubscribe = null, freelancerUnsubscribe = null, clientUnsubscribe = null;
-  let freelancerTabsInitialized = false, clientTabsInitialized = false;
-  let currentClientChatId = null;
-  let currentChatId = null;
-  let logsPage = 0, logsPageSize = 20;
-  let notificationUnsubscribe = null;
-
-  function applyDarkMode(pref) { const isDark = pref === 'dark' || (!pref && window.matchMedia('(prefers-color-scheme: dark)').matches); document.documentElement.classList.toggle('dark', isDark); localStorage.setItem('theme', isDark ? 'dark' : 'light'); }
-  function toggleDarkMode() { applyDarkMode(document.documentElement.classList.contains('dark') ? 'light' : 'dark'); }
-  applyDarkMode(localStorage.getItem('theme'));
-
-  function showLoading() { document.getElementById('loadingOverlay').classList.remove('hidden'); }
-  function hideLoading() { document.getElementById('loadingOverlay').classList.add('hidden'); }
-  function showToast(msg, type = 'info') { const toast = document.getElementById('toast'); toast.className = 'toast-modern'; toast.innerHTML = `<i data-lucide="info" class="w-4 h-4"></i> ${msg}`; lucide.createIcons(); toast.classList.add('show'); setTimeout(() => toast.classList.remove('show'), 3000); }
-
-  function hideAllViews() {
-  ['adminView','workerView','freelancerView','clientView','managerView'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.classList.add('hidden');   // Tailwind (display: none !important)
-      el.style.display = 'none';    // sécurité inline
-    }
-  });
-  const balance = document.getElementById('navBalance');
-  if (balance) balance.classList.add('hidden');
-  }
-  function showRegister() { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('registerScreen').classList.remove('hidden'); }
-  function showLogin()  { document.getElementById('registerScreen').classList.add('hidden'); document.getElementById('loginScreen').classList.remove('hidden'); }
-
-  async function handleLogin() { const id = document.getElementById('loginId').value.trim().toLowerCase(); const pass = document.getElementById('loginPass').value; if (!id || !pass) return showToast('Please fill all fields', 'error'); showLoading(); try { await auth.signInWithEmailAndPassword(`${id}@taskpam.com`, pass); } catch (e) { showToast('Login failed: ' + e.message, 'error'); } finally { hideLoading(); } }
-
-  async function handleRegister() { const name = document.getElementById('regName').value.trim(); const id = document.getElementById('regId').value.trim().toLowerCase(); const pass = document.getElementById('regPass').value; const role = document.getElementById('regRole').value; if (!name || !id || !pass) return showToast('Please fill all fields', 'error'); showLoading(); try { await auth.createUserWithEmailAndPassword(`${id}@taskpam.com`, pass); const approved = (role === 'client' || role === 'entreprise'); await db.collection('users').doc(id).set({ name, role, approved, balanceHTG: 0, totalTasks: 0, history: [], skills: '', rate: 0, teamId: null, teamName: null, paymentMethod: '', paymentId: '', badge: 'Bronze', createdAt: firebase.firestore.FieldValue.serverTimestamp(), portfolioLinks: [], reviews: [], collaborators: [] }); showToast('Account created! ' + (approved ? 'You can login now.' : 'Pending admin approval.'), 'success'); showLogin(); } catch (e) { showToast('Registration failed: ' + e.message, 'error'); } finally { hideLoading(); } }
-
-  function handleLogout() { auth.signOut(); }
-
-  auth.onAuthStateChanged(async (user) => {
-    if (!user) { 
-      currentUser = null; 
-      document.getElementById('appShell').classList.add('hidden'); 
-      document.getElementById('loginScreen').classList.remove('hidden'); 
-      document.getElementById('registerScreen').classList.add('hidden'); 
-      if (workerUnsubscribe) { workerUnsubscribe(); workerUnsubscribe = null; }
-      if (freelancerUnsubscribe) { freelancerUnsubscribe(); freelancerUnsubscribe = null; }
-      if (clientUnsubscribe) { clientUnsubscribe(); clientUnsubscribe = null; }
-      if (notificationUnsubscribe) { notificationUnsubscribe(); notificationUnsubscribe = null; }
-      hideLoading(); 
-      return; 
-    }
-    try { 
-      showLoading(); 
-      firebaseToken = await user.getIdToken(); 
-      const userId = user.email.replace('@taskpam.com', ''); 
-      const doc = await db.collection('users').doc(userId).get(); 
-      if (!doc.exists) { 
-        showToast('User document not found', 'error'); 
-        await auth.signOut(); 
-        hideLoading(); 
-        return; 
-      } 
-      currentUser = { id: userId, ...doc.data() }; 
-      showApp(); 
-      // Start notification listener
-      if (notificationUnsubscribe) notificationUnsubscribe();
-      notificationUnsubscribe = db.collection('notifications')
-        .where('recipientId', '==', currentUser.id)
-        .orderBy('createdAt', 'desc')
-        .onSnapshot(snap => {
-          const unread = snap.docs.filter(d => !d.data().read).length;
-          const badge = document.getElementById('notificationBadge');
-          const countSpan = document.getElementById('notifCount');
-          if (badge) {
-            badge.classList.toggle('hidden', unread === 0);
-            if (countSpan) countSpan.textContent = unread;
-          }
-        });
-    } catch (e) { 
-      showToast('Auth error: ' + e.message, 'error'); 
-      await auth.signOut(); 
-    } finally { 
-      hideLoading(); 
-    }
-  });
-
-  function showApp() {
-    document.getElementById('loginScreen').classList.add('hidden'); 
-    document.getElementById('registerScreen').classList.add('hidden'); 
-    document.getElementById('appShell').classList.remove('hidden'); 
-    document.getElementById('navUserId').textContent = currentUser.id; 
-    document.getElementById('roleTag').textContent = currentUser.role.toUpperCase(); 
-    hideAllViews();
-    if (currentUser.role === 'admin') renderAdmin();
-    else if (currentUser.role === 'worker') renderWorker();
-    else if (currentUser.role === 'manager') renderManager();   // ← À AJOUTER
-    else if (currentUser.role === 'freelancer') renderFreelancer();
-    else if (currentUser.role === 'client' || currentUser.role === 'entreprise') renderClient();
-  }
-
-  // ================== NOTIFICATIONS ==================
-  async function createNotification(recipientId, message, type = 'info') {
-    try {
-      await db.collection('notifications').add({
-        recipientId,
-        message,
-        type,
-        read: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-    } catch (e) { console.error('Notification error:', e); }
-  }
-
-  function openNotifications() {
-    document.getElementById('notificationsModal').classList.remove('hidden');
-    loadNotifications();
-  }
-
-  function closeNotifications() { document.getElementById('notificationsModal').classList.add('hidden'); }
-
-  async function loadNotifications() {
-    const container = document.getElementById('notificationsList');
-    if (!container) return;
-    container.innerHTML = '<p class="text-muted text-sm">Loading...</p>';
-    try {
-      const snap = await db.collection('notifications')
-        .where('recipientId', '==', currentUser.id)
-        .orderBy('createdAt', 'desc')
-        .limit(50)
-        .get();
-      if (snap.empty) {
-        container.innerHTML = '<p class="text-muted text-sm">No notifications.</p>';
-        return;
-      }
-      container.innerHTML = '';
-      snap.forEach(doc => {
-        const notif = doc.data();
-        const div = document.createElement('div');
-        div.className = `p-2 rounded-lg text-sm ${notif.read ? 'bg-gray-50 dark:bg-slate-800' : 'bg-indigo-50 dark:bg-indigo-900/30'} flex justify-between items-center`;
-        div.innerHTML = `<span>${notif.message}</span><span class="text-xs text-muted">${notif.createdAt?.toDate?.()?.toLocaleString() || ''}</span>`;
-        div.onclick = async () => {
-          if (!notif.read) {
-            await doc.ref.update({ read: true });
-          }
-        };
-        container.appendChild(div);
-      });
-    } catch (e) {
-      container.innerHTML = '<p class="text-danger text-sm">Failed to load notifications.</p>';
-    }
-  }
-
-  // ================== WORKER ENHANCED ==================
-  function renderWorker() {
-    const workerView = document.getElementById('workerView');
-    workerView.classList.remove('hidden');
-    document.getElementById('navBalance').classList.remove('hidden');
-    
-    if (workerUnsubscribe) workerUnsubscribe();
-    workerUnsubscribe = db.collection('users').doc(currentUser.id)
-      .onSnapshot(async (doc) => {
-        if (!doc.exists) { showToast('Account deleted.', 'error'); auth.signOut(); return; }
-        currentUser = { id: doc.id, ...doc.data() };
-        updateWorkerUI();
-      }, (error) => { console.error(error); showToast('Live update failed', 'error'); });
-    
-    updateWorkerUI();
-    document.getElementById('btnWithdraw')?.addEventListener('click', () => document.getElementById('withdrawModal').classList.remove('hidden'));
-    document.getElementById('cancelWithdraw')?.addEventListener('click', () => document.getElementById('withdrawModal').classList.add('hidden'));
-    document.getElementById('submitWithdraw')?.addEventListener('click', submitWithdrawal);
-    // Set offerwall iframes dynamically
-    const userId = currentUser.id;
-    document.getElementById('monlixFrame').src = `https://wall.monlix.com/app?appid=APP_ID&userid=${userId}`;
-    document.getElementById('adscendFrame').src = `https://wall.adscendmedia.com/embed?userid=${userId}`;
-    document.getElementById('ayetFrame').src = `https://www.ayetstudios.com/offerwall?uid=${userId}`;
-    document.getElementById('offertoroFrame').src = `https://www.offertoro.com/iframes?user_id=${userId}`;
-  }
-
-  async function updateWorkerUI() {
-    if (!currentUser) return;
-    const approved = currentUser.approved === true;
-    const banner = document.getElementById('pendingBanner');
-    const dashboard = document.getElementById('workerDashboard');
-    if (!approved) {
-      banner.classList.remove('hidden'); dashboard.classList.add('hidden');
-      document.getElementById('navApprovedStatus').textContent = '(pending)'; return;
-    }
-    banner.classList.add('hidden'); dashboard.classList.remove('hidden');
-    document.getElementById('navApprovedStatus').textContent = '✅ Approved';
-    
-    const balance = currentUser.balanceHTG || 0;
-    document.getElementById('workerBalance').textContent = balance.toLocaleString();
-    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
-    
-    const totalTasks = currentUser.totalTasks || 0;
-    let badge = 'Bronze';
-    if (totalTasks >= 100) badge = 'Gold';
-    else if (totalTasks >= 50) badge = 'Silver';
-    if (currentUser.badge !== badge) {
-      try { await db.collection('users').doc(currentUser.id).update({ badge }); } catch(e){}
-    }
-    document.getElementById('workerBadge').textContent = badge;
-    
-    const historyContainer = document.getElementById('historyContainer');
-    const history = (currentUser.history || []).slice(-20);
-    historyContainer.innerHTML = history.length ? history.map(entry => {
-      const amount = entry.amount || 0;
-      const desc = entry.description || 'Task reward';
-      const time = entry.timestamp?.toDate?.()?.toLocaleString() || 'recent';
-      return `<div class="flex justify-between items-center border-b border-border py-1 px-2"><span>${desc}</span><span class="font-semibold ${amount >= 0 ? 'text-lakay' : 'text-danger'}">${amount >= 0 ? '+' : ''}${amount} HTG <span class="text-xs text-muted">${time}</span></span></div>`;
-    }).join('') : '<div class="text-muted italic">No earnings yet.</div>';
-    
-    document.getElementById('profileName').textContent = currentUser.name || currentUser.id;
-    document.getElementById('profileTeam').textContent = currentUser.teamName || 'None';
-    let managerName = 'None';
-    if (currentUser.teamId) {
-      try {
-        const teamDoc = await db.collection('teams').doc(currentUser.teamId).get();
-        if (teamDoc.exists && teamDoc.data().managerId) {
-          const manDoc = await db.collection('users').doc(teamDoc.data().managerId).get();
-          if (manDoc.exists) managerName = manDoc.data().name || teamDoc.data().managerId;
-        }
-      } catch(e){}
-    }
-    document.getElementById('profileManager').textContent = managerName;
-    await loadAgencyTasks();
-    lucide.createIcons();
-  }
-
-  async function updateWorkerBalanceFromOfferwall() {
-    showToast('Balance refreshed from offerwalls (simulated).', 'info');
-    // In real implementation, fetch from offerwall API and update Firestore.
-  }
-
-  // ... (worker withdrawal and agency tasks unchanged but using new notification)
-  async function submitWithdrawal() {
-    const amountStr = document.getElementById('withdrawAmount').value.trim();
-    const method = document.getElementById('withdrawMethod').value.trim();
-    const amount = parseFloat(amountStr);
-    if (isNaN(amount) || amount <= 0) return showToast('Please enter a valid amount', 'error');
-    if (amount > (currentUser.balanceHTG || 0)) return showToast('Insufficient balance', 'error');
-    if (!method) return showToast('Please enter a payment method', 'error');
-    showLoading();
-    try {
-      await db.collection('withdrawalRequests').add({
-        userId: currentUser.id, userName: currentUser.name || currentUser.id, amount, method, status: 'pending',
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      const newBalance = (currentUser.balanceHTG || 0) - amount;
-      await db.collection('users').doc(currentUser.id).update({ balanceHTG: newBalance });
-      await db.collection('users').doc(currentUser.id).update({
-        history: firebase.firestore.FieldValue.arrayUnion({ amount: -amount, description: `Withdrawal request (${method})`, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
-      });
-      await createNotification(currentUser.id, `Withdrawal request of ${amount} HTG submitted.`, 'withdrawal');
-      document.getElementById('withdrawModal').classList.add('hidden');
-      document.getElementById('withdrawAmount').value = ''; document.getElementById('withdrawMethod').value = '';
-      showToast('Withdrawal request submitted!', 'success');
-    } catch(e) { showToast('Failed: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ... rest of worker functions (loadAgencyTasks, markTaskDone) remain identical to original, with notification added
-  async function loadAgencyTasks() {
-    const container = document.getElementById('agencyTasksContainer');
-    if (!container) return;
-    try {
-      const snap = await db.collection('agencyTasks').orderBy('createdAt', 'desc').limit(20).get();
-      container.innerHTML = snap.empty ? '<div class="text-muted italic">No HBW Agency tasks available.</div>' : '';
-      snap.forEach(doc => {
-        const task = doc.data(); const taskId = doc.id;
-        const div = document.createElement('div');
-        div.className = 'flex items-center justify-between border border-border rounded-xl p-3 bg-gray-50 dark:bg-slate-800';
-        div.innerHTML = `<div><p class="font-semibold">${task.title} <span class="text-xs text-muted ml-2">+${task.rewardHTG} HTG</span></p><p class="text-xs text-muted">${task.description}</p></div><button class="mark-task-btn bg-lakay/10 text-lakay font-semibold px-3 py-1 rounded-lg text-sm" data-taskid="${taskId}" data-reward="${task.rewardHTG}" data-title="${task.title}">✅ Yes</button>`;
-        container.appendChild(div);
-      });
-      document.querySelectorAll('.mark-task-btn').forEach(btn => btn.addEventListener('click', async (e) => {
-        const taskId = btn.dataset.taskid; const reward = parseFloat(btn.dataset.reward) || 0; const title = btn.dataset.title;
-        await markTaskDone(taskId, reward, title);
-      }));
-    } catch(e) { container.innerHTML = '<div class="text-danger">Failed to load tasks.</div>'; }
-  }
-
-  async function markTaskDone(taskId, reward, title) {
-    if (!currentUser || !currentUser.approved) return showToast('Not approved.', 'error');
-    showLoading();
-    try {
-      const newBalance = (currentUser.balanceHTG || 0) + reward;
-      await db.collection('users').doc(currentUser.id).update({
-        balanceHTG: newBalance, totalTasks: firebase.firestore.FieldValue.increment(1),
-        history: firebase.firestore.FieldValue.arrayUnion({ amount: reward, description: `Agency task: ${title}`, timestamp: firebase.firestore.FieldValue.serverTimestamp() })
-      });
-      await createNotification(currentUser.id, `Earned ${reward} HTG from task "${title}".`, 'earning');
-      showToast(`Task completed! +${reward} HTG`, 'success');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ================== FREELANCER ENHANCED ==================
-  function renderFreelancer() {
-    const freelancerView = document.getElementById('freelancerView');
-    freelancerView.classList.remove('hidden');
-    document.getElementById('navBalance').classList.remove('hidden');
-    const approved = currentUser.approved === true;
-    document.getElementById('freelancerPendingBanner').classList.toggle('hidden', approved);
-    document.getElementById('freelancerMain').classList.toggle('hidden', !approved);
-    document.getElementById('navApprovedStatus').textContent = approved ? '✅ Approved' : '(pending)';
-    if (!approved) return;
-    updateFreelancerBalance();
-    if (freelancerUnsubscribe) freelancerUnsubscribe();
-    freelancerUnsubscribe = db.collection('users').doc(currentUser.id).onSnapshot(doc => {
-      if (doc.exists) { currentUser = { id: doc.id, ...doc.data() }; updateFreelancerBalance(); }
-    });
-    if (!freelancerTabsInitialized) { initFreelancerTabs(); freelancerTabsInitialized = true; }
-    else { const active = document.querySelector('.ftab-btn.tab-active'); if (active) active.click(); }
-  }
-
-  function updateFreelancerBalance() {
-    const balance = currentUser.balanceHTG || 0;
-    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
-  }
-
-  function initFreelancerTabs() {
-    document.querySelectorAll('.ftab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tabId = btn.getAttribute('data-ftab');
-        document.querySelectorAll('.ftab-content').forEach(tc => tc.classList.add('hidden'));
-        document.getElementById(`ftab-${tabId}`).classList.remove('hidden');
-        document.querySelectorAll('.ftab-btn').forEach(b => b.classList.remove('tab-active'));
-        btn.classList.add('tab-active');
-        switch(tabId) {
-          case 'dashboard': freelancerLoadDashboard(); break;
-          case 'profile': freelancerLoadProfile(); break;
-          case 'portfolio': freelancerLoadPortfolio(); break;
-          case 'marketplace': freelancerLoadMarketplace(); break;
-          case 'applications': freelancerLoadApplications(); break;
-          case 'reviews': freelancerLoadReviews(); break;
-          case 'messages': freelancerLoadChats(); break;
-        }
-      });
-    });
-    document.querySelector('.ftab-btn[data-ftab="dashboard"]')?.click();
-  }
-
-  async function freelancerLoadDashboard() { /* unchanged */ let revenue = 0, completedJobs = 0; try { const snap = await db.collection('contracts').where('freelancerId', '==', currentUser.id).where('status', '==', 'completed').get(); snap.forEach(doc => { revenue += doc.data().payment || 0; completedJobs++; }); } catch(e){} document.getElementById('freelancerRevenue').textContent = revenue.toLocaleString(); document.getElementById('freelancerCompleted').textContent = completedJobs; }
-
-  // Portfolio
-  async function freelancerLoadPortfolio() {
-    const container = document.getElementById('portfolioLinksList');
-    const links = currentUser.portfolioLinks || [];
-    container.innerHTML = links.length ? links.map((link, idx) => `<div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-2 rounded-lg"><a href="${link}" target="_blank" class="text-primary text-sm truncate">${link}</a><button onclick="removePortfolioLink(${idx})" class="text-danger text-xs">Remove</button></div>`).join('') : '<p class="text-muted text-sm">No portfolio links yet.</p>';
-  }
-
-  async function addPortfolioLink() {
-    const input = document.getElementById('portfolioLinkInput');
-    const url = input.value.trim();
-    if (!url) return;
-    showLoading();
-    try {
-      const links = currentUser.portfolioLinks || [];
-      links.push(url);
-      await db.collection('users').doc(currentUser.id).update({ portfolioLinks: links });
-      input.value = '';
-      showToast('Link added.', 'success');
-      freelancerLoadPortfolio();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-  window.addPortfolioLink = addPortfolioLink;
-
-  async function removePortfolioLink(idx) {
-    showLoading();
-    try {
-      const links = currentUser.portfolioLinks || [];
-      links.splice(idx, 1);
-      await db.collection('users').doc(currentUser.id).update({ portfolioLinks: links });
-      freelancerLoadPortfolio();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-  window.removePortfolioLink = removePortfolioLink;
-
-  // Marketplace with filters
-  async function freelancerLoadMarketplace() {
-    const container = document.getElementById('openJobsList');
-    container.innerHTML = '<p class="text-muted">Loading...</p>';
-    const catFilter = document.getElementById('marketplaceCategoryFilter')?.value || '';
-    const minBudget = parseFloat(document.getElementById('marketplaceMinBudget')?.value) || 0;
-    try {
-      let query = db.collection('jobs').where('status', '==', 'open');
-      if (catFilter) query = query.where('category', '==', catFilter);
-      if (minBudget > 0) query = query.where('budget', '>=', minBudget);
-      const jobsSnap = await query.get();
-      if (jobsSnap.empty) { container.innerHTML = '<p class="text-muted">No open jobs.</p>'; return; }
-      container.innerHTML = '';
-      jobsSnap.forEach(doc => {
-        const job = doc.data(); const jobId = doc.id;
-        const div = document.createElement('div');
-        div.className = 'border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 space-y-2';
-        div.innerHTML = `<h4 class="font-semibold">${job.title}</h4><p class="text-sm text-muted">${job.description || ''}</p><div class="flex justify-between items-center"><span class="text-sm font-semibold text-lakay">Budget: ${job.budget} HTG</span><button class="apply-btn bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-semibold" data-jobid="${jobId}">Apply</button></div>`;
-        container.appendChild(div);
-      });
-      document.querySelectorAll('.apply-btn').forEach(btn => btn.addEventListener('click', () => applyToJob(btn.dataset.jobid)));
-    } catch(e) { container.innerHTML = '<p class="text-danger">Failed to load jobs.</p>'; }
-  }
-
-  // Load categories for filter
-  async function loadMarketplaceCategories() {
-    const select = document.getElementById('marketplaceCategoryFilter');
-    if (!select) return;
-    try {
-      const doc = await db.collection('config').doc('categories').get();
-      const cats = doc.exists ? doc.data().list : [];
-      select.innerHTML = '<option value="">All Categories</option>' + cats.map(c => `<option value="${c}">${c}</option>`).join('');
-    } catch(e){}
-  }
-
-  // Reviews
-  async function freelancerLoadReviews() {
-    const container = document.getElementById('freelancerReviewsList');
-    const reviews = currentUser.reviews || [];
-    container.innerHTML = reviews.length ? reviews.map(r => `<div class="border-b py-1"><span class="font-semibold">${r.clientName || 'Client'}</span>: ${'⭐'.repeat(r.rating)} ${r.comment || ''}</div>`).join('') : '<p class="text-muted">No reviews yet.</p>';
-    const avg = reviews.length ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1) : '-';
-    document.getElementById('freelancerAvgRating').textContent = avg;
-  }
-
-  // Client can leave review (called from client side)
-  async function leaveReview(freelancerId, clientId, rating, comment) {
-    try {
-      const userRef = db.collection('users').doc(freelancerId);
-      const userDoc = await userRef.get();
-      if (!userDoc.exists) return;
-      const reviews = userDoc.data().reviews || [];
-      reviews.push({ clientId, clientName: currentUser.name || currentUser.id, rating, comment, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-      await userRef.update({ reviews });
-      await createNotification(freelancerId, `New review from ${currentUser.name || currentUser.id}: ${rating} stars.`, 'review');
-      showToast('Review submitted!', 'success');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
-  }
-
-  // ... rest of freelancer functions unchanged but with notification on accept/reject
-  async function clientAcceptApplication(appId, jobId, freelancerId) {
-    showLoading();
-    try {
-      await db.collection('applications').doc(appId).update({ status: 'accepted' });
-      const jobRef = db.collection('jobs').doc(jobId);
-      const jobDoc = await jobRef.get();
-      const budget = jobDoc.data().budget || 0;
-      await jobRef.update({ status: 'in_progress', freelancerId });
-      await db.collection('contracts').add({ jobId, freelancerId, clientId: currentUser.id, startDate: firebase.firestore.FieldValue.serverTimestamp(), status: 'active', payment: budget });
-      const chatExists = await db.collection('chats').where('participants', 'array-contains', freelancerId).where('participants', 'array-contains', currentUser.id).get();
-      if (chatExists.empty) await db.collection('chats').add({ participants: [freelancerId, currentUser.id], messages: [] });
-      // Reject other pending
-      const others = await db.collection('applications').where('jobId', '==', jobId).where('status', '==', 'pending').get();
-      others.forEach(async d => { if (d.id !== appId) await d.ref.update({ status: 'rejected' }); });
-      await createNotification(freelancerId, `Your application for "${jobDoc.data().title}" was accepted!`, 'application');
-      showToast('Freelancer accepted!', 'success');
-      clientLoadMyJobs();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function clientRejectApplication(appId) {
-    showLoading();
-    try {
-      await db.collection('applications').doc(appId).update({ status: 'rejected' });
-      const appDoc = await db.collection('applications').doc(appId).get();
-      if (appDoc.exists) await createNotification(appDoc.data().freelancerId, 'Your application was rejected.', 'application');
-      showToast('Application rejected.', 'info');
-      clientLoadMyJobs();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ... other client functions (clientMarkJobCompleted, clientReleasePayment etc) with notifications
-  async function clientMarkJobCompleted(jobId) {
-    showLoading();
-    try {
-      await db.collection('jobs').doc(jobId).update({ status: 'completed' });
-      const contractsSnap = await db.collection('contracts').where('jobId', '==', jobId).where('status', '==', 'active').get();
-      contractsSnap.forEach(async doc => { await doc.ref.update({ status: 'completed', endDate: firebase.firestore.FieldValue.serverTimestamp() }); });
-      await createNotification(currentUser.id, 'Job marked as completed.', 'job');
-      showToast('Job completed. Release payment.', 'success');
-      clientLoadMyJobs();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ... (rest of client functions preserved, adding notification on payment release)
-  async function clientReleasePayment(jobId) {
-    const jobDoc = await db.collection('jobs').doc(jobId).get();
-    if (!jobDoc.exists) return;
-    const jobData = jobDoc.data();
-    const budget = jobData.budget || 0;
-    if ((currentUser.balanceHTG || 0) < budget) return showToast('Insufficient balance.', 'error');
-    showLoading();
-    try {
-      await db.collection('users').doc(currentUser.id).update({ balanceHTG: firebase.firestore.FieldValue.increment(-budget) });
-      const freelancerId = jobData.freelancerId;
-      const freelancerRef = db.collection('users').doc(freelancerId);
-      const freelancerDoc = await freelancerRef.get();
-      if (freelancerDoc.exists) {
-        await freelancerRef.update({ balanceHTG: firebase.firestore.FieldValue.increment(budget * 0.9) });
-      }
-      const adminRef = db.collection('users').doc('admin');
-      const adminDoc = await adminRef.get();
-      if (adminDoc.exists) await adminRef.update({ balanceHTG: firebase.firestore.FieldValue.increment(budget * 0.1) });
-      else await adminRef.set({ balanceHTG: budget * 0.1, role: 'admin', approved: true, name: 'Admin' }, { merge: true });
-      const contractsSnap = await db.collection('contracts').where('jobId', '==', jobId).where('status', '==', 'completed').get();
-      contractsSnap.forEach(async doc => { await doc.ref.update({ paymentReleased: true }); });
-      await createNotification(freelancerId, `Payment of ${budget} HTG released for job "${jobData.title}".`, 'payment');
-      showToast('Payment released.', 'success');
-      clientLoadMyJobs();
-      clientLoadDashboard();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ================== CLIENT COLLABORATORS ==================
-  async function addCollaborator() {
-    const username = document.getElementById('collaboratorIdInput').value.trim().toLowerCase();
-    if (!username) return;
-    if (username === currentUser.id) return showToast('Cannot add yourself.', 'error');
-    showLoading();
-    try {
-      const userDoc = await db.collection('users').doc(username).get();
-      if (!userDoc.exists) return showToast('User not found.', 'error');
-      const collaborators = currentUser.collaborators || [];
-      if (collaborators.includes(username)) return showToast('Already a collaborator.', 'info');
-      collaborators.push(username);
-      await db.collection('users').doc(currentUser.id).update({ collaborators });
-      document.getElementById('collaboratorIdInput').value = '';
-      await loadCollaborators();
-      showToast('Collaborator added.', 'success');
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function loadCollaborators() {
-    const container = document.getElementById('collaboratorsList');
-    const collaborators = currentUser.collaborators || [];
-    container.innerHTML = collaborators.length ? collaborators.map(c => `<div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-2 rounded-lg"><span>${c}</span><button onclick="removeCollaborator('${c}')" class="text-danger text-xs">Remove</button></div>`).join('') : '<p class="text-muted text-sm">No collaborators.</p>';
-  }
-
-  async function removeCollaborator(username) {
-    showLoading();
-    try {
-      const collaborators = currentUser.collaborators || [];
-      const idx = collaborators.indexOf(username);
-      if (idx > -1) collaborators.splice(idx, 1);
-      await db.collection('users').doc(currentUser.id).update({ collaborators });
-      await loadCollaborators();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-  window.addCollaborator = addCollaborator;
-  window.removeCollaborator = removeCollaborator;
-
-  // ================== CLIENT SUBSCRIPTION ==================
-  async function clientLoadSubscriptionTab() {
-    const plansContainer = document.getElementById('availablePlansClient');
-    try {
-      const plansSnap = await db.collection('plans').get();
-      if (plansSnap.empty) { plansContainer.innerHTML = '<p class="text-muted">No plans available.</p>'; return; }
-      plansContainer.innerHTML = '';
-      plansSnap.forEach(doc => {
-        const plan = doc.data(); const planId = doc.id;
-        const div = document.createElement('div');
-        div.className = 'border rounded-xl p-4 flex flex-col justify-between';
-        div.innerHTML = `<h4 class="font-semibold">${plan.name}</h4><p class="text-sm text-muted">${plan.features?.join(', ') || ''}</p><p class="text-sm font-bold mt-2">Monthly: ${plan.monthlyPrice} HTG | Yearly: ${plan.yearlyPrice} HTG</p>
-          <div class="flex gap-2 mt-2">
-            <button onclick="subscribeToPlan('${planId}', 'monthly')" class="bg-primary text-white px-3 py-1 rounded-lg text-sm">Monthly</button>
-            <button onclick="subscribeToPlan('${planId}', 'yearly')" class="bg-lakay text-white px-3 py-1 rounded-lg text-sm">Yearly</button>
-          </div>`;
-        plansContainer.appendChild(div);
-      });
-    } catch(e) {}
-    // Load history
-    const historyContainer = document.getElementById('clientSubHistory');
-    try {
-      const subsSnap = await db.collection('subscriptions').where('userId', '==', currentUser.id).orderBy('startDate', 'desc').get();
-      historyContainer.innerHTML = subsSnap.empty ? '<p class="text-muted text-sm">No subscription history.</p>' : '';
-      subsSnap.forEach(doc => {
-        const sub = doc.data();
-        historyContainer.innerHTML += `<div class="flex justify-between text-xs"><span>${sub.planName} (${sub.billingCycle})</span><span>${sub.startDate?.toDate?.()?.toLocaleDateString() || ''} → ${sub.endDate?.toDate?.()?.toLocaleDateString() || ''} [${sub.status}]</span></div>`;
-      });
-    } catch(e){}
-  }
-
-  async function subscribeToPlan(planId, cycle) {
-    showLoading();
-    try {
-      const planDoc = await db.collection('plans').doc(planId).get();
-      if (!planDoc.exists) return showToast('Plan not found.', 'error');
-      const plan = planDoc.data();
-      const price = cycle === 'monthly' ? plan.monthlyPrice : plan.yearlyPrice;
-      if ((currentUser.balanceHTG || 0) < price) return showToast('Insufficient balance. Please deposit.', 'error');
-      const start = new Date();
-      const end = new Date(start);
-      if (cycle === 'monthly') end.setMonth(end.getMonth() + 1);
-      else end.setFullYear(end.getFullYear() + 1);
-      await db.collection('subscriptions').add({
-        userId: currentUser.id, planId, planName: plan.name, billingCycle: cycle, price,
-        startDate: firebase.firestore.Timestamp.fromDate(start),
-        endDate: firebase.firestore.Timestamp.fromDate(end),
-        status: 'active'
-      });
-      await db.collection('users').doc(currentUser.id).update({ balanceHTG: firebase.firestore.FieldValue.increment(-price) });
-      await createNotification(currentUser.id, `Subscribed to ${plan.name} (${cycle}).`, 'subscription');
-      showToast('Subscription activated!', 'success');
-      clientLoadSubscriptionTab();
-      clientLoadDashboard();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-  window.subscribeToPlan = subscribeToPlan;
-
-  // Update client dashboard with subscription info
-  async function clientLoadDashboard() {
-    let jobsCount = 0, activeContracts = 0;
-    try {
-      const jobsSnap = await db.collection('jobs').where('clientId', '==', currentUser.id).get();
-      jobsCount = jobsSnap.size;
-      jobsSnap.forEach(doc => { if (doc.data().status === 'in_progress') activeContracts++; });
-    } catch(e){}
-    document.getElementById('clientJobsCount').textContent = jobsCount;
-    document.getElementById('clientActiveContracts').textContent = activeContracts;
-    updateClientBalance();
-    // Subscription status
-    try {
-      const activeSub = await db.collection('subscriptions')
-        .where('userId', '==', currentUser.id)
-        .where('status', '==', 'active')
-        .orderBy('endDate', 'desc')
-        .limit(1)
-        .get();
-      const subEl = document.getElementById('clientSubStatus');
-      const expiryEl = document.getElementById('clientSubExpiry');
-      if (!activeSub.empty) {
-        const sub = activeSub.docs[0].data();
-        subEl.textContent = sub.planName || 'Active';
-        expiryEl.textContent = `Expires: ${sub.endDate?.toDate?.()?.toLocaleDateString() || ''}`;
-      } else {
-        subEl.textContent = 'None';
-        expiryEl.textContent = '';
-      }
-    } catch(e){}
-    // Spending chart (simplified)
-    const ctx = document.getElementById('clientSpendingChart')?.getContext('2d');
-    if (ctx) {
-      // For now just placeholder, in production query payments made
-      new Chart(ctx, { type: 'line', data: { labels: ['Jan','Feb','Mar'], datasets: [{ label: 'Spending', data: [0,0,0] }] } });
-    }
-  }
-
-  // ... rest client init tabs etc.
-  function initClientTabs() {
-    document.querySelectorAll('.ctab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tabId = btn.getAttribute('data-ctab');
-        document.querySelectorAll('.ctab-content').forEach(tc => tc.classList.add('hidden'));
-        document.getElementById(`ctab-${tabId}`).classList.remove('hidden');
-        document.querySelectorAll('.ctab-btn').forEach(b => b.classList.remove('tab-active'));
-        btn.classList.add('tab-active');
-        switch(tabId) {
-          case 'dashboard': clientLoadDashboard(); break;
-          case 'postjob': clientLoadCategories(); break;
-          case 'myjobs': clientLoadMyJobs(); break;
-          case 'freelancers': clientLoadFreelancers(); break;
-          case 'subscription': clientLoadSubscriptionTab(); break;
-          case 'collaborators': loadCollaborators(); break;
-          case 'messages': clientLoadChats(); break;
-        }
-      });
-    });
-    document.getElementById('depositBtn')?.addEventListener('click', clientDeposit);
-    document.getElementById('postJobBtn')?.addEventListener('click', clientPostJob);
-    document.querySelector('.ctab-btn[data-ctab="dashboard"]')?.click();
-  }
-
-  function renderClient() {
-    const clientView = document.getElementById('clientView');
-    clientView.classList.remove('hidden');
-    document.getElementById('navBalance').classList.remove('hidden');
-    document.getElementById('navApprovedStatus').textContent = '✅ Approved';
-    if (clientUnsubscribe) clientUnsubscribe();
-    clientUnsubscribe = db.collection('users').doc(currentUser.id).onSnapshot(doc => {
-      if (doc.exists) { currentUser = { id: doc.id, ...doc.data() }; updateClientBalance(); }
-    });
-    updateClientBalance();
-    if (!clientTabsInitialized) { initClientTabs(); clientTabsInitialized = true; }
-    else { const active = document.querySelector('.ctab-btn.tab-active'); if (active) active.click(); }
-  }
-
-  function updateClientBalance() {
-    const balance = currentUser.balanceHTG || 0;
-    document.getElementById('navBalanceAmt').textContent = `${balance.toLocaleString()} HTG`;
-    const balEl = document.getElementById('clientBalance');
-    if (balEl) balEl.textContent = balance.toLocaleString();
-  }
-
-  // ... (clientPostJob, clientDeposit, clientLoadMyJobs, etc. unchanged)
-  async function clientPostJob() {
-    const title = document.getElementById('jobTitle').value.trim();
-    const description = document.getElementById('jobDescription').value.trim();
-    const budget = parseFloat(document.getElementById('jobBudget').value);
-    const category = document.getElementById('jobCategory').value;
-    const deadline = document.getElementById('jobDeadline').value;
-    const attachment = document.getElementById('jobAttachment').value.trim();
-    if (!title || !description || isNaN(budget) || budget <= 0 || !category) return showToast('Please fill all required fields', 'error');
-    showLoading();
-    try {
-      await db.collection('jobs').add({
-        clientId: currentUser.id, title, description, budget, category, status: 'open',
-        deadline: deadline || null, attachment: attachment || null,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      showToast('Job published!', 'success');
-      document.getElementById('jobTitle').value = ''; document.getElementById('jobDescription').value = '';
-      document.getElementById('jobBudget').value = ''; document.getElementById('jobDeadline').value = '';
-      document.getElementById('jobAttachment').value = '';
-      clientLoadDashboard();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ================== ADMIN ENHANCED FUNCTIONS ==================
-  let gainsChart = null;
-
-  async function addLog(action, details) {
-    if (!currentUser) return;
-    await db.collection('logs').add({
-      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-      userId: currentUser.id, userRole: currentUser.role, action, details
-    });
-  }
-
-  // Approve, delete, promote unchanged but with notifications
-  async function approveUser(userId) {
-    showLoading();
-    try {
-      await db.collection('users').doc(userId).update({ approved: true });
-      await addLog('APPROVE_USER', `Approved user ${userId}`);
-      await createNotification(userId, 'Your account has been approved!', 'system');
-      showToast('User approved');
-      await refreshAllAdminData();
-    } catch(e) { showToast(e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function approveAllPending() {
-    showLoading();
-    try {
-      const snap = await db.collection('users').where('approved', '==', false).get();
-      const batch = db.batch();
-      snap.forEach(doc => { batch.update(doc.ref, { approved: true }); });
-      await batch.commit();
-      await addLog('APPROVE_ALL', `Approved ${snap.size} users`);
-      showToast(`Approved ${snap.size} users.`, 'success');
-      await refreshAllAdminData();
-    } catch(e) { showToast(e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function deleteUser(userId) {
-    if (!confirm('Delete user? This cannot be undone.')) return;
-    showLoading();
-    try {
-      await db.collection('users').doc(userId).delete();
-      await addLog('DELETE_USER', `Deleted user ${userId}`);
-      await refreshAllAdminData();
-      showToast('User deleted');
-    } catch(e) { showToast(e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function promoteUser(userId, newRole) {
-    showLoading();
-    try {
-      await db.collection('users').doc(userId).update({ role: newRole });
-      await addLog('PROMOTE_USER', `User ${userId} promoted to ${newRole}`);
-      await refreshAllAdminData();
-      showToast(`Role updated to ${newRole}`);
-    } catch(e) { showToast(e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function updateExchangeRate() {
-    const rate = parseFloat(document.getElementById('exchangeRateInput').value);
-    if (isNaN(rate) || rate <= 0) return showToast('Invalid rate', 'error');
-    showLoading();
-    try {
-      await db.collection('config').doc('exchangeRate').set({ value: rate });
-      await addLog('UPDATE_RATE', `Exchange rate set to ${rate}`);
-      await loadExchangeRate();
-      showToast('Rate updated');
-      await refreshStats();
-    } catch(e) { showToast(e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  // ... categories, teams, withdrawals, logs unchanged but added pagination to logs
-  async function loadLogs(page = 0) {
-    logsPage = page;
-    const container = document.getElementById('logsContainer');
-    if (!container) return;
-    try {
-      const totalSnap = await db.collection('logs').count().get();
-      const total = totalSnap.data().count;
-      const snap = await db.collection('logs').orderBy('timestamp', 'desc').limit(logsPageSize).offset(page * logsPageSize).get();
-      container.innerHTML = '';
-      snap.forEach(d => {
-        const data = d.data();
-        const time = data.timestamp?.toDate?.()?.toLocaleString() || 'recent';
-        container.innerHTML += `<div class="border-b border-border pb-1 text-muted">[${time}] <span class="font-mono font-bold">${data.action}</span> — ${data.details}</div>`;
-      });
-      document.getElementById('logsPageInfo').textContent = `Page ${page + 1} / ${Math.ceil(total / logsPageSize) || 1}`;
-      document.getElementById('logsPrevBtn').disabled = page === 0;
-      document.getElementById('logsNextBtn').disabled = (page + 1) * logsPageSize >= total;
-    } catch(e) { container.innerHTML = '<div class="text-danger">Failed to load logs.</div>'; }
-  }
-
-  // Settings
-  async function saveSettings() {
-    const rate = parseFloat(document.getElementById('settingsExchangeRate').value);
-    const commission = parseFloat(document.getElementById('settingsCommission').value);
-    const wallet = document.getElementById('settingsAdminWallet').value.trim();
-    if (isNaN(rate) || isNaN(commission)) return showToast('Invalid numbers', 'error');
-    showLoading();
-    try {
-      await db.collection('config').doc('exchangeRate').set({ value: rate });
-      await db.collection('config').doc('commission').set({ value: commission });
-      await db.collection('config').doc('adminWallet').set({ address: wallet });
-      await addLog('UPDATE_SETTINGS', `Rate:${rate}, Comm:${commission}%, Wallet:${wallet}`);
-      showToast('Settings saved', 'success');
-      await loadExchangeRate();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-  }
-
-  async function loadSettingsTab() {
-    try {
-      const rateDoc = await db.collection('config').doc('exchangeRate').get();
-      document.getElementById('settingsExchangeRate').value = rateDoc.exists ? rateDoc.data().value : 130;
-      const commDoc = await db.collection('config').doc('commission').get();
-      document.getElementById('settingsCommission').value = commDoc.exists ? commDoc.data().value : 10;
-      const walletDoc = await db.collection('config').doc('adminWallet').get();
-      document.getElementById('settingsAdminWallet').value = walletDoc.exists ? walletDoc.data().address : '';
-    } catch(e){}
-  }
-
-  // Subscriptions management
-  async function loadPlans() {
-    const container = document.getElementById('plansListContainer');
-    if (!container) return;
-    try {
-      const snap = await db.collection('plans').get();
-      container.innerHTML = '';
-      snap.forEach(doc => {
-        const plan = doc.data(); const planId = doc.id;
-        const div = document.createElement('div');
-        div.className = 'border rounded-xl p-3 flex justify-between items-center';
-        div.innerHTML = `<div><strong>${plan.name}</strong><p class="text-xs text-muted">Monthly: ${plan.monthlyPrice} HTG | Yearly: ${plan.yearlyPrice} HTG</p><p class="text-xs">${plan.features?.join(', ') || ''}</p></div><button onclick="deletePlan('${planId}')" class="text-danger text-xs">Delete</button>`;
-        container.appendChild(div);
-      });
-    } catch(e){}
-  }
-
-  async function savePlan() {
-    const name = document.getElementById('planNameInput').value.trim();
-    const monthly = parseFloat(document.getElementById('planMonthlyPrice').value);
-    const yearly = parseFloat(document.getElementById('planYearlyPrice').value);
-    const features = document.getElementById('planFeatures').value.split(',').map(s => s.trim()).filter(f => f);
-    if (!name || isNaN(monthly) || isNaN(yearly)) return showToast('Fill all fields', 'error');
-    try {
-      const existing = await db.collection('plans').where('name', '==', name).get();
-      const planRef = existing.empty ? db.collection('plans').doc() : existing.docs[0].ref;
-      await planRef.set({ name, monthlyPrice: monthly, yearlyPrice: yearly, features });
-      await addLog('SAVE_PLAN', name);
-      showToast('Plan saved', 'success');
-      loadPlans();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
-  }
-
-  async function deletePlan(planId) {
-    if (!confirm('Delete plan?')) return;
-    try {
-      await db.collection('plans').doc(planId).delete();
-      await addLog('DELETE_PLAN', planId);
-      loadPlans();
-    } catch(e) { showToast('Error: ' + e.message, 'error'); }
-  }
-
-  async function loadActiveSubscriptions() {
-    const container = document.getElementById('activeSubscriptionsList');
-    if (!container) return;
-    try {
-      const snap = await db.collection('subscriptions').where('status', '==', 'active').get();
-      container.innerHTML = snap.empty ? '<p class="text-muted">No active subscriptions.</p>' : '';
-      snap.forEach(doc => {
-        const sub = doc.data();
-        container.innerHTML += `<div class="flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-800 rounded"><span>${sub.userId} — ${sub.planName} (${sub.billingCycle})</span><span class="text-xs text-muted">Expires: ${sub.endDate?.toDate?.()?.toLocaleDateString() || ''}</span></div>`;
-      });
-    } catch(e){}
-  }
-
-  // Top workers and clients
-  async function loadTopWorkersAndClients() {
-    try {
-      const usersSnap = await db.collection('users').where('role', '==', 'worker').orderBy('balanceHTG', 'desc').limit(5).get();
-      const topWorkers = document.getElementById('topWorkersList');
-      if (topWorkers) {
-        topWorkers.innerHTML = '';
-        usersSnap.forEach(doc => {
-          const u = doc.data();
-          topWorkers.innerHTML += `<div class="flex justify-between"><span>${u.name || doc.id}</span><span class="font-semibold">${(u.balanceHTG || 0).toLocaleString()} HTG</span></div>`;
-        });
-      }
-      // Top clients: sum budgets of jobs posted
-      const allJobsSnap = await db.collection('jobs').get();
-      const clientSpending = {};
-      allJobsSnap.forEach(doc => {
-        const j = doc.data();
-        clientSpending[j.clientId] = (clientSpending[j.clientId] || 0) + (j.budget || 0);
-      });
-      const sortedClients = Object.entries(clientSpending).sort((a,b) => b[1]-a[1]).slice(0,5);
-      const topClients = document.getElementById('topClientsList');
-      if (topClients) {
-        topClients.innerHTML = '';
-        for (let [cid, total] of sortedClients) {
-          const userDoc = await db.collection('users').doc(cid).get();
-          const name = userDoc.exists ? userDoc.data().name : cid;
-          topClients.innerHTML += `<div class="flex justify-between"><span>${name}</span><span class="font-semibold">${total.toLocaleString()} HTG</span></div>`;
-        }
-      }
-    } catch(e){}
-  }
-
-  // Export CSV
-  function exportUsersCSV() {
-    if (!allUsersCache.length) return showToast('No data to export.', 'error');
-    const headers = ['ID', 'Name', 'Role', 'Balance(HTG)', 'Approved', 'Last Activity'];
-    const rows = allUsersCache.map(u => [u.id, u.name, u.role, u.balanceHTG || 0, u.approved ? 'Yes' : 'No', u.lastActivity?.toDate?.()?.toISOString() || '']);
-    const csvContent = [headers, ...rows].map(e => e.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = 'users_export.csv'; a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // User detail modal
-  async function showUserDetail(userId) {
-    try {
-      const doc = await db.collection('users').doc(userId).get();
-      if (!doc.exists) return;
-      const u = doc.data();
-      const content = document.getElementById('userDetailContent');
-      content.innerHTML = `
-        <p><strong>ID:</strong> ${userId}</p>
-        <p><strong>Name:</strong> ${u.name}</p>
-        <p><strong>Role:</strong> ${u.role}</p>
-        <p><strong>Approved:</strong> ${u.approved ? '✅' : '⏳'}</p>
-        <p><strong>Balance:</strong> ${u.balanceHTG || 0} HTG</p>
-        <p><strong>Badge:</strong> ${u.badge || 'Bronze'}</p>
-        <p><strong>Team:</strong> ${u.teamName || 'None'}</p>
-        <p><strong>Skills:</strong> ${u.skills || 'N/A'}</p>
-        <p><strong>Hourly Rate:</strong> ${u.hourlyRate || 'N/A'}</p>
-        <p><strong>Portfolio:</strong> ${(u.portfolioLinks || []).join(', ') || 'None'}</p>
-        <p><strong>Reviews:</strong> ${(u.reviews || []).length} reviews</p>
-        <p><strong>Collaborators:</strong> ${(u.collaborators || []).join(', ') || 'None'}</p>
-        <p><strong>Last Activity:</strong> ${u.lastActivity?.toDate?.()?.toLocaleString() || 'N/A'}</p>
-      `;
-      document.getElementById('userDetailModal').classList.remove('hidden');
-    } catch(e) { showToast('Error loading user details', 'error'); }
-  }
-
-  // Enhanced refresh stats
-  async function refreshStats() {
-    const usersSnap = await db.collection('users').get();
-    let total = 0, pending = 0, totalBalance = 0, activeWorkers = 0, activeFreelancers = 0;
-    usersSnap.forEach(d => {
-      total++;
-      const data = d.data();
-      if (!data.approved) pending++;
-      totalBalance += data.balanceHTG || 0;
-      if (data.role === 'worker' && data.approved) activeWorkers++;
-      if (data.role === 'freelancer' && data.approved) activeFreelancers++;
-    });
-    const rateDoc = await db.collection('config').doc('exchangeRate').get();
-    const rate = rateDoc.exists ? rateDoc.data().value : 130;
-    document.getElementById('statTotalUsers').innerText = total;
-    document.getElementById('statPending').innerText = pending;
-    document.getElementById('statTotalHTG').innerText = totalBalance.toLocaleString();
-    document.getElementById('statTotalUSD').innerText = (totalBalance / rate).toFixed(2);
-    document.getElementById('statActiveWorkers').innerText = activeWorkers;
-    document.getElementById('statActiveFreelancers').innerText = activeFreelancers;
-    // Active subs count
-    const subsSnap = await db.collection('subscriptions').where('status', '==', 'active').get();
-    document.getElementById('statActiveSubs').innerText = subsSnap.size;
-    // Monthly revenue estimate
-    let monthlyRevenue = 0;
-    subsSnap.forEach(doc => {
-      const sub = doc.data();
-      if (sub.billingCycle === 'monthly') monthlyRevenue += sub.price || 0;
-      else if (sub.billingCycle === 'yearly') monthlyRevenue += (sub.price || 0) / 12;
-    });
-    document.getElementById('statMonthlyRevenue').innerText = monthlyRevenue.toFixed(0) + ' HTG';
-  }
-
-  // Enhanced load all users with filter and detail button
-  async function loadAllUsersTable() {
-    const snap = await db.collection('users').get();
-    let users = []; snap.forEach(d => users.push({ id: d.id, ...d.data() }));
-    allUsersCache = users;
-    const search = document.getElementById('userSearchInput')?.value.toLowerCase() || '';
-    const roleFilter = document.getElementById('userRoleFilter')?.value || '';
-    const filtered = users.filter(u => 
-      (u.id.toLowerCase().includes(search) || u.name.toLowerCase().includes(search)) &&
-      (!roleFilter || u.role === roleFilter)
-    );
-    const tbody = document.getElementById('usersTbody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    filtered.forEach(u => {
-      const tr = document.createElement('tr');
-      tr.className = 'border-b border-border dark:border-slate-700';
-      tr.innerHTML = `
-        <td class="py-2">${u.id}</td>
-        <td>${u.name}</td>
-        <td>${u.role}</td>
-        <td>${u.balanceHTG || 0}</td>
-        <td>${u.approved ? '✅' : '⏳'}</td>
-        <td class="text-xs text-muted">${u.lastActivity?.toDate?.()?.toLocaleString() || 'N/A'}</td>
-        <td class="space-x-1">
-          <button onclick="showUserDetail('${u.id}')" class="text-xs bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded">Detail</button>
-          ${!u.approved ? `<button onclick="approveUser('${u.id}')" class="text-xs bg-lakay/10 text-lakay px-2 py-1 rounded">Approve</button>` : ''}
-          <button onclick="promoteUser('${u.id}', 'manager')" class="text-xs bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded">Manager</button>
-          <button onclick="deleteUser('${u.id}')" class="text-xs bg-red-100 dark:bg-red-900 px-2 py-1 rounded">Delete</button>
-        </td>`;
-      tbody.appendChild(tr);
-    });
-  }
-
-  // Admin tabs initialization
-  function initAdminTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const tabId = btn.getAttribute('data-tab');
-        document.querySelectorAll('.tab-content').forEach(tc => tc.classList.add('hidden'));
-        document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('tab-active'));
-        btn.classList.add('tab-active');
-        if (tabId === 'subscriptions') { loadPlans(); loadActiveSubscriptions(); }
-        if (tabId === 'settings') loadSettingsTab();
-        if (tabId === 'logs') loadLogs(0);
-      });
-    });
-    document.querySelector('.tab-btn')?.click();
-    document.getElementById('updateExchangeBtn')?.addEventListener('click', updateExchangeRate);
-    document.getElementById('addCategoryBtn')?.addEventListener('click', addCategory);
-    document.getElementById('createTeamBtn')?.addEventListener('click', createTeam);
-    document.getElementById('userSearchInput')?.addEventListener('input', ()=>loadAllUsersTable());
-    document.getElementById('savePlanBtn')?.addEventListener('click', savePlan);
-    document.getElementById('logsPrevBtn')?.addEventListener('click', () => loadLogs(logsPage - 1));
-    document.getElementById('logsNextBtn')?.addEventListener('click', () => loadLogs(logsPage + 1));
-  }
-
-  async function renderAdmin() {
-    const adminDiv = document.getElementById('adminView'); if(adminDiv) adminDiv.classList.remove('hidden');
-    await refreshAllAdminData();
-    initAdminTabs();
-    await loadTopWorkersAndClients();
-    lucide.createIcons();
-  }
-
-  async function refreshAllAdminData() {
-    await Promise.all([refreshStats(), loadPendingApprovals(), loadAllUsersTable(), loadTeams(), loadCategories(), loadExchangeRate(), loadWithdrawals(), loadLogs(logsPage), refreshChart()]);
-  }
-
-  // ... (other admin functions unchanged but with minor additions)
-  async function loadPendingApprovals() {
-    const snap = await db.collection('users').where('approved', '==', false).get();
-    const container = document.getElementById('pendingUsersList');
-    if (!container) return;
-    container.innerHTML = snap.empty ? '<div class="text-muted text-sm">No pending approvals</div>' : '';
-    snap.forEach(doc => {
-      const u = doc.data();
-      container.innerHTML += `<div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-3 rounded-xl"><div><span class="font-medium">${u.name}</span> (${doc.id}) - ${u.role}</div><div class="flex gap-2"><button onclick="approveUser('${doc.id}')" class="bg-primary text-white px-3 py-1 rounded-lg text-xs">Approve</button><button onclick="deleteUser('${doc.id}')" class="bg-red-100 text-danger px-3 py-1 rounded-lg text-xs">Reject</button></div></div>`;
-    });
-  }
-
-  // Expose globally
-  window.approveUser = approveUser;
-  window.deleteUser = deleteUser;
-  window.promoteUser = promoteUser;
-  window.approveAllPending = approveAllPending;
-  window.showUserDetail = showUserDetail;
-  window.exportUsersCSV = exportUsersCSV;
-  window.removeCategory = removeCategory;
-  window.deleteTeam = deleteTeam;
-  window.updateTeamManager = updateTeamManager;
-  window.markWithdrawalPaid = markWithdrawalPaid;
-  window.freelancerSaveProfile = freelancerSaveProfile;
-  window.sendChatMessage = sendChatMessage;
-  window.clientAcceptApplication = clientAcceptApplication;
-  window.clientRejectApplication = clientRejectApplication;
-  window.clientMarkJobCompleted = clientMarkJobCompleted;
-  window.clientReleasePayment = clientReleasePayment;
-  window.clientStartChat = clientStartChat;
-  window.saveSettings = saveSettings;
-  window.savePlan = savePlan;
-  window.deletePlan = deletePlan;
-  window.subscribeToPlan = subscribeToPlan;
-  // ================== FONCTIONS MANQUANTES (à ajouter à la fin du script) ==================
-
-async function removeCategory(catName) {
-  showLoading();
-  try {
-    const ref = db.collection('config').doc('categories');
-    const doc = await ref.get();
-    let arr = doc.exists ? doc.data().list : [];
-    arr = arr.filter(c => c !== catName);
-    await ref.set({ list: arr });
-    await addLog('REMOVE_CATEGORY', catName);
-    await loadCategories();
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-async function deleteTeam(teamId, teamName) {
-  if (!confirm(`Delete team "${teamName}"?`)) return;
-  showLoading();
-  try {
-    await db.collection('teams').doc(teamId).delete();
-    const workers = await db.collection('users').where('teamId', '==', teamId).get();
-    workers.forEach(async doc => await doc.ref.update({ teamId: null, teamName: null }));
-    await addLog('DELETE_TEAM', teamName);
-    await loadTeams();
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-async function updateTeamManager(teamId, newManagerId) {
-  showLoading();
-  try {
-    await db.collection('teams').doc(teamId).update({ managerId: newManagerId || null });
-    await addLog('UPDATE_TEAM_MANAGER', `Team ${teamId} manager changed`);
-    await loadTeams();
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-async function markWithdrawalPaid(requestId) {
-  showLoading();
-  try {
-    await db.collection('withdrawalRequests').doc(requestId).update({ status: 'paid', processedAt: firebase.firestore.FieldValue.serverTimestamp() });
-    await addLog('PAY_WITHDRAWAL', `Request ${requestId} marked paid`);
-    await loadWithdrawals();
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-function freelancerLoadProfile() {
-  document.getElementById('freelancerSkills').value = currentUser.skills || '';
-  document.getElementById('freelancerRate').value = currentUser.hourlyRate || '';
-}
-
-async function freelancerSaveProfile() {
-  const skills = document.getElementById('freelancerSkills').value.trim();
-  const rate = parseFloat(document.getElementById('freelancerRate').value);
-  if (isNaN(rate) || rate <= 0) return showToast('Enter a valid hourly rate', 'error');
-  showLoading();
-  try {
-    await db.collection('users').doc(currentUser.id).update({ skills, hourlyRate: rate });
-    showToast('Profile updated!', 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-}
-
-async function applyToJob(jobId) {
-  if (!currentUser.approved) return showToast('You are not approved yet', 'error');
-  showLoading();
-  try {
-    const existing = await db.collection('applications')
-      .where('jobId', '==', jobId).where('freelancerId', '==', currentUser.id).get();
-    if (!existing.empty) return showToast('Already applied.', 'info');
-    await db.collection('applications').add({
-      jobId, freelancerId: currentUser.id, freelancerName: currentUser.name || currentUser.id,
-      status: 'pending', appliedAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    showToast('Application submitted!', 'success');
-  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-}
-
-async function clientLoadFreelancers() {
-  const container = document.getElementById('freelancersList');
-  container.innerHTML = '<p class="text-muted">Loading...</p>';
-  try {
-    const snap = await db.collection('users').where('role', '==', 'freelancer').where('approved', '==', true).get();
-    if (snap.empty) { container.innerHTML = '<p class="text-muted">No freelancers available.</p>'; return; }
-    container.innerHTML = '';
-    snap.forEach(doc => {
-      const f = doc.data(); const freelancerId = doc.id;
-      container.innerHTML += `<div class="border border-border rounded-xl p-4 bg-gray-50 dark:bg-slate-800 flex justify-between items-center">
-        <div><p class="font-semibold">${f.name || freelancerId}</p><p class="text-sm">${f.skills || 'N/A'} · ${f.hourlyRate || 'N/A'} HTG/hr</p></div>
-        <button onclick="clientStartChat('${freelancerId}')" class="bg-primary text-white px-3 py-1.5 rounded-lg text-sm">💬 Message</button>
-      </div>`;
-    });
-  } catch(e) { container.innerHTML = '<p class="text-danger">Failed to load freelancers.</p>'; }
-}
-
-async function clientStartChat(freelancerId) {
-  showLoading();
-  try {
-    const existing = await db.collection('chats').where('participants', 'array-contains', currentUser.id)
-      .where('participants', 'array-contains', freelancerId).get();
-    if (!existing.empty) { existing.forEach(d => currentClientChatId = d.id); }
-    else {
-      const newChat = await db.collection('chats').add({ participants: [currentUser.id, freelancerId], messages: [] });
-      currentClientChatId = newChat.id;
-    }
-    document.querySelector('.ctab-btn[data-ctab="messages"]').click();
-    clientOpenChat(currentClientChatId, freelancerId);
-  } catch(e) { showToast('Error: ' + e.message, 'error'); } finally { hideLoading(); }
-}
-
-async function clientLoadChats() {
-  const container = document.getElementById('clientChatList');
-  container.innerHTML = 'Loading...';
-  try {
-    const snap = await db.collection('chats').where('participants', 'array-contains', currentUser.id).get();
-    container.innerHTML = snap.empty ? '<p class="text-muted text-sm">No chats yet.</p>' : '';
-    snap.forEach(doc => {
-      const chat = doc.data();
-      const other = chat.participants.find(p => p !== currentUser.id) || 'Unknown';
-      container.innerHTML += `<button class="px-3 py-1.5 rounded-full border text-sm" onclick="clientOpenChat('${doc.id}', '${other}')">💬 ${other}</button>`;
-    });
-  } catch(e) { container.innerHTML = '<p class="text-danger">Failed to load chats.</p>'; }
-}
-
-async function clientOpenChat(chatId, participantName) {
-  currentClientChatId = chatId;
-  document.getElementById('clientChatInputArea').classList.remove('hidden');
-  const chatWindow = document.getElementById('clientChatWindow');
-  chatWindow.innerHTML = '<p class="text-muted">Loading...</p>';
-  try {
-    const doc = await db.collection('chats').doc(chatId).get();
-    if (!doc.exists) return;
-    const msgs = doc.data().messages || [];
-    chatWindow.innerHTML = msgs.length ? msgs.map(m => {
-      const isMe = m.senderId === currentUser.id;
-      return `<div class="mb-2 flex ${isMe ? 'justify-end' : 'justify-start'}"><div class="max-w-[75%] p-2 rounded-xl ${isMe ? 'bg-primary text-white' : 'bg-gray-200 dark:bg-slate-600'}"><p class="text-sm">${m.text}</p><span class="text-[10px] opacity-70">${m.timestamp?.toDate?.()?.toLocaleTimeString() || ''}</span></div></div>`;
-    }).join('') : '<p class="text-muted">No messages yet.</p>';
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-  } catch(e) { chatWindow.innerHTML = '<p class="text-danger">Error loading messages.</p>'; }
-}
-
-async function sendClientChatMessage() {
-  if (!currentClientChatId) return;
-  const input = document.getElementById('clientChatMessageInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  try {
-    await db.collection('chats').doc(currentClientChatId).update({
-      messages: firebase.firestore.FieldValue.arrayUnion({
-        senderId: currentUser.id, text,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-    });
-    clientOpenChat(currentClientChatId, '');
-  } catch(e) { showToast('Failed to send message', 'error'); }
-}
-
-async function sendChatMessage() {
-  if (!currentChatId) return;
-  const input = document.getElementById('chatMessageInput');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  try {
-    await db.collection('chats').doc(currentChatId).update({
-      messages: firebase.firestore.FieldValue.arrayUnion({
-        senderId: currentUser.id, text,
-        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-      })
-    });
-    openChat(currentChatId, '');
-  } catch(e) { showToast('Failed to send message', 'error'); }
-}
-
-async function loadTeams() {
-  const teamsSnap = await db.collection('teams').get();
-  const usersSnap = await db.collection('users').get();
-  const managerOptions = [];
-  usersSnap.forEach(u => { managerOptions.push({ id: u.id, name: u.data().name }); });
-  const select = document.getElementById('teamManagerSelect');
-  if (select) {
-    select.innerHTML = '<option value="">-- Select Manager --</option>';
-    managerOptions.forEach(m => select.innerHTML += `<option value="${m.id}">${m.name}</option>`);
-  }
-  const container = document.getElementById('teamsListContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  for (const teamDoc of teamsSnap.docs) {
-    const team = { id: teamDoc.id, ...teamDoc.data() };
-    let managerName = 'None';
-    if (team.managerId) {
-      const manDoc = await db.collection('users').doc(team.managerId).get();
-      if (manDoc.exists) managerName = manDoc.data().name;
-    }
-    container.innerHTML += `<div class="bg-gray-50 dark:bg-slate-800 p-4 rounded-xl">
-      <div class="flex justify-between items-center"><div><strong>${team.name}</strong><span class="text-xs ml-2">Manager: ${managerName}</span></div>
-      <div class="flex gap-2"><select id="mgrSelect-${team.id}" class="text-xs border rounded px-2 py-1">${managerOptions.map(m => `<option value="${m.id}" ${team.managerId===m.id?'selected':''}>${m.name}</option>`).join('')}<option value="">None</option></select>
-      <button onclick="updateTeamManager('${team.id}', document.getElementById('mgrSelect-${team.id}').value)" class="text-primary text-xs bg-primary/10 px-3 py-1 rounded">Update</button>
-      <button onclick="deleteTeam('${team.id}','${team.name}')" class="text-danger text-xs bg-red-100 px-3 py-1 rounded">Delete</button></div></div></div>`;
-  }
-  if (teamsSnap.empty) container.innerHTML = '<div class="text-muted">No teams yet</div>';
-}
-
-async function loadCategories() {
-  const doc = await db.collection('config').doc('categories').get();
-  const cats = doc.exists ? doc.data().list : [];
-  const container = document.getElementById('categoriesList');
-  if (container) {
-    container.innerHTML = cats.map(c => `<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-sm flex items-center gap-2">${c}<button onclick="removeCategory('${c.replace(/'/g, "\\'")}')" class="text-danger hover:bg-red-100 rounded-full w-5 h-5 inline-flex items-center justify-center">✕</button></span>`).join('');
-  }
-}
-
-async function loadExchangeRate() {
-  const doc = await db.collection('config').doc('exchangeRate').get();
-  const rate = doc.exists ? doc.data().value : 130;
-  document.getElementById('currentRateDisplay').innerText = `Current: 1 USD = ${rate} HTG`;
-  document.getElementById('exchangeRateInput').value = rate;
-}
-
-async function loadWithdrawals() {
-  const snap = await db.collection('withdrawalRequests').where('status','==','pending').orderBy('createdAt','desc').get();
-  const container = document.getElementById('withdrawalsRequestsList');
-  if (!container) return;
-  container.innerHTML = snap.empty ? '<div class="text-muted">No pending withdrawals</div>' : '';
-  snap.forEach(doc => {
-    const req = doc.data();
-    container.innerHTML += `<div class="flex justify-between items-center bg-gray-50 dark:bg-slate-800 p-3 rounded-xl">
-      <div><span class="font-medium">${req.userName || req.userId}</span> - ${req.amount} HTG (${req.method || 'N/A'})</div>
-      <button onclick="markWithdrawalPaid('${doc.id}')" class="bg-green-600 text-white px-3 py-1 rounded-lg text-xs">Mark Paid</button></div>`;
-  });
-}
-
-async function refreshChart() {
-  const usersSnap = await db.collection('users').get();
-  const monthly = {};
-  usersSnap.forEach(doc => {
-    const ts = doc.data().createdAt;
-    if (ts && ts.toDate) {
-      const date = ts.toDate();
-      const key = `${date.getFullYear()}-${date.getMonth()+1}`;
-      monthly[key] = (monthly[key] || 0) + 1;
-    }
-  });
-  const sorted = Object.keys(monthly).sort().slice(-12);
-  const labels = sorted;
-  const counts = sorted.map(k => monthly[k]);
-  const ctx = document.getElementById('adminGainsChart')?.getContext('2d');
-  if (ctx) {
-    if (gainsChart) gainsChart.destroy();
-    gainsChart = new Chart(ctx, {
-      type: 'line',
-      data: { labels, datasets: [{ label: 'New users', data: counts, borderColor: '#6366f1', tension: 0.3, fill: true, backgroundColor: 'rgba(99,102,241,0.1)' }] },
-      options: { responsive: true }
-    });
-  }
-}
-
-async function createTeam() {
-  const name = document.getElementById('teamNameInput').value.trim();
-  const managerId = document.getElementById('teamManagerSelect').value;
-  if (!name) return;
-  showLoading();
-  try {
-    await db.collection('teams').add({ name, managerId: managerId || null, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
-    await addLog('CREATE_TEAM', `Team ${name} created`);
-    await loadTeams();
-    document.getElementById('teamNameInput').value = '';
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-async function addCategory() {
-  const name = document.getElementById('newCategoryInput').value.trim();
-  if (!name) return;
-  showLoading();
-  try {
-    const ref = db.collection('config').doc('categories');
-    const doc = await ref.get();
-    let arr = doc.exists ? doc.data().list : [];
-    if (!arr.includes(name)) arr.push(name);
-    await ref.set({ list: arr });
-    await addLog('ADD_CATEGORY', name);
-    await loadCategories();
-    document.getElementById('newCategoryInput').value = '';
-  } catch(e) { showToast(e.message,'error'); } finally { hideLoading(); }
-}
-
-// N'oubliez pas de rendre ces fonctions disponibles globalement :
-window.removeCategory = removeCategory;
-window.deleteTeam = deleteTeam;
-window.updateTeamManager = updateTeamManager;
-window.markWithdrawalPaid = markWithdrawalPaid;
-window.freelancerSaveProfile = freelancerSaveProfile;
-window.applyToJob = applyToJob;
-window.clientLoadFreelancers = clientLoadFreelancers;
-window.clientStartChat = clientStartChat;
-window.sendClientChatMessage = sendClientChatMessage;
-window.sendChatMessage = sendChatMessage;
-  // ================== SYSTÈME D'ONGLETS UNIVERSEL (à placer à la fin du script) ==================
-function initTabs(containerSelector, tabBtnSelector, contentSelector, activeClass = 'tab-active') {
-  const container = document.querySelector(containerSelector);
-  if (!container) return;
-
-  // Délégation d'événement pour les clics sur les boutons d'onglet
-  container.addEventListener('click', (e) => {
-    const btn = e.target.closest(tabBtnSelector);
-    if (!btn) return;
-
-    const tabId = btn.getAttribute('data-tab') || btn.getAttribute('data-ftab') || btn.getAttribute('data-ctab');
-    if (!tabId) return;
-
-    // Trouver le parent qui contient tous les onglets (pour les vues avec préfixe ftab- ou ctab-)
-    const prefix = btn.getAttribute('data-ftab') ? 'ftab-' : (btn.getAttribute('data-ctab') ? 'ctab-' : 'tab-');
-    const contentId = prefix + tabId;
-
-    // Masquer tous les contenus
-    const allContents = container.parentElement.querySelectorAll('.tab-content, .ftab-content, .ctab-content');
-    allContents.forEach(c => c.classList.add('hidden'));
-
-    // Afficher le contenu cible
-    const targetContent = document.getElementById(contentId);
-    if (targetContent) targetContent.classList.remove('hidden');
-
-    // Retirer la classe active de tous les boutons
-    container.querySelectorAll(tabBtnSelector).forEach(b => b.classList.remove(activeClass));
-    // Ajouter la classe active au bouton cliqué
-    btn.classList.add(activeClass);
-
-    // Déclencher les fonctions de chargement spécifiques (selon la vue)
-    const viewType = containerSelector.includes('adminView') ? 'admin' :
-                    (containerSelector.includes('freelancerView') ? 'freelancer' :
-                    (containerSelector.includes('clientView') ? 'client' : ''));
-    if (viewType === 'admin') {
-      if (tabId === 'subscriptions') { loadPlans(); loadActiveSubscriptions(); }
-      if (tabId === 'settings') loadSettingsTab();
-      if (tabId === 'logs') loadLogs(0);
-    } else if (viewType === 'freelancer') {
-      if (tabId === 'dashboard') freelancerLoadDashboard();
-      else if (tabId === 'profile') freelancerLoadProfile();
-      else if (tabId === 'portfolio') freelancerLoadPortfolio();
-      else if (tabId === 'marketplace') freelancerLoadMarketplace();
-      else if (tabId === 'applications') freelancerLoadApplications();
-      else if (tabId === 'reviews') freelancerLoadReviews();
-      else if (tabId === 'messages') freelancerLoadChats();
-    } else if (viewType === 'client') {
-      if (tabId === 'dashboard') clientLoadDashboard();
-      else if (tabId === 'postjob') clientLoadCategories();
-      else if (tabId === 'myjobs') clientLoadMyJobs();
-      else if (tabId === 'freelancers') clientLoadFreelancers();
-      else if (tabId === 'subscription') clientLoadSubscriptionTab();
-      else if (tabId === 'collaborators') loadCollaborators();
-      else if (tabId === 'messages') clientLoadChats();
-    }
-  });
-
-  // Activer le premier onglet par défaut
-  const firstBtn = container.querySelector(tabBtnSelector);
-  if (firstBtn) firstBtn.click();
-}
-
-// Initialiser les onglets dans chaque vue
-function initAllTabs() {
-  // Admin
-  if (document.getElementById('adminView')) {
-    initTabs('#adminView', '.tab-btn', '.tab-content');
-  }
-  // Freelancer
-  if (document.getElementById('freelancerView')) {
-    initTabs('#freelancerView', '.ftab-btn', '.ftab-content');
-  }
-  // Client
-  if (document.getElementById('clientView')) {
-    initTabs('#clientView', '.ctab-btn', '.ctab-content');
-  }
-}
-
-// Appeler initAllTabs après chaque rendu de vue
-const originalShowApp = showApp;
-showApp = function() {
-  originalShowApp();
-  setTimeout(initAllTabs, 200); // laisser le DOM se mettre à jour
-};
-
-// Appeler également au chargement initial
-window.addEventListener('load', () => {
-  setTimeout(initAllTabs, 500);
-});
-      
-    let managerTabsInitialized = false;
-let managerChartInstance = null;
-
-// Fonction principale appelée lors de la connexion d'un manager
-async function renderManager() {
-  const managerView = document.getElementById('managerView');
-  managerView.classList.remove('hidden');
-  document.getElementById('navBalance').classList.remove('hidden');
-  document.getElementById('navApprovedStatus').textContent = '✅ Approved';
-
-  document.getElementById('managerName').textContent = currentUser.name || currentUser.id;
-  document.getElementById('managerTeamDisplay').textContent = currentUser.teamName || 'No team';
-
-  // Vérifier/créer l'équipe du manager si nécessaire
-  await checkManagerTeam();
-
-  // Mettre à jour les stats et le solde
-  updateManagerUI();
-
-  if (!managerTabsInitialized) {
-    initManagerTabs();
-    managerTabsInitialized = true;
-  } else {
-    const active = document.querySelector('.mtab-btn.tab-active');
-    if (active) active.click();
-    else document.querySelector('.mtab-btn[data-mtab="team"]')?.click();
-  }
-
-  // Écouter les changements en temps réel sur le document du manager
-  db.collection('users').doc(currentUser.id).onSnapshot(doc => {
-    if (doc.exists) {
-      currentUser = { id: doc.id, ...doc.data() };
-      updateManagerUI();
-    }
-  });
-}
-
-// Mise à jour des affichages simples (solde, etc.)
-function updateManagerUI() {
-  document.getElementById('managerBalance').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
-  document.getElementById('navBalanceAmt').textContent = (currentUser.balanceHTG || 0).toLocaleString() + ' HTG';
-}
-
-// Vérifie si le manager a une équipe, sinon affiche le formulaire de création
-async function checkManagerTeam() {
-  const noTeamDiv = document.getElementById('noTeamYet');
-  const teamExistsDiv = document.getElementById('teamExists');
-  const addMemberTab = document.querySelector('.mtab-btn[data-mtab="addmember"]');
-  
-  if (currentUser.teamId) {
-    // L'équipe existe déjà
-    noTeamDiv.classList.add('hidden');
-    teamExistsDiv.classList.remove('hidden');
-    if (addMemberTab) addMemberTab.classList.remove('hidden');
-    await loadManagerTeam();
-  } else {
-    // Pas d'équipe encore
-    noTeamDiv.classList.remove('hidden');
-    teamExistsDiv.classList.add('hidden');
-    if (addMemberTab) addMemberTab.classList.add('hidden');
-  }
-}
-
-// Créer une équipe pour ce manager
-async function createManagerTeam() {
-  const teamName = document.getElementById('newTeamName').value.trim();
-  if (!teamName) {
-    showToast('Please enter a team name', 'error');
-    return;
-  }
-  showLoading();
-  try {
-    // Vérifier que le manager n'a pas déjà une équipe
-    const existing = await db.collection('teams').where('managerId', '==', currentUser.id).get();
-    if (!existing.empty) {
-      showToast('You already have a team', 'error');
-      hideLoading();
-      return;
-    }
-
-    // Créer l'équipe
-    const teamRef = await db.collection('teams').add({
-      name: teamName,
-      managerId: currentUser.id,
-      managerName: currentUser.name || currentUser.id,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Mettre à jour le document utilisateur du manager
-    await db.collection('users').doc(currentUser.id).update({
-      teamId: teamRef.id,
-      teamName: teamName
-    });
-
-    // Mettre à jour l'objet courant
-    currentUser.teamId = teamRef.id;
-    currentUser.teamName = teamName;
-    document.getElementById('managerTeamDisplay').textContent = teamName;
-
-    showToast('Team created successfully!', 'success');
-    await checkManagerTeam();
-  } catch (e) {
-    showToast('Error: ' + e.message, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Charger la liste des membres de l'équipe
-async function loadManagerTeam() {
-  const container = document.getElementById('managerTeamList');
-  if (!container || !currentUser.teamId) return;
-  
-  container.innerHTML = '<p class="text-muted text-sm">Loading team members...</p>';
-
-  try {
-    const snap = await db.collection('users')
-      .where('teamId', '==', currentUser.teamId)
-      .where('role', '==', 'worker')
-      .get();
-    
-    const members = [];
-    snap.forEach(doc => members.push({ id: doc.id, ...doc.data() }));
-
-    // Calcul des statistiques
-    let totalBalance = 0, totalTasks = 0;
-    members.forEach(m => {
-      totalBalance += m.balanceHTG || 0;
-      totalTasks += m.totalTasks || 0;
-    });
-
-    document.getElementById('managerTeamBalance').textContent = totalBalance.toLocaleString() + ' HTG';
-    document.getElementById('managerTeamCount').textContent = members.length;
-    document.getElementById('managerTeamTasks').textContent = totalTasks;
-
-    // Afficher la liste
-    if (members.length === 0) {
-      container.innerHTML = '<p class="text-muted">No members in your team yet. Go to "Add Member" tab.</p>';
-    } else {
-      container.innerHTML = '';
-      members.forEach(m => {
-        const div = document.createElement('div');
-        div.className = 'flex justify-between items-center p-3 bg-gray-50 dark:bg-slate-800 rounded-xl';
-        div.innerHTML = `
-          <div>
-            <p class="font-semibold">${m.name || m.id}</p>
-            <p class="text-xs text-muted">${m.id} · ${m.badge || 'Bronze'}</p>
-            <p class="text-xs text-muted">${m.status || ''} ${m.phone ? '· ' + m.phone : ''}</p>
-          </div>
-          <div class="text-right">
-            <p class="font-bold text-primary">${(m.balanceHTG || 0).toLocaleString()} HTG</p>
-            <p class="text-xs text-muted">${m.totalTasks || 0} tasks</p>
-          </div>`;
-        container.appendChild(div);
-      });
-    }
-
-    drawManagerChart(members);
-  } catch (e) {
-    container.innerHTML = '<p class="text-danger">Failed to load team.</p>';
-  }
-}
-
-// Ajouter un membre à l'équipe
-async function addTeamMember() {
-  if (!currentUser.teamId) {
-    showToast('You need to create a team first', 'error');
-    return;
-  }
-
-  const firstName = document.getElementById('memberFirstName').value.trim();
-  const lastName = document.getElementById('memberLastName').value.trim();
-  if (!firstName || !lastName) {
-    showToast('First name and last name are required', 'error');
-    return;
-  }
-
-  const age = document.getElementById('memberAge').value.trim();
-  const gender = document.getElementById('memberGender').value;
-  const address = document.getElementById('memberAddress').value.trim();
-  const email = document.getElementById('memberEmail').value.trim();
-  const phone = document.getElementById('memberPhone').value.trim();
-  const status = document.getElementById('memberStatus').value;
-
-  showLoading();
-  document.getElementById('memberMsg').textContent = '';
-
-  try {
-    // Générer un username unique
-    const username = await generateUniqueUsername();
-    // Générer un mot de passe aléatoire de 8 caractères
-    const password = generateRandomPassword(8);
-
-    // Créer le compte Firebase Auth
-    const emailForAuth = `${username}@taskpam.com`;
-    await auth.createUserWithEmailAndPassword(emailForAuth, password);
-
-    // Créer le document Firestore pour le nouveau membre
-    const fullName = `${firstName} ${lastName}`;
-    await db.collection('users').doc(username).set({
-      name: fullName,
-      firstName,
-      lastName,
-      age: age || null,
-      gender: gender || null,
-      address: address || null,
-      email: email || null,
-      phone: phone || null,
-      status: status || null,
-      role: 'worker',
-      approved: true,  // Vous pouvez changer si besoin d'approbation admin
-      teamId: currentUser.teamId,
-      teamName: currentUser.teamName,
-      balanceHTG: 0,
-      totalTasks: 0,
-      badge: 'Bronze',
-      history: [],
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-
-    // Afficher les credentials générés dans un message
-    document.getElementById('memberMsg').innerHTML = 
-      `✅ Member created! <br>Username: <strong>${username}</strong><br>Password: <strong>${password}</strong>`;
-    
-    // Vider le formulaire
-    document.getElementById('memberFirstName').value = '';
-    document.getElementById('memberLastName').value = '';
-    document.getElementById('memberAge').value = '';
-    document.getElementById('memberGender').value = '';
-    document.getElementById('memberAddress').value = '';
-    document.getElementById('memberEmail').value = '';
-    document.getElementById('memberPhone').value = '';
-    document.getElementById('memberStatus').value = '';
-
-    // Rafraîchir la liste de l'équipe
-    await loadManagerTeam();
-    showToast('Member added successfully!', 'success');
-  } catch (e) {
-    document.getElementById('memberMsg').textContent = 'Error: ' + e.message;
-    showToast('Error: ' + e.message, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Générer un username unique de type worker_XXX
-async function generateUniqueUsername() {
-  let username = '';
-  let exists = true;
-  while (exists) {
-    const num = Math.floor(Math.random() * 90000) + 10000; // 5 chiffres aléatoires
-    username = `worker_${num}`;
-    const doc = await db.collection('users').doc(username).get();
-    if (!doc.exists) {
-      exists = false;
-    }
-  }
-  return username;
-}
-
-// Générer un mot de passe aléatoire de la longueur spécifiée
-function generateRandomPassword(length = 8) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%';
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return password;
-}
-
-// Fonctions existantes (graphique, notifications, retrait)
-function drawManagerChart(members) {
-  const ctx = document.getElementById('managerChart')?.getContext('2d');
-  if (!ctx) return;
-  if (managerChartInstance) managerChartInstance.destroy();
-  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const data = labels.map(() => Math.floor(Math.random() * 500 + 100));
-  managerChartInstance = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Team earnings (HTG)',
-        data,
-        borderColor: '#6366f1',
-        backgroundColor: 'rgba(99,102,241,0.1)',
-        fill: true,
-        tension: 0.4
-      }]
-    },
-    options: { responsive: true, plugins: { legend: { display: false } } }
-  });
-}
-
-async function loadManagerNotifications() {
-  const container = document.getElementById('managerNotificationsList');
-  if (!container) return;
-  container.innerHTML = '<p class="text-muted text-sm">Loading...</p>';
-  try {
-    const snap = await db.collection('notifications')
-      .where('recipientId', '==', currentUser.id)
-      .orderBy('createdAt', 'desc')
-      .limit(20)
-      .get();
-    container.innerHTML = snap.empty
-      ? '<p class="text-muted text-sm">No notifications.</p>'
-      : '';
-    snap.forEach(doc => {
-      const notif = doc.data();
-      const div = document.createElement('div');
-      div.className = 'flex justify-between items-center p-2 bg-gray-50 dark:bg-slate-800 rounded-lg';
-      div.innerHTML = `<span>${notif.message}</span><span class="text-xs text-muted">${notif.createdAt?.toDate?.()?.toLocaleString() || ''}</span>`;
-      container.appendChild(div);
-    });
-  } catch (e) {
-    container.innerHTML = '<p class="text-danger">Failed to load notifications.</p>';
-  }
-}
-
-async function managerWithdraw() {
-  const amountStr = document.getElementById('managerWithdrawAmount').value.trim();
-  const amount = parseFloat(amountStr);
-  if (isNaN(amount) || amount <= 0) {
-    document.getElementById('managerWithdrawMsg').textContent = 'Please enter a valid amount.';
-    return;
-  }
-  if (amount > (currentUser.balanceHTG || 0)) {
-    document.getElementById('managerWithdrawMsg').textContent = 'Insufficient balance.';
-    return;
-  }
-  showLoading();
-  try {
-    await db.collection('withdrawalRequests').add({
-      userId: currentUser.id,
-      userName: currentUser.name || currentUser.id,
-      amount,
-      method: 'Manager withdrawal',
-      status: 'pending',
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    await db.collection('users').doc(currentUser.id).update({
-      balanceHTG: firebase.firestore.FieldValue.increment(-amount)
-    });
-    document.getElementById('managerWithdrawMsg').textContent = 'Withdrawal request submitted.';
-    document.getElementById('managerWithdrawAmount').value = '';
-  } catch (e) {
-    document.getElementById('managerWithdrawMsg').textContent = 'Error: ' + e.message;
-  } finally { hideLoading(); }
-}
-
-function initManagerTabs() {
-  const container = document.querySelector('#managerView');
-  if (!container) return;
-  container.addEventListener('click', (e) => {
-    const btn = e.target.closest('.mtab-btn');
-    if (!btn) return;
-    const tabId = btn.getAttribute('data-mtab');
-    container.querySelectorAll('.mtab-content').forEach(c => c.classList.add('hidden'));
-    const target = document.getElementById('mtab-' + tabId);
-    if (target) target.classList.remove('hidden');
-    container.querySelectorAll('.mtab-btn').forEach(b => b.classList.remove('tab-active'));
-    btn.classList.add('tab-active');
-
-    if (tabId === 'team') loadManagerTeam();
-    else if (tabId === 'stats') loadManagerTeam();
-    else if (tabId === 'notifications') loadManagerNotifications();
-  });
-
-  container.querySelector('.mtab-btn[data-mtab="team"]')?.click();
-  }
-  lucide.createIcons();
-</script>
+  <!-- Modal : Ajouter Maintenance -->
+  <div class="modal hidden" id="modal-add-maintenance">
+    <div class="modal-header">
+      <h3 class="modal-title">Activer une maintenance</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Worker</label>
+        <select id="maintenance-worker-select" class="form-select">
+          <option value="">Sélectionner un worker</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Montant (HTG)</label>
+        <input type="number" id="maintenance-amount-input" class="form-input" placeholder="250" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Raison (optionnel)</label>
+        <textarea id="maintenance-reason-input" class="form-textarea" rows="2" placeholder="Raison de la maintenance..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="activateMaintenance()">Activer</button>
+    </div>
+  </div>
+
+  <!-- Modal : Ajouter Membre (Manager) -->
+  <div class="modal modal-large hidden" id="modal-add-member">
+    <div class="modal-header">
+      <h3 class="modal-title">Ajouter un nouveau membre</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Prénom *</label>
+          <input type="text" id="member-firstname" class="form-input" placeholder="Jean" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom *</label>
+          <input type="text" id="member-lastname" class="form-input" placeholder="Dupont" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Âge</label>
+          <input type="number" id="member-age" class="form-input" placeholder="25" min="16" max="65" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sexe</label>
+          <select id="member-gender" class="form-select">
+            <option value="M">Masculin</option>
+            <option value="F">Féminin</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Téléphone</label>
+          <input type="tel" id="member-phone" class="form-input" placeholder="509-XXXX-XXXX" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Statut</label>
+          <select id="member-status" class="form-select">
+            <option value="étudiant">Étudiant</option>
+            <option value="commerçant">Commerçant</option>
+            <option value="employé">Employé</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+        <div class="form-group col-span-2">
+          <label class="form-label">Adresse</label>
+          <input type="text" id="member-address" class="form-input" placeholder="Adresse complète" />
+        </div>
+      </div>
+
+      <div class="generated-credentials" id="generated-credentials">
+        <div class="cred-header"><i data-lucide="key" class="w-4 h-4"></i> Identifiants générés</div>
+        <div class="cred-item">
+          <span class="cred-key">Nom d'utilisateur :</span>
+          <span class="cred-val" id="gen-username">worker_XXXXX</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-key">Email :</span>
+          <span class="cred-val" id="gen-email">worker_XXXXX@hbwtask.com</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-key">Mot de passe :</span>
+          <span class="cred-val" id="gen-password">XXXXXXXX</span>
+        </div>
+        <p class="cred-warning"><i data-lucide="alert-circle" class="w-3 h-3"></i> Notez ces identifiants avant de fermer cette fenêtre !</p>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="generateWorkerCredentials()">
+        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Régénérer
+      </button>
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-primary" onclick="createWorkerAccount()">
+        <i data-lucide="user-plus" class="w-4 h-4"></i> Créer le compte
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal : Voir Preuve Maintenance -->
+  <div class="modal hidden" id="modal-maintenance-proof">
+    <div class="modal-header">
+      <h3 class="modal-title">Preuve de paiement</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body" id="modal-maintenance-proof-body">
+    </div>
+    <div class="modal-footer">
+      <input type="hidden" id="proof-maintenance-user-id" />
+      <button class="btn-secondary" onclick="closeModal()">Fermer</button>
+      <button class="btn-danger" onclick="rejectMaintenanceProof()">
+        <i data-lucide="x-circle" class="w-4 h-4"></i> Rejeter
+      </button>
+      <button class="btn-primary" onclick="approveMaintenanceProof()">
+        <i data-lucide="check-circle" class="w-4 h-4"></i> Approuver
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal : Confirmation -->
+  <div class="modal hidden" id="modal-confirm">
+    <div class="modal-header">
+      <h3 class="modal-title" id="confirm-title">Confirmer l'action</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-message" class="text-gray-300"></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-danger" id="confirm-action-btn">Confirmer</button>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- App Script -->
+  <script src="app.js"></script>
 </body>
-                                                                    </html>
+            </html>
