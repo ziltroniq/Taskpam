@@ -114,7 +114,6 @@ async function handleAuthStateChanged(user) {
  * Le nom d'utilisateur est converti en email interne
  */
 async function handleLogin() {
-async function handleLogin() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
 
