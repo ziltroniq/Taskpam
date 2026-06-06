@@ -1873,10 +1873,16 @@ function showResult(el, msg, type) {
 // 17. MANAGER — TABLEAU DE BORD
 // =====================================================
 
-async function renderManagerDashboard() {
+      async function renderManagerDashboard() {
   try {
+    // Si le manager n'a pas encore d'équipe, afficher un message clair
     if (!currentUser.teamId) {
-      showToast('Vous n\'êtes assigné à aucune équipe.', 'warning');
+      document.getElementById('mgr-stat-members').textContent = '0';
+      document.getElementById('mgr-stat-tasks').textContent = '0';
+      document.getElementById('mgr-stat-avg').textContent = '0 HTG';
+      document.getElementById('mgr-stat-balance').textContent = '0 HTG';
+      document.getElementById('team-ranking-list').innerHTML = 
+        '<div class="empty-state-sm">Aucune équipe assignée. Contactez l\'administrateur.</div>';
       return;
     }
 
@@ -1887,7 +1893,7 @@ async function renderManagerDashboard() {
       .get();
     const members = membersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
-    // Stats du jour
+    // Stats
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const txSnap = await db.collection('transactions')
@@ -1905,101 +1911,32 @@ async function renderManagerDashboard() {
     document.getElementById('mgr-stat-avg').textContent = formatCurrency(avgBalance) + ' HTG';
     document.getElementById('mgr-stat-balance').textContent = formatCurrency(totalBalance) + ' HTG';
 
-    // Classement de l'équipe
+    // Classement
     const ranked = [...members].sort((a, b) => (b.balance || 0) - (a.balance || 0));
-    renderTeamRankingList(ranked);
+    const container = document.getElementById('team-ranking-list');
+    if (!members.length) {
+      container.innerHTML = '<div class="empty-state-sm">Aucun membre dans l\'équipe</div>';
+    } else {
+      container.innerHTML = ranked.map((m, i) => `
+        <div class="mini-item">
+          <div class="mini-avatar">${i+1}</div>
+          <div class="mini-info">
+            <p class="mini-name">${escapeHtml(m.username || '?')}</p>
+            <p class="mini-sub">${m.totalTasks || 0} tâches</p>
+          </div>
+          <span class="mini-amount green">${formatCurrency(m.balance || 0)} HTG</span>
+        </div>
+      `).join('');
+    }
 
-    // Graphique
-    await renderManagerChart(members);
+    // Graphique (optionnel, ne bloque pas en cas d'erreur)
+    try { await renderManagerChart(members); } catch(e) { console.error('Graphique manager ignoré', e); }
 
   } catch (err) {
     console.error('Erreur dashboard manager :', err);
     showToast('Erreur lors du chargement du tableau de bord.', 'error');
   }
-}
-
-function renderTeamRankingList(members) {
-  const container = document.getElementById('team-ranking-list');
-  if (!members.length) {
-    container.innerHTML = '<div class="empty-state-sm">Aucun membre</div>';
-    return;
-  }
-  const medals = ['🥇', '🥈', '🥉'];
-  container.innerHTML = members.map((m, i) => `
-    <div class="mini-item">
-      <div class="mini-avatar" style="background:transparent;font-size:1.25rem;width:34px;height:34px">
-        ${medals[i] || (i + 1)}
-      </div>
-      <div class="mini-info">
-        <p class="mini-name">${escapeHtml(m.username || '?')}</p>
-        <p class="mini-sub">${m.totalTasks || 0} tâche(s) · ${getBadgeLabel(m.totalTasks || 0)}</p>
-      </div>
-      <span class="mini-amount green">${formatCurrency(m.balance || 0)} HTG</span>
-    </div>
-  `).join('');
-}
-
-async function renderManagerChart(members) {
-  const ctx = document.getElementById('manager-chart');
-  if (!ctx) return;
-
-  const labels = getLast7DaysLabels();
-  const last7 = getLast7Days();
-  const memberIds = members.map(m => m.id);
-
-  const from = new Date();
-  from.setDate(from.getDate() - 7);
-  from.setHours(0, 0, 0, 0);
-
-  try {
-    const snap = await db.collection('transactions')
-      .where('type', '==', 'task')
-      .where('createdAt', '>=', from)
-      .get();
-
-    const dailyTotals = {};
-    last7.forEach(d => { dailyTotals[d] = 0; });
-
-    snap.docs.forEach(doc => {
-      const data = doc.data();
-      if (!memberIds.includes(data.userId)) return;
-      const date = data.createdAt?.toDate ? data.createdAt.toDate() : new Date();
-      const key = date.toISOString().split('T')[0];
-      if (dailyTotals[key] !== undefined) dailyTotals[key]++;
-    });
-
-    const values = last7.map(d => dailyTotals[d] || 0);
-
-    if (managerChart) managerChart.destroy();
-
-    managerChart = new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Tâches complétées',
-          data: values,
-          backgroundColor: 'rgba(22,163,74,0.5)',
-          borderColor: '#16a34a',
-          borderWidth: 2,
-          borderRadius: 6
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 11 } } },
-          y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#64748b', font: { size: 11 } }, beginAtZero: true, stepSize: 1 }
-        }
       }
-    });
-  } catch (err) {
-    console.error('Erreur graphique manager :', err);
-  }
-}
-
 // =====================================================
 // 18. MANAGER — MEMBRES
 // =====================================================
