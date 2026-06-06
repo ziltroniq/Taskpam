@@ -2059,7 +2059,7 @@ function generateWorkerCredentials() {
   document.getElementById('gen-password').textContent = randomPass;
 }
 
- async function createWorkerAccount() {
+     async function createWorkerAccount() {
   const firstName = document.getElementById('member-firstname').value.trim();
   const lastName = document.getElementById('member-lastname').value.trim();
   const age = document.getElementById('member-age').value;
@@ -2077,15 +2077,22 @@ function generateWorkerCredentials() {
     return;
   }
 
-  // Sauvegarder les credentials du manager pour le reconnecter après
-  const managerEmail = currentUser.email;   // email du manager connecté
-  const managerPass = prompt(
-    'Pour des raisons de sécurité, entrez votre mot de passe manager pour rester connecté après la création :'
-  );
-  if (!managerPass) {
-    showToast('Mot de passe manager requis.', 'error');
-    return;
+  // Sauvegarder les credentials du manager (si non déjà stockés)
+  if (!sessionStorage.getItem('mgr_email')) {
+    const mgrEmail = currentUser.email;
+    const mgrPass = prompt(
+      'Pour des raisons de sécurité, entrez votre mot de passe manager (une seule fois par session) :'
+    );
+    if (!mgrPass) {
+      showToast('Mot de passe manager requis.', 'error');
+      return;
+    }
+    sessionStorage.setItem('mgr_email', mgrEmail);
+    sessionStorage.setItem('mgr_pass', mgrPass);
   }
+
+  const managerEmail = sessionStorage.getItem('mgr_email');
+  const managerPass = sessionStorage.getItem('mgr_pass');
 
   showLoading();
   try {
@@ -2097,21 +2104,23 @@ function generateWorkerCredentials() {
       return;
     }
 
-    // Créer le compte Auth (ceci déconnecte le manager et connecte le worker)
+    // Créer le compte Auth (ceci déconnecte temporairement le manager)
     const cred = await auth.createUserWithEmailAndPassword(email, password);
-    const uid = cred.user.uid;
+    const workerUid = cred.user.uid;
 
-    // Reconnecter immédiatement le manager
+    // Reconnecter immédiatement le manager avec les identifiants stockés
     await auth.signInWithEmailAndPassword(managerEmail, managerPass);
 
-    // Maintenant que le manager est reconnecté, créer le document Firestore
+    // Maintenant que le manager est reconnecté, créer le document Firestore du worker
     let teamName = '';
     if (currentUser.teamId) {
-      const teamDoc = await db.collection('teams').doc(currentUser.teamId).get();
-      if (teamDoc.exists) teamName = teamDoc.data().name || '';
+      try {
+        const teamDoc = await db.collection('teams').doc(currentUser.teamId).get();
+        if (teamDoc.exists) teamName = teamDoc.data().name || '';
+      } catch (e) { /* ignorer */ }
     }
 
-    await db.collection('users').doc(uid).set({
+    await db.collection('users').doc(workerUid).set({
       username,
       email,
       firstName,
@@ -2133,29 +2142,28 @@ function generateWorkerCredentials() {
       createdBy: currentUser.id
     });
 
-    // Mettre à jour le compteur de l'équipe
+    // Incrémenter le compteur de l'équipe (si autorisé par les règles)
     if (currentUser.teamId) {
-      await db.collection('teams').doc(currentUser.teamId).update({
-        memberCount: firebase.firestore.FieldValue.increment(1)
-      });
+      try {
+        await db.collection('teams').doc(currentUser.teamId).update({
+          memberCount: firebase.firestore.FieldValue.increment(1)
+        });
+      } catch (e) { /* non bloquant */ }
     }
 
     await addLog('user', `Worker ${username} créé par manager ${currentUser.username}`, currentUser.username);
-
     showToast(`Worker "${username}" créé avec succès !`, 'success');
     closeModal();
     await loadMembers();
   } catch (err) {
     console.error('Erreur création worker :', err);
     showToast('Erreur : ' + err.message, 'error');
-    // Essayer de reconnecter le manager si besoin
-    try { await auth.signInWithEmailAndPassword(managerEmail, managerPass); } catch(e) {}
+    // Tenter de reconnecter le manager si nécessaire
+    try { await auth.signInWithEmailAndPassword(managerEmail, managerPass); } catch (e) {}
   } finally {
     hideLoading();
   }
- }
-      
-
+     }
 // =====================================================
 // 20. MANAGER — MESSAGERIE
 // =====================================================
