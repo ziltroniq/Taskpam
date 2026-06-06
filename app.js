@@ -114,6 +114,7 @@ async function handleAuthStateChanged(user) {
  * Le nom d'utilisateur est converti en email interne
  */
 async function handleLogin() {
+async function handleLogin() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
 
@@ -125,47 +126,36 @@ async function handleLogin() {
   setLoginLoading(true);
   hideLoginError();
 
-  try {
-    // Rechercher l'email associé au nom d'utilisateur
-    const usersQuery = await db.collection('users')
-      .where('username', '==', username)
-      .limit(1)
-      .get();
+  // Essayer directement les deux domaines possibles
+  const domains = ['@hbwtask.com', '@taskpam.com'];
+  let lastError = null;
 
-    if (usersQuery.empty) {
-      showLoginError('Nom d\'utilisateur introuvable.');
+  for (const domain of domains) {
+    const email = username + domain;
+    try {
+      await auth.signInWithEmailAndPassword(email, password);
+      // Connexion réussie → le reste est géré par auth.onAuthStateChanged
       setLoginLoading(false);
       return;
+    } catch (err) {
+      lastError = err;
+      // Si l'utilisateur n'existe pas du tout, on passe au domaine suivant
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+        continue;
+      }
+      // Pour toute autre erreur, on arrête immédiatement
+      break;
     }
-
-    const userDoc = usersQuery.docs[0];
-    const userData = userDoc.data();
-
-    if (userData.suspended) {
-      showLoginError('Ce compte est suspendu. Contactez l\'administrateur.');
-      setLoginLoading(false);
-      return;
-    }
-
-    // Connexion Firebase Auth avec l'email stocké
-    await auth.signInWithEmailAndPassword(userData.email, password);
-
-    // Log de connexion
-    await addLog('login', `Connexion de ${username}`, username);
-
-  } catch (err) {
-    console.error('Erreur login :', err);
-    let msg = 'Identifiants incorrects. Vérifiez votre mot de passe.';
-    if (err.code === 'auth/too-many-requests') {
-      msg = 'Trop de tentatives. Réessayez plus tard.';
-    } else if (err.code === 'auth/user-disabled') {
-      msg = 'Ce compte a été désactivé.';
-    }
-    showLoginError(msg);
-    setLoginLoading(false);
   }
-}
 
+  // Aucun domaine n'a fonctionné
+  console.error('Login error:', lastError);
+  let msg = 'Identifiants incorrects.';
+  if (lastError?.code === 'auth/too-many-requests') msg = 'Trop de tentatives. Réessayez plus tard.';
+  else if (lastError?.code === 'auth/user-disabled') msg = 'Ce compte a été désactivé.';
+  showLoginError(msg);
+  setLoginLoading(false);
+}
 /**
  * Déconnexion
  */
