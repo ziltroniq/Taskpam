@@ -2003,27 +2003,41 @@ async function createManagerAccount() {
   const resultEl = document.getElementById('manager-creation-result');
 
   if (!name || !username || !password || !adminPassword) {
-    showToast('Veuillez remplir tous les champs', 'warning');
+    showToast('Veuillez remplir tous les champs.', 'warning');
     return;
   }
 
   const email = `${username}@hbwtask.com`;
 
-  if (resultEl) { resultEl.className = 'result-box'; resultEl.textContent = 'Création en cours...'; resultEl.classList.remove('hidden'); }
+  if (resultEl) {
+    resultEl.className = 'result-box';
+    resultEl.textContent = 'Création en cours...';
+    resultEl.classList.remove('hidden');
+  }
+
+  // Sauvegarder l'identité admin avant de créer le compte
+  const adminEmail = currentFirebaseUser.email;
 
   try {
-    // Vérifier si le username est déjà pris
-    const existCheck = await db.collection('users').where('username', '==', username).get();
-    if (!existCheck.empty) {
-      if (resultEl) { resultEl.className = 'result-box error'; resultEl.textContent = 'Ce nom d\'utilisateur est déjà pris.'; }
+    // Vérifier si le username existe déjà
+    const existing = await db.collection('users').where('username', '==', username).limit(1).get();
+    if (!existing.empty) {
+      if (resultEl) {
+        resultEl.className = 'result-box error';
+        resultEl.textContent = 'Ce nom d\'utilisateur est déjà pris.';
+      }
       return;
     }
 
-    // Créer le compte Firebase Auth
+    // Étape 1 : créer le compte Firebase Auth
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const newManagerUid = userCredential.user.uid;
 
-    // Créer le document Firestore
+    // Étape 2 : se reconnecter IMMÉDIATEMENT en tant qu'admin
+    // Si le mot de passe est incorrect, une exception sera levée et le document ne sera pas écrit
+    await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
+
+    // Étape 3 : écrire le document Firestore (maintenant que l'admin est reconnecté)
     await db.collection('users').doc(newManagerUid).set({
       uid: newManagerUid,
       email,
@@ -2039,18 +2053,16 @@ async function createManagerAccount() {
       createdBy: currentUser.uid
     });
 
-    // Se reconnecter en tant qu'admin
-    const adminEmail = currentFirebaseUser.email;
-    await auth.signInWithEmailAndPassword(adminEmail, adminPassword);
-
+    // Log
     await addLog('user', `Manager créé : ${username} (${name})`, currentUser.username);
 
+    // Message de succès
     if (resultEl) {
       resultEl.className = 'result-box success';
       resultEl.innerHTML = `✅ Manager créé avec succès !<br>Username: <strong>${username}</strong><br>Email: <strong>${email}</strong>`;
     }
 
-    // Vider le formulaire
+    // Vider les champs
     ['new-manager-name', 'new-manager-username', 'new-manager-password', 'admin-confirm-password'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.value = '';
@@ -2058,12 +2070,22 @@ async function createManagerAccount() {
 
     showToast('Manager créé avec succès', 'success');
   } catch (err) {
-    console.error("Erreur création manager:", err);
-    let msg = err.message;
-    if (err.code === 'auth/email-already-in-use') msg = 'Cet email est déjà utilisé.';
-    else if (err.code === 'auth/wrong-password') msg = 'Mot de passe admin incorrect. La session admin peut être compromise.';
-    if (resultEl) { resultEl.className = 'result-box error'; resultEl.textContent = `Erreur : ${msg}`; }
-    showToast('Erreur lors de la création', 'error');
+    console.error('Erreur création manager:', err);
+
+    // Si l'erreur est due à un mauvais mot de passe admin
+    if (err.code === 'auth/wrong-password') {
+      if (resultEl) {
+        resultEl.className = 'result-box error';
+        resultEl.textContent = '❌ Mot de passe admin incorrect. Le compte manager a été créé mais le document Firestore n\'a pas pu être enregistré.';
+      }
+      showToast('Mot de passe admin incorrect. Le compte manager n\'a pas été créé correctement.', 'error');
+    } else {
+      if (resultEl) {
+        resultEl.className = 'result-box error';
+        resultEl.textContent = `Erreur : ${err.message}`;
+      }
+      showToast('Erreur lors de la création du manager.', 'error');
+    }
   }
 }
 
