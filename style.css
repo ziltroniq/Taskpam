@@ -1762,3 +1762,51 @@ html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(30,5
 .text-center { text-align: center; }
 .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
 .ml-auto { margin-left: auto; }
+/* ======================
+Offline Mode
+===================*/
+.offline-screen {
+  display: none;
+}
+
+body.offline .offline-screen {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(circle at top, #08152D, #020617);
+  z-index: 99999;
+}
+
+.offline-box {
+  text-align: center;
+  background: rgba(255,255,255,0.05);
+  padding: 30px;
+  border-radius: 18px;
+  backdrop-filter: blur(15px);
+  width: 85%;
+  max-width: 340px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+.offline-logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #60a5fa;
+  margin-bottom: 10px;
+}
+
+.offline-spinner {
+  width: 45px;
+  height: 45px;
+  border: 4px solid rgba(255,255,255,0.2);
+  border-top: 4px solid #3b82f6;
+  border-radius: 50%;
+  margin: 15px auto;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}
