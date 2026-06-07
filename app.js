@@ -5,12 +5,12 @@
 
 // ─── FIREBASE CONFIGURATION ───────────────────────────────────────────────────
 const firebaseConfig = {
-  apiKey: "AIzaSyBXxxx_REMPLACEZ_PAR_VOTRE_CLE",
+  apiKey: "AIzaSyAbRFgL4jxSbBgc7FhIORKyOEq7N163_AQ",
   authDomain: "hbwtaskpam.firebaseapp.com",
   projectId: "hbwtaskpam",
   storageBucket: "hbwtaskpam.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+  messagingSenderId: "142029895340",
+  appId: "1:142029895340:web:ce94830569430491ef5109"
 };
 
 // Initialisation Firebase
@@ -2986,7 +2986,7 @@ async function submitMaintenanceProof() {
 
     // Upload si fichier sélectionné
     if (file) {
-      if (IMGBB_API_KEY === 'votre_cle_imgbb_ici') {
+      if (IMGBB_API_KEY === '555e4fae57d7a9f253b9a34addfe8609') {
         showToast('Clé ImgBB non configurée. Utilisez une URL manuelle.', 'warning');
         return;
       }
