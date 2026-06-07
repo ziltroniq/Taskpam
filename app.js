@@ -2359,27 +2359,52 @@ async function createWorkerAccount() {
   const address = document.getElementById('member-address')?.value.trim();
   const managerPassword = document.getElementById('manager-password-input')?.value;
 
-  const genUsername = document.getElementById('gen-username')?.textContent || '';
-  const genEmail = document.getElementById('gen-email')?.textContent || '';
-  const genPassword = document.getElementById('gen-password')?.textContent || '';
-
-  if (!firstname || !lastname) { showToast('Prénom et nom sont requis', 'warning'); return; }
-  if (!managerPassword) { showToast('Votre mot de passe est requis pour confirmer', 'warning'); return; }
-  if (!genUsername || !genEmail || !genPassword) { showToast('Veuillez générer les identifiants', 'warning'); return; }
+  const genUsername = document.getElementById('gen-username')?.textContent.trim();
+  const genEmail = document.getElementById('gen-email')?.textContent.trim();
+  const genPassword = document.getElementById('gen-password')?.textContent.trim();
 
   const btn = document.getElementById('create-worker-btn');
   const btnText = document.getElementById('create-worker-btn-text');
   const spinner = document.getElementById('create-worker-spinner');
+
+  // Validation des champs obligatoires
+  if (!firstname || !lastname) {
+    showToast('Prénom et nom sont requis.', 'warning');
+    return;
+  }
+  if (!managerPassword) {
+    showToast('Veuillez entrer votre mot de passe manager pour confirmer.', 'warning');
+    return;
+  }
+  if (!genUsername || !genEmail || !genPassword) {
+    showToast('Veuillez générer les identifiants avant de créer le compte.', 'warning');
+    return;
+  }
+
+  // Activer le spinner
   if (btn) btn.disabled = true;
   if (btnText) btnText.textContent = 'Création...';
   if (spinner) spinner.classList.remove('hidden');
 
+  // Sauvegarder l'email du manager connecté
+  const managerEmail = currentFirebaseUser.email;
+
   try {
-    // Créer le compte Firebase Auth
+    // Vérifier que le nom d'utilisateur est disponible
+    const existing = await db.collection('users').where('username', '==', genUsername).limit(1).get();
+    if (!existing.empty) {
+      showToast('Ce nom d\'utilisateur est déjà pris. Régénérez les identifiants.', 'error');
+      return;
+    }
+
+    // Étape 1 : créer le compte Firebase Auth (ceci déconnecte le manager)
     const userCredential = await auth.createUserWithEmailAndPassword(genEmail, genPassword);
     const newWorkerUid = userCredential.user.uid;
 
-    // Créer le document Firestore du worker (TOUS les champs)
+    // Étape 2 : reconnecter IMMÉDIATEMENT le manager
+    await auth.signInWithEmailAndPassword(managerEmail, managerPassword);
+
+    // Étape 3 : écrire le document Firestore du worker
     await db.collection('users').doc(newWorkerUid).set({
       uid: newWorkerUid,
       email: genEmail,
@@ -2387,7 +2412,7 @@ async function createWorkerAccount() {
       displayName: `${firstname} ${lastname}`,
       firstName: firstname,
       lastName: lastname,
-      age: parseInt(age) || null,
+      age: age ? parseInt(age) : null,
       gender: gender || 'M',
       phone: phone || '',
       status: status || 'autre',
@@ -2405,27 +2430,29 @@ async function createWorkerAccount() {
       lastActivity: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // Se reconnecter en tant que manager
-    const managerEmail = currentFirebaseUser.email;
-    await auth.signInWithEmailAndPassword(managerEmail, managerPassword);
+    // Log
+    await addLog('user', `Worker créé : ${genUsername} par le manager ${currentUser.username}`, currentUser.username);
 
-    await addLog('user', `Worker créé : ${genUsername} (${firstname} ${lastname}) par manager ${currentUser.username}`, currentUser.username);
     showToast(`Worker ${genUsername} créé avec succès !`, 'success');
     closeModal();
-    loadManagerMembers();
+    loadManagerMembers(); // rafraîchir la liste
 
   } catch (err) {
-    console.error("Erreur création worker:", err);
+    console.error('Erreur création worker:', err);
     let msg = 'Erreur lors de la création.';
-    if (err.code === 'auth/email-already-in-use') msg = 'Cet email est déjà utilisé. Régénérez les identifiants.';
-    else if (err.code === 'auth/wrong-password') msg = 'Mot de passe manager incorrect. Session compromise.';
+    if (err.code === 'auth/email-already-in-use') {
+      msg = 'Cet email est déjà utilisé. Régénérez les identifiants.';
+    } else if (err.code === 'auth/wrong-password') {
+      msg = 'Mot de passe manager incorrect. Le compte worker a été créé mais n\'a pas été enregistré correctement.';
+    }
     showToast(msg, 'error');
   } finally {
+    // Réactiver le bouton et cacher le spinner
     if (btn) btn.disabled = false;
     if (btnText) btnText.textContent = 'Créer le compte';
     if (spinner) spinner.classList.add('hidden');
   }
-}
+                                          }
 
 function sendMessageToMember(uid, name) {
   const msgRecipient = document.getElementById('msg-recipient');
