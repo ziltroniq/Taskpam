@@ -121,46 +121,41 @@ async function handleLogin() {
   const password = passwordInput.value;
 
   if (!username || !password) {
-    showLoginError("Veuillez remplir tous les champs.");
+    showLoginError('Veuillez remplir tous les champs.');
     return;
   }
 
-  // Afficher le spinner
   loginBtn.disabled = true;
   loginBtnText.textContent = 'Connexion...';
   loginSpinner.classList.remove('hidden');
   hideLoginError();
 
-  try {
-    // Chercher l'email associé au nom d'utilisateur
-    const usersSnap = await db.collection('users').where('username', '==', username).limit(1).get();
-    if (usersSnap.empty) {
-      showLoginError("Nom d'utilisateur ou mot de passe incorrect.");
-      return;
+  // Essayer les deux domaines possibles
+  const domains = ['@hbwtask.com', '@taskpam.com'];
+  let lastError = null;
+
+  for (const domain of domains) {
+    try {
+      await auth.signInWithEmailAndPassword(username + domain, password);
+      return; // Connexion réussie, le reste est géré par onAuthStateChanged
+    } catch (err) {
+      lastError = err;
+      // Si l'utilisateur n'existe pas du tout, on passe au domaine suivant
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+        continue;
+      }
+      break; // autre erreur, on arrête
     }
-    const userData = usersSnap.docs[0].data();
-    const email = userData.email;
-
-    // Connexion Firebase Auth
-    await auth.signInWithEmailAndPassword(email, password);
-
-    // Log de connexion
-    await addLog('login', `Connexion réussie`, username);
-
-  } catch (err) {
-    console.error("Erreur login:", err);
-    let msg = "Identifiants incorrects.";
-    if (err.code === 'auth/wrong-password') msg = "Mot de passe incorrect.";
-    else if (err.code === 'auth/user-not-found') msg = "Utilisateur introuvable.";
-    else if (err.code === 'auth/too-many-requests') msg = "Trop de tentatives. Réessayez plus tard.";
-    showLoginError(msg);
-  } finally {
-    loginBtn.disabled = false;
-    loginBtnText.textContent = 'Se connecter';
-    loginSpinner.classList.add('hidden');
   }
-}
 
+  // Aucun domaine n'a fonctionné
+  let msg = 'Identifiants incorrects.';
+  if (lastError?.code === 'auth/too-many-requests') msg = 'Trop de tentatives. Réessayez plus tard.';
+  showLoginError(msg);
+  loginBtn.disabled = false;
+  loginBtnText.textContent = 'Se connecter';
+  loginSpinner.classList.add('hidden');
+}
 /**
  * Déconnexion
  */
