@@ -3551,4 +3551,30 @@ document.addEventListener('keydown', (e) => {
 // Toutes les fonctions sont déjà globales car déclarées avec function (non const/let)
 // au niveau du module. Aucune action supplémentaire requise.
 
-console.log('✅ HBW Task app.js chargé avec succès — Version 1.1.0');
+let retryCount = 0;
+
+/* 1. Fonctions */
+function checkConnection() {
+    if (!navigator.onLine) {
+        document.body.classList.add("offline");
+    } else {
+        document.body.classList.remove("offline");
+    }
+}
+
+function retryConnection() {
+    retryCount++;
+    const delay = Math.min(3000 * retryCount, 10000);
+
+    setTimeout(() => {
+        location.reload();
+    }, delay);
+}
+
+/* 2. Events */
+window.addEventListener("offline", checkConnection);
+window.addEventListener("online", checkConnection);
+
+/* 3. DÉMARRAGE (TOUJOURS À LA FIN) */
+window.addEventListener("load", checkConnection);
+});
