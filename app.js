@@ -322,28 +322,61 @@ function showConfirm(title, message, onConfirm) {
    6. UPLOAD IMGBB
    ============================================================= */
 
-async function uploadToImgbb(file) {
+async function uploadToImgbb(file, progressBarId = 'upload-progress-bar', progressTextId = 'upload-progress-text', progressContainerId = 'upload-progress-container') {
   if (!file) throw new Error('Aucun fichier sélectionné');
-  if (!IMGBB_API_KEY || IMGBB_API_KEY.length < 10) {
-    throw new Error('Clé API ImgBB non configurée');
-  }
+  if (!IMGBB_API_KEY || IMGBB_API_KEY.length < 10) throw new Error('Clé API ImgBB non configurée');
 
-  const formData = new FormData();
-  formData.append('image', file);
+  const container = document.getElementById(progressContainerId);
+  const bar       = document.getElementById(progressBarId);
+  const text      = document.getElementById(progressTextId);
 
-  const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-    method: 'POST',
-    body: formData
+  // Afficher le conteneur de progression
+  if (container) container.classList.remove('hidden');
+  if (bar) bar.style.width = '0%';
+  if (text) text.textContent = 'Préparation de l\'upload...';
+
+  return new Promise((resolve, reject) => {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`);
+
+    // ✅ Événement de progression
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        if (bar) bar.style.width = percent + '%';
+        if (text) text.textContent = `Upload en cours... ${percent}%`;
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      // Upload terminé
+      if (bar) bar.style.width = '100%';
+      if (text) text.textContent = 'Upload terminé !';
+      setTimeout(() => { if (container) container.classList.add('hidden'); }, 1500);
+
+      try {
+        const data = JSON.parse(xhr.responseText);
+        if (data.success) {
+          resolve(data.data.url);  // ✅ URL de l'image
+        } else {
+          reject(new Error(data.error?.message || 'Échec de l\'upload'));
+        }
+      } catch (e) {
+        reject(new Error('Réponse invalide du serveur'));
+      }
+    });
+
+    xhr.addEventListener('error', () => {
+      if (container) container.classList.add('hidden');
+      reject(new Error('Erreur réseau lors de l\'upload'));
+    });
+
+    xhr.send(formData);
   });
-
-  const data = await response.json();
-
-  if (!data.success) {
-    throw new Error(data.error?.message || 'Échec de l\'upload');
-  }
-
-  return data.data.url;
-}
+          }
 /* =============================================================
    7. SPLASH SCREEN
    ============================================================= */
