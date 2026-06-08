@@ -321,6 +321,7 @@ function showConfirm(title, message, onConfirm) {
 /* =============================================================
    6. UPLOAD IMGBB
    ============================================================= */
+
 async function uploadToImgbb(file) {
   if (!file) throw new Error('Aucun fichier sélectionné');
   if (!IMGBB_API_KEY || IMGBB_API_KEY.length < 10) {
@@ -341,15 +342,7 @@ async function uploadToImgbb(file) {
     throw new Error(data.error?.message || 'Échec de l\'upload');
   }
 
-  return data.data.url;   // URL directe de l’image
-                                                           }
-    xhr.onerror = () => {
-      if (container) container.classList.add('hidden');
-      reject(new Error('Erreur réseau lors de l\'upload'));
-    };
-
-    xhr.send(formData);
-  });
+  return data.data.url;
 }
 /* =============================================================
    7. SPLASH SCREEN
