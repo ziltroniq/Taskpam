@@ -189,8 +189,8 @@ function formatDateAbs(ts) {
 }
 
 /** Génère un mot de passe aléatoire */
-function generateRandomPassword(length = 8) {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#!';
+function generateRandomPassword(length = 6) {
+  const chars = '123456789';
   let pwd = '';
   for (let i = 0; i < length; i++) pwd += chars[Math.floor(Math.random() * chars.length)];
   return pwd;
