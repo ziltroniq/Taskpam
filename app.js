@@ -321,41 +321,28 @@ function showConfirm(title, message, onConfirm) {
 /* =============================================================
    6. UPLOAD IMGBB
    ============================================================= */
-async function uploadToImgbb(file, progressBarId = 'upload-progress-bar', progressTextId = 'upload-progress-text', progressContainerId = 'upload-progress-container') {
-  const container = document.getElementById(progressContainerId);
-  const bar       = document.getElementById(progressBarId);
-  const text      = document.getElementById(progressTextId);
-  if (container) container.classList.remove('hidden');
-  if (bar) bar.style.width = '0%';
-  if (text) text.textContent = 'Préparation de l\'upload...';
+async function uploadToImgbb(file) {
+  if (!file) throw new Error('Aucun fichier sélectionné');
+  if (!IMGBB_API_KEY || IMGBB_API_KEY.length < 10) {
+    throw new Error('Clé API ImgBB non configurée');
+  }
 
-  return new Promise((resolve, reject) => {
-    const formData = new FormData();
-    formData.append('image', file);
-    formData.append('key', IMGBB_API_KEY);
+  const formData = new FormData();
+  formData.append('image', file);
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'https://api.imgbb.com/1/upload');
+  const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+    method: 'POST',
+    body: formData
+  });
 
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
-        const pct = Math.round((e.loaded / e.total) * 90);
-        if (bar) bar.style.width = pct + '%';
-        if (text) text.textContent = `Upload en cours... ${pct}%`;
-      }
-    };
+  const data = await response.json();
 
-    xhr.onload = () => {
-      if (bar) bar.style.width = '100%';
-      if (text) text.textContent = 'Upload terminé !';
-      setTimeout(() => { if (container) container.classList.add('hidden'); }, 1500);
-      try {
-        const data = JSON.parse(xhr.responseText);
-        if (data.success) resolve(data.data.url);
-        else reject(new Error('ImgBB error: ' + (data.error?.message || 'Échec')));
-      } catch (e) { reject(e); }
-    };
+  if (!data.success) {
+    throw new Error(data.error?.message || 'Échec de l\'upload');
+  }
 
+  return data.data.url;   // URL directe de l’image
+                                                           }
     xhr.onerror = () => {
       if (container) container.classList.add('hidden');
       reject(new Error('Erreur réseau lors de l\'upload'));
