@@ -153,7 +153,7 @@ let activeMaintWorker    = null; // worker sélectionné pour maintenance
 let signalWorkerData     = {};
 let generatedCredentials = {};
 
-const IMGBB_API_KEY = "5f8e8af5a2432ef30e37a54d89df476e"; // clé publique gratuite ImgBB
+const IMGBB_API_KEY = "555e4fae57d7a9f253b9a34addfe8609"; // clé publique gratuite ImgBB
 
 /* =============================================================
    3. UTILITAIRES GÉNÉRAUX
