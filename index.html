@@ -5,14 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>HBW Task &amp; Travail en ligne</title>
 
-    <!-- Barre Android -->
+  <!-- PWA / Mobile -->
   <meta name="theme-color" content="#08152D" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="description" content="HBW Agency Haiti — Plateforme privée de micro-travail" />
 
-  <!-- Fonts -->
+  <!-- Fonts: Syne pour les titres + DM Sans pour le corps -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -38,15 +40,12 @@
       theme: {
         extend: {
           fontFamily: {
-            poppins: ['Poppins', 'sans-serif'],
-            inter: ['Inter', 'sans-serif'],
+            syne: ['Syne', 'sans-serif'],
+            dm: ['DM Sans', 'sans-serif'],
           },
           colors: {
-            primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+            primary: { 50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 900: '#1e3a8a' },
             brand: { dark: '#1e3a5f', mid: '#2d5a87', light: '#3b7cc9' },
-            success: '#16a34a',
-            warning: '#eab308',
-            danger: '#dc2626',
           }
         }
       }
@@ -54,12 +53,50 @@
   </script>
 </head>
 
-<body class="font-inter bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
+<body class="font-dm bg-gray-950 text-gray-100 min-h-screen overflow-x-hidden">
+
+  <!-- =====================================================
+       SPLASH SCREEN
+  ===================================================== -->
+  <div id="splash-screen" class="splash-screen">
+    <div class="splash-bg">
+      <div class="splash-orb splash-orb-1"></div>
+      <div class="splash-orb splash-orb-2"></div>
+      <div class="splash-orb splash-orb-3"></div>
+      <!-- Grid overlay -->
+      <div class="splash-grid"></div>
+    </div>
+    <div class="splash-content">
+      <!-- Logo animé -->
+      <div class="splash-logo-wrap">
+        <div class="splash-logo-icon">
+          <i data-lucide="zap" class="w-8 h-8"></i>
+        </div>
+      </div>
+      <!-- Texte machine à écrire -->
+      <div class="splash-title-wrap">
+        <h1 class="splash-title" id="splash-title"></h1>
+        <div class="splash-cursor" id="splash-cursor">|</div>
+      </div>
+      <p class="splash-subtitle" id="splash-subtitle">Travail en ligne · Haiti</p>
+      <!-- Spinner + texte -->
+      <div class="splash-loader" id="splash-loader">
+        <div class="splash-spinner"></div>
+        <span class="splash-loader-text" id="splash-loader-text">Chargement en cours...</span>
+      </div>
+      <!-- Barre de progression splash -->
+      <div class="splash-progress-bar-wrap">
+        <div class="splash-progress-bar" id="splash-progress-bar"></div>
+      </div>
+    </div>
+    <!-- Version tag -->
+    <div class="splash-version">v2.0.0 · HBW Agency</div>
+  </div>
 
   <!-- =====================================================
        ÉCRAN DE CONNEXION
   ===================================================== -->
-  <div id="login-screen" class="login-screen">
+  <div id="login-screen" class="login-screen hidden">
     <!-- Animated Background -->
     <div class="login-bg">
       <div class="particles-container" id="particles"></div>
@@ -189,24 +226,26 @@
           </div>
         </div>
         <div class="topbar-right">
-          <!-- Solde (worker only) -->
+          <!-- Solde (worker/manager) -->
           <div id="topbar-balance" class="topbar-balance hidden">
             <i data-lucide="wallet" class="w-4 h-4"></i>
             <span id="topbar-balance-amount">0 HTG</span>
           </div>
           <!-- Notifications -->
-          <button class="notif-btn" onclick="toggleNotifications()" id="notif-toggle">
-            <i data-lucide="bell" class="w-5 h-5"></i>
-            <span class="notif-badge hidden" id="notif-badge">0</span>
-          </button>
-          <!-- Notifications Dropdown -->
-          <div class="notif-dropdown hidden" id="notif-dropdown">
-            <div class="notif-header">
-              <span>Notifications</span>
-              <button onclick="markAllRead()" class="notif-mark-all">Tout lire</button>
-            </div>
-            <div class="notif-list" id="notif-list">
-              <div class="notif-empty">Aucune notification</div>
+          <div style="position:relative">
+            <button class="notif-btn" onclick="toggleNotifications()" id="notif-toggle">
+              <i data-lucide="bell" class="w-5 h-5"></i>
+              <span class="notif-badge hidden" id="notif-badge">0</span>
+            </button>
+            <!-- Notifications Dropdown -->
+            <div class="notif-dropdown hidden" id="notif-dropdown">
+              <div class="notif-header">
+                <span>Notifications</span>
+                <button onclick="markAllRead()" class="notif-mark-all">Tout lire</button>
+              </div>
+              <div class="notif-list" id="notif-list">
+                <div class="notif-empty">Aucune notification</div>
+              </div>
             </div>
           </div>
         </div>
@@ -351,6 +390,43 @@
           </div>
         </div>
 
+        <!-- ==================== PAGE : ADMIN USER MANAGEMENT ==================== -->
+        <div id="page-admin-user-management" class="page hidden">
+          <div class="page-toolbar">
+            <div class="search-bar">
+              <i data-lucide="search" class="w-4 h-4"></i>
+              <input type="text" id="um-search" placeholder="Rechercher..." oninput="filterUserManagement()" />
+            </div>
+            <button class="btn-primary" onclick="exportUserManagementCSV()">
+              <i data-lucide="download" class="w-4 h-4"></i> Export CSV
+            </button>
+          </div>
+          <div class="card table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Nom complet</th>
+                    <th>Mot de passe</th>
+                    <th>Adresse</th>
+                    <th>Sexe</th>
+                    <th>Âge</th>
+                    <th>Statut</th>
+                    <th>Équipe</th>
+                    <th>Solde</th>
+                    <th>Tâches</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="um-tbody">
+                  <tr><td colspan="11" class="text-center py-8 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== PAGE : ADMIN ÉQUIPES ==================== -->
         <div id="page-admin-teams" class="page hidden">
           <div class="page-toolbar">
@@ -382,7 +458,7 @@
                 <thead>
                   <tr>
                     <th>Titre</th>
-                    <th>Type</th>
+                    <th>Image</th>
                     <th>Récompense</th>
                     <th>Worker</th>
                     <th>Statut</th>
@@ -529,6 +605,39 @@
           </div>
         </div>
 
+        <!-- ==================== PAGE : ADMIN LEADERBOARD ==================== -->
+        <div id="page-admin-leaderboard" class="page hidden">
+          <div class="leaderboard-layout">
+            <!-- Top Teams -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="layers" class="w-5 h-5"></i> Top 10 Équipes</h3>
+              </div>
+              <div id="lb-teams" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+            <!-- Top Managers -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="briefcase" class="w-5 h-5"></i> Top 10 Managers</h3>
+              </div>
+              <div id="lb-managers" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+            <!-- Top Workers -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trophy" class="w-5 h-5"></i> Top 10 Workers</h3>
+              </div>
+              <div id="lb-workers" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== PAGE : ADMIN PARAMÈTRES ==================== -->
         <div id="page-admin-settings" class="page hidden">
           <div class="settings-grid">
@@ -564,7 +673,6 @@
               </div>
             </div>
 
-            <!-- NOUVEAU : Numéros de paiement MonCash / Natcash -->
             <div class="card settings-card">
               <div class="card-header">
                 <h3 class="card-title"><i data-lucide="smartphone" class="w-5 h-5"></i> Numéros de Paiement</h3>
@@ -590,22 +698,10 @@
                 <h3 class="card-title"><i data-lucide="shield" class="w-5 h-5"></i> Informations Plateforme</h3>
               </div>
               <div class="info-list">
-                <div class="info-item">
-                  <span class="info-key">Plateforme</span>
-                  <span class="info-val">HBW Task &amp; Travail en ligne</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-key">Version</span>
-                  <span class="info-val">1.1.0</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-key">Firebase Project</span>
-                  <span class="info-val">hbwtaskpam</span>
-                </div>
-                <div class="info-item">
-                  <span class="info-key">Accès</span>
-                  <span class="info-val badge-green">Privé</span>
-                </div>
+                <div class="info-item"><span class="info-key">Plateforme</span><span class="info-val">HBW Task &amp; Travail en ligne</span></div>
+                <div class="info-item"><span class="info-key">Version</span><span class="info-val">2.0.0 Cosmique</span></div>
+                <div class="info-item"><span class="info-key">Firebase Project</span><span class="info-val">hbwtaskpam</span></div>
+                <div class="info-item"><span class="info-key">Accès</span><span class="info-val badge badge-green">Privé</span></div>
               </div>
             </div>
 
@@ -637,6 +733,20 @@
                 <div id="manager-creation-result" class="hidden result-box"></div>
               </div>
             </div>
+
+            <!-- Commission calculateur -->
+            <div class="card settings-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="percent" class="w-5 h-5"></i> Calcul des Commissions</h3>
+              </div>
+              <div class="settings-form">
+                <p class="form-hint">Calculer et distribuer les commissions 5% du jour pour tous les managers.</p>
+                <button class="btn-primary" onclick="calculateDailyCommissions()">
+                  <i data-lucide="calculator" class="w-4 h-4"></i> Calculer les commissions du jour
+                </button>
+                <div id="commission-calc-result" class="hidden result-box"></div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -666,7 +776,7 @@
             <div class="stat-card yellow">
               <div class="stat-icon"><i data-lucide="trending-up" class="w-6 h-6"></i></div>
               <div class="stat-info">
-                <p class="stat-label">Gain moyen</p>
+                <p class="stat-label">Gain moyen équipe</p>
                 <p class="stat-value" id="mgr-stat-avg">0 HTG</p>
               </div>
             </div>
@@ -677,8 +787,7 @@
                 <p class="stat-value" id="mgr-stat-balance">0 HTG</p>
               </div>
             </div>
-            <!-- NOUVEAU : Mes gains (commission 10%) -->
-            <div class="stat-card green">
+            <div class="stat-card teal">
               <div class="stat-icon"><i data-lucide="coins" class="w-6 h-6"></i></div>
               <div class="stat-info">
                 <p class="stat-label">Mes gains (commission)</p>
@@ -775,6 +884,28 @@
 
         <!-- ==================== PAGE : MANAGER STATISTIQUES ==================== -->
         <div id="page-manager-stats" class="page hidden">
+          <!-- Tâches du jour par membre -->
+          <div class="card mb-6">
+            <div class="card-header">
+              <h3 class="card-title"><i data-lucide="calendar" class="w-5 h-5"></i> Tâches du jour par membre</h3>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Membre</th>
+                    <th>Tâches aujourd'hui</th>
+                    <th>Heures estimées</th>
+                  </tr>
+                </thead>
+                <tbody id="daily-tasks-tbody">
+                  <tr><td colspan="3" class="text-center py-4 text-gray-400">Chargement...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Performance globale -->
           <div class="card table-card">
             <div class="card-header">
               <h3 class="card-title"><i data-lucide="bar-chart" class="w-5 h-5"></i> Performances des membres</h3>
@@ -796,6 +927,135 @@
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER RETRAIT ==================== -->
+        <div id="page-manager-withdrawal" class="page hidden">
+          <div class="withdrawal-layout">
+            <div class="card withdrawal-card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="arrow-up-circle" class="w-5 h-5"></i> Demande de retrait (Manager)</h3>
+              </div>
+
+              <div class="withdrawal-balance-info">
+                <p class="wd-label">Mon solde disponible</p>
+                <p class="wd-balance" id="mgr-wd-balance">0 HTG</p>
+              </div>
+
+              <div id="mgr-withdrawal-error" class="error-banner hidden mb-4">
+                <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                <span id="mgr-withdrawal-error-msg"></span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Méthode de paiement</label>
+                <div class="method-selector">
+                  <div class="method-option selected" onclick="selectManagerMethod('MonCash')" id="mgr-method-moncash">
+                    <div class="method-logo moncash">M</div>
+                    <span>MonCash</span>
+                  </div>
+                  <div class="method-option" onclick="selectManagerMethod('Natcash')" id="mgr-method-natcash">
+                    <div class="method-logo natcash">N</div>
+                    <span>Natcash</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Montant (HTG)</label>
+                <input type="number" id="mgr-wd-amount" class="form-input no-icon" placeholder="Montant minimum : 100 HTG" min="100" />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Numéro de téléphone</label>
+                <input type="tel" id="mgr-wd-phone" class="form-input no-icon" placeholder="509-XXXX-XXXX" />
+              </div>
+
+              <button class="btn-primary w-full" onclick="requestManagerWithdrawal()" id="mgr-withdrawal-btn">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span id="mgr-withdrawal-btn-text">Envoyer la demande</span>
+                <span id="mgr-withdrawal-spinner" class="spinner hidden"></span>
+              </button>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="history" class="w-5 h-5"></i> Mes retraits</h3>
+              </div>
+              <div id="mgr-withdrawals-list" class="mini-list">
+                <div class="empty-state-sm">Aucun retrait</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER LEADERBOARD ==================== -->
+        <div id="page-manager-leaderboard" class="page hidden">
+          <div class="leaderboard-layout">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trophy" class="w-5 h-5"></i> Top Workers (Global)</h3>
+              </div>
+              <div id="mgr-lb-workers" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="layers" class="w-5 h-5"></i> Top Équipes</h3>
+              </div>
+              <div id="mgr-lb-teams" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==================== PAGE : MANAGER OFFERWALLS ==================== -->
+        <div id="page-manager-offerwalls" class="page hidden">
+          <div class="offerwalls-grid">
+            <div class="card offerwall-card" onclick="openOfferwall('monlix')">
+              <div class="offerwall-logo monlix">M</div>
+              <div>
+                <h3 class="offerwall-name">Monlix</h3>
+                <p class="offerwall-desc">Sondages et offres</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('adscend')">
+              <div class="offerwall-logo adscend">A</div>
+              <div>
+                <h3 class="offerwall-name">Adscend Media</h3>
+                <p class="offerwall-desc">Offres premium</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('ayet')">
+              <div class="offerwall-logo ayet">Y</div>
+              <div>
+                <h3 class="offerwall-name">AyetStudios</h3>
+                <p class="offerwall-desc">Jeux et applications</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+            <div class="card offerwall-card" onclick="openOfferwall('offertoro')">
+              <div class="offerwall-logo offertoro">O</div>
+              <div>
+                <h3 class="offerwall-name">Offertoro</h3>
+                <p class="offerwall-desc">Micro-tâches variées</p>
+              </div>
+              <i data-lucide="external-link" class="w-5 h-5 ml-auto text-gray-400"></i>
+            </div>
+          </div>
+          <div id="offerwall-iframe-container-mgr" class="hidden card mt-4">
+            <div class="card-header">
+              <h3 class="card-title" id="offerwall-iframe-title-mgr">Offerwall</h3>
+              <button class="btn-link" onclick="closeOfferwall()">
+                <i data-lucide="x" class="w-4 h-4"></i> Fermer
+              </button>
+            </div>
+            <iframe id="offerwall-iframe-mgr" src="" class="offerwall-iframe" frameborder="0" allowfullscreen></iframe>
           </div>
         </div>
 
@@ -942,6 +1202,28 @@
           </div>
         </div>
 
+        <!-- ==================== PAGE : WORKER LEADERBOARD ==================== -->
+        <div id="page-worker-leaderboard" class="page hidden">
+          <div class="leaderboard-layout">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="trophy" class="w-5 h-5"></i> Top Workers</h3>
+              </div>
+              <div id="wkr-lb-workers" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><i data-lucide="layers" class="w-5 h-5"></i> Top Équipes</h3>
+              </div>
+              <div id="wkr-lb-teams" class="leaderboard-list">
+                <div class="empty-state-sm">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- ==================== PAGE : WORKER MAINTENANCE ==================== -->
         <div id="page-worker-maintenance" class="page hidden">
           <div class="card maintenance-card">
@@ -1080,6 +1362,12 @@
 
       </div><!-- /pages-container -->
     </main>
+
+    <!-- ==================== BOTTOM BAR MOBILE ==================== -->
+    <nav class="bottom-bar" id="bottom-bar">
+      <!-- Items injected dynamically by JS based on role -->
+    </nav>
+
   </div><!-- /app -->
 
   <!-- =====================================================
@@ -1125,8 +1413,8 @@
     </div>
   </div>
 
-  <!-- Modal : Créer Tâche -->
-  <div class="modal hidden" id="modal-task">
+  <!-- Modal : Créer Tâche (avec image + tutoriel) -->
+  <div class="modal modal-large hidden" id="modal-task">
     <div class="modal-header">
       <h3 class="modal-title">Nouvelle tâche agency</h3>
       <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -1138,20 +1426,50 @@
       </div>
       <div class="form-group">
         <label class="form-label">Description / Instructions</label>
-        <textarea id="task-desc-input" class="form-textarea" rows="4" placeholder="Instructions détaillées..."></textarea>
+        <textarea id="task-desc-input" class="form-textarea" rows="3" placeholder="Instructions détaillées..."></textarea>
       </div>
       <div class="form-group">
-        <label class="form-label">Récompense (HTG)</label>
-        <input type="number" id="task-reward-input" class="form-input no-icon" placeholder="500" />
+        <label class="form-label">Tutoriel complet (optionnel)</label>
+        <textarea id="task-tutorial-input" class="form-textarea" rows="4" placeholder="Étapes détaillées, conseils, captures..."></textarea>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label class="form-label">Récompense (HTG)</label>
+          <input type="number" id="task-reward-input" class="form-input no-icon" placeholder="500" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Heures estimées</label>
+          <input type="number" id="task-hours-input" class="form-input no-icon" placeholder="1.5" step="0.5" min="0" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Image de la tâche (URL ou upload)</label>
+        <input type="text" id="task-image-url-input" class="form-input no-icon" placeholder="https://... URL de l'image (optionnel)" />
+        <div style="margin-top:6px">
+          <label class="form-hint" style="cursor:pointer;color:var(--brand-light)">
+            <i data-lucide="upload-cloud" style="width:14px;height:14px;display:inline;margin-right:4px"></i>
+            Ou uploadez une image
+          </label>
+          <input type="file" id="task-image-file" accept="image/*" class="hidden" onchange="handleTaskImageFile(event)" />
+          <div id="task-image-preview" class="hidden" style="margin-top:8px">
+            <img id="task-img-preview-el" src="" alt="Aperçu" style="max-height:120px;border-radius:8px;border:1px solid var(--border)" />
+            <div class="progress-bar-wrapper hidden" id="task-upload-progress-wrap" style="margin-top:6px">
+              <div class="progress-bar-fill" id="task-upload-bar" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" onclick="createTask()">Créer la tâche</button>
+      <button class="btn-primary" onclick="createTask()">
+        <span id="create-task-btn-text">Créer la tâche</span>
+        <span id="create-task-spinner" class="spinner hidden"></span>
+      </button>
     </div>
   </div>
 
-  <!-- Modal : Valider Tâche Worker -->
+  <!-- Modal : Valider Tâche Worker (preuve avec image + upload) -->
   <div class="modal hidden" id="modal-task-proof">
     <div class="modal-header">
       <h3 class="modal-title">Soumettre une preuve</h3>
@@ -1163,14 +1481,36 @@
         <label class="form-label">Instructions de la tâche</label>
         <div class="task-instructions-box" id="task-instructions-box"></div>
       </div>
+      <!-- Image de la tâche si disponible -->
+      <div id="task-proof-task-image-wrap" class="hidden form-group">
+        <label class="form-label">Image de référence</label>
+        <img id="task-proof-task-image" src="" alt="Tâche" style="max-width:100%;max-height:160px;border-radius:8px;border:1px solid var(--border)" />
+      </div>
       <div class="form-group">
         <label class="form-label">URL de la preuve</label>
         <input type="text" id="task-proof-url" class="form-input no-icon" placeholder="Lien vers la capture d'écran..." />
       </div>
+      <div class="form-group">
+        <label class="form-label">Ou uploadez une photo preuve</label>
+        <div class="file-upload-zone" id="task-proof-file-zone" onclick="document.getElementById('task-proof-file').click()">
+          <i data-lucide="camera" class="w-8 h-8 text-gray-400"></i>
+          <p>Prendre une photo ou choisir depuis la galerie</p>
+          <input type="file" id="task-proof-file" accept="image/*" capture="environment" class="hidden" onchange="handleTaskProofFile(event)" />
+        </div>
+        <div id="task-proof-upload-progress" class="hidden" style="margin-top:8px">
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-fill" id="task-proof-progress-bar" style="width:0%"></div>
+          </div>
+          <p id="task-proof-progress-text" style="font-size:0.75rem;color:var(--text-muted);margin-top:4px">Upload en cours...</p>
+        </div>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
-      <button class="btn-primary" onclick="submitTaskProof()">Soumettre</button>
+      <button class="btn-primary" onclick="submitTaskProof()">
+        <span id="task-proof-btn-text">Soumettre</span>
+        <span id="task-proof-spinner" class="spinner hidden"></span>
+      </button>
     </div>
   </div>
 
@@ -1198,7 +1538,6 @@
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="closeModal()">Annuler</button>
-      <!-- NOUVEAU : Bouton "Activer sur tous les workers" -->
       <button class="btn-danger" onclick="activateMaintenanceAll()" title="Appliquer cette maintenance à TOUS les workers">
         <i data-lucide="users" class="w-4 h-4"></i> Tous les workers
       </button>
@@ -1254,7 +1593,6 @@
         </div>
       </div>
 
-      <!-- Champ mot de passe manager — OBLIGATOIRE pour reconnecter après création -->
       <div class="form-group" style="margin-top:1rem">
         <label class="form-label">🔐 Votre mot de passe manager *</label>
         <input type="password" id="manager-password-input" class="form-input no-icon" placeholder="••••••••" autocomplete="current-password" />
@@ -1314,6 +1652,48 @@
     </div>
   </div>
 
+  <!-- Modal : Voir Preuve Tâche (admin) -->
+  <div class="modal hidden" id="modal-task-proof-admin">
+    <div class="modal-header">
+      <h3 class="modal-title">Preuve de tâche</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body" id="modal-task-proof-admin-body"></div>
+    <div class="modal-footer">
+      <input type="hidden" id="admin-task-proof-id" />
+      <button class="btn-secondary" onclick="closeModal()">Fermer</button>
+      <button class="btn-danger" onclick="rejectTaskFromModal()">
+        <i data-lucide="x-circle" class="w-4 h-4"></i> Rejeter
+      </button>
+      <button class="btn-primary" onclick="validateTaskFromModal()">
+        <i data-lucide="check-circle" class="w-4 h-4"></i> Valider
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal : Signaler un worker (Manager) -->
+  <div class="modal hidden" id="modal-signal-worker">
+    <div class="modal-header">
+      <h3 class="modal-title">Signaler un worker</h3>
+      <button onclick="closeModal()" class="modal-close"><i data-lucide="x" class="w-5 h-5"></i></button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="signal-worker-id" />
+      <input type="hidden" id="signal-worker-name" />
+      <p id="signal-worker-label" style="font-weight:600;margin-bottom:0.75rem;color:var(--text-primary)">Worker : —</p>
+      <div class="form-group">
+        <label class="form-label">Message de signalement</label>
+        <textarea id="signal-message" class="form-textarea" rows="4" placeholder="Décrivez le problème ou comportement à signaler..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Annuler</button>
+      <button class="btn-danger" onclick="submitWorkerSignal()">
+        <i data-lucide="flag" class="w-4 h-4"></i> Signaler
+      </button>
+    </div>
+  </div>
+
   <!-- Modal : Confirmation -->
   <div class="modal hidden" id="modal-confirm">
     <div class="modal-header">
@@ -1332,20 +1712,18 @@
   <!-- Toast Notifications -->
   <div class="toast-container" id="toast-container"></div>
 
+  <!-- Offline Screen -->
   <div class="offline-screen">
-  <div class="offline-box">
-    <div class="offline-logo">⚡ HBW PRO</div>
-
-    <div class="offline-spinner"></div>
-
-    <h2>Connexion perdue</h2>
-    <p>Nous tentons de reconnecter automatiquement</p>
-
-    <button onclick="retryConnection()">Réessayer</button>
-  </div>
+    <div class="offline-box">
+      <div class="offline-logo">⚡ HBW Task</div>
+      <div class="offline-spinner"></div>
+      <h2>Connexion perdue</h2>
+      <p>Nous tentons de reconnecter automatiquement</p>
+      <button onclick="retryConnection()">Réessayer</button>
+    </div>
   </div>
 
   <!-- App Script -->
   <script src="app.js"></script>
 </body>
-  </html>
+                </html>
