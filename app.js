@@ -2569,9 +2569,14 @@ async function createWorkerAccount() {
   const managerPwd = document.getElementById('manager-password-input')?.value;
 
   if (!firstName || !lastName || !managerPwd) {
-    showToast('Prénom, nom et mot de passe manager sont requis.', 'warning');
+    showToast('Prénom, nom et votre mot de passe manager sont requis.', 'warning');
     return;
   }
+
+  // Sauvegarder les identifiants du manager pour le reconnecter ensuite
+  const managerEmail = currentUserAuth.email;   // email Firebase du manager
+  sessionStorage.setItem('mgr_email', managerEmail);
+  sessionStorage.setItem('mgr_pass', managerPwd);
 
   const btn     = document.getElementById('create-worker-btn');
   const btnText = document.getElementById('create-worker-btn-text');
@@ -2580,33 +2585,45 @@ async function createWorkerAccount() {
   if (btnText) btnText.textContent = 'Création...';
   if (spinner) spinner.classList.remove('hidden');
 
-  const { username, email, password } = generatedCredentials;
+  const { username, email, password } = generatedCredentials; // générés plus tôt
 
   try {
+    // 1. Créer le compte Firebase Auth (le manager est déconnecté ici)
     const cred = await auth.createUserWithEmailAndPassword(email, password);
-    const uid  = cred.user.uid;
+    const workerUid = cred.user.uid;
 
-    await db.collection('users').doc(uid).set({
-      username, email, displayName: firstName + ' ' + lastName,
-      firstName, lastName, age: age ? parseInt(age) : null,
+    // 2. Reconnecter le manager AVANT d'écrire dans Firestore
+    await auth.signInWithEmailAndPassword(managerEmail, managerPwd);
+
+    // 3. Maintenant le manager est reconnecté → écrire le document
+    await db.collection('users').doc(workerUid).set({
+      username, email,
+      displayName: `${firstName} ${lastName}`,
+      firstName, lastName,
+      age: age ? parseInt(age) : null,
       gender, phone: phone || null, status, address: address || null,
-      role: 'worker', teamId: currentUser.teamId || null,
+      role: 'worker',
+      teamId: currentUser.teamId || null,
       balance: 0, completedTasks: 0, active: true,
       storedPassword: password,
       createdBy: currentUser.id, managerId: currentUser.id,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
 
-    // Reconnecter le manager
-    await auth.signInWithEmailAndPassword(currentUserAuth.email, managerPwd);
-
     closeModal();
-    showToast(`Worker "${username}" créé !`, 'success');
+    showToast(`Worker "${username}" créé avec succès !`, 'success');
     addLog('user', `Worker créé : ${username} par ${currentUser.username}`, currentUser.username);
     loadManagerMembers();
 
-  } catch (e) {
-    showToast('Erreur création worker : ' + e.message, 'error');
+    // Nettoyer le sessionStorage
+    sessionStorage.removeItem('mgr_email');
+    sessionStorage.removeItem('mgr_pass');
+
+  } catch (err) {
+    console.error('Erreur création worker:', err);
+    // Essayer de reconnecter le manager même en cas d'erreur
+    try { await auth.signInWithEmailAndPassword(managerEmail, managerPwd); } catch (e) {}
+    showToast('Erreur : ' + err.message, 'error');
   } finally {
     if (btn) btn.disabled = false;
     if (btnText) btnText.textContent = 'Créer le compte';
