@@ -1266,7 +1266,7 @@
                   <i data-lucide="upload-cloud" class="w-8 h-8 text-gray-400"></i>
                   <p>Cliquez ici pour choisir une image</p>
                   <p style="font-size:0.72rem;color:var(--text-muted);margin-top:4px">JPG, PNG, GIF acceptés</p>
-                  <input type="file" id="maintenance-file" accept="image/*" capture="environment" class="hidden" onchange="handleMaintenanceFile(event)" />
+                  <input type="file" id="maintenance-file" accept="image/*" class="hidden" onchange="handleMaintenanceFile(event)" />
                 </div>
                 <div id="upload-progress-container" class="hidden" style="margin-top:8px">
                   <div class="progress-bar-wrapper">
@@ -1451,7 +1451,7 @@
             <i data-lucide="upload-cloud" style="width:14px;height:14px;display:inline;margin-right:4px"></i>
             Ou uploadez une image
           </label>
-          <input type="file" id="task-image-file" accept="image/*" class="hidden" onchange="handleTaskImageFile(event)" />
+          <input type="file" id="task-proof-file" accept="image/*" class="hidden" onchange="handleTaskProofFile(event)" />
           <div id="task-image-preview" class="hidden" style="margin-top:8px">
             <img id="task-img-preview-el" src="" alt="Aperçu" style="max-height:120px;border-radius:8px;border:1px solid var(--border)" />
             <div class="progress-bar-wrapper hidden" id="task-upload-progress-wrap" style="margin-top:6px">
